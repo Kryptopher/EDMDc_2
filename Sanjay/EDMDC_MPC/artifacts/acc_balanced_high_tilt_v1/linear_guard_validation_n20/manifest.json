@@ -1,0 +1,84 @@
+{
+  "configuration": {
+    "allocator_altered_steps": 0,
+    "attitude_error_max_rad": 0.12,
+    "attitude_trust_rad": 0.45,
+    "candidate_id": 9,
+    "control_horizon_seconds": 0.2,
+    "controller": "hover_linear",
+    "failed_solves": 0,
+    "horizon_seconds": 0.5,
+    "mean_position_rmse_m": 0.007068827584833477,
+    "mean_velocity_rmse_mps": 0.0045498361706779985,
+    "q_position_scale": 4.0,
+    "q_velocity_scale": 0.25,
+    "r_scale": 0.01,
+    "selection_score": 0.010018950634940809,
+    "terminal_scale": 1.0,
+    "thrust_trust_n": 8.0,
+    "worst_position_rmse_m": 0.012475697165197659
+  },
+  "duration_seconds": 30.0,
+  "families": [
+    "helix",
+    "figure8",
+    "lissajous",
+    "waypoint"
+  ],
+  "linear_config": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_waypoint_v2\\simple_baseline_equal_information_tuning\\selected_config.json",
+  "purpose": "Audit whether the hover-linear tracking tail is caused by its attitude guard.\n\nThe frozen confirmation used a validation-selected 0.12 rad state-to-command\nattitude-error bound.  This script keeps the model, weights, horizon, plant,\npreview, trajectories, and seeds fixed while varying only that bound.\n",
+  "run_index_start": 760000,
+  "runs_per_family": 5,
+  "single_changed_factor": "attitude_error_max_rad",
+  "speed_scale": 1.75,
+  "summary": [
+    {
+      "allocator_altered_steps": 0,
+      "attitude_error_max_rad": 0.12,
+      "episodes": 20,
+      "failed_solves": 0,
+      "guard_label": "frozen_0p12",
+      "mean_position_rmse_m": 7.654323809007589,
+      "median_position_rmse_m": 5.038465999324493,
+      "p90_position_rmse_m": 18.56450412118749,
+      "runs_over_1m": 10,
+      "worst_position_rmse_m": 22.973554303533103
+    },
+    {
+      "allocator_altered_steps": 0,
+      "attitude_error_max_rad": 0.25,
+      "episodes": 20,
+      "failed_solves": 0,
+      "guard_label": "guard_0p25",
+      "mean_position_rmse_m": 3.6907238723969016,
+      "median_position_rmse_m": 0.023852078786085452,
+      "p90_position_rmse_m": 12.375923500515395,
+      "runs_over_1m": 6,
+      "worst_position_rmse_m": 17.91213103999178
+    },
+    {
+      "allocator_altered_steps": 0,
+      "attitude_error_max_rad": 0.4,
+      "episodes": 20,
+      "failed_solves": 0,
+      "guard_label": "guard_0p40",
+      "mean_position_rmse_m": 1.8638482902678,
+      "median_position_rmse_m": 0.023852078786085452,
+      "p90_position_rmse_m": 10.03616211915102,
+      "runs_over_1m": 5,
+      "worst_position_rmse_m": 11.106453896337506
+    },
+    {
+      "allocator_altered_steps": 0,
+      "attitude_error_max_rad": null,
+      "episodes": 20,
+      "failed_solves": 0,
+      "guard_label": "unguarded",
+      "mean_position_rmse_m": 1.5334784526318908,
+      "median_position_rmse_m": 0.023852078786085452,
+      "p90_position_rmse_m": 9.16957062525746,
+      "runs_over_1m": 3,
+      "worst_position_rmse_m": 10.733434577086054
+    }
+  ]
+}

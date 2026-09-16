@@ -1,0 +1,40 @@
+{
+  "experiment": "locked_attitude_command_interception_comparison",
+  "nominal_plant": true,
+  "controller_rate_hz": 100.0,
+  "families": [
+    "straight",
+    "accelerating",
+    "helix",
+    "weaving"
+  ],
+  "runs_per_family": 10,
+  "base_seed": 800000,
+  "tmax_s": 20.0,
+  "capture_radius_m": 0.75,
+  "intercept_lead_s": 0.0,
+  "qualified_dwell_s": 0.2,
+  "qualified_time_reference": "dwell_end",
+  "qualified_sample_convention": "elapsed_interval",
+  "qualified_speed_limits_mps": [
+    2.0,
+    3.0,
+    5.0
+  ],
+  "plant_ids": [
+    "nominal"
+  ],
+  "initial_yaw": "current target yaw for every controller",
+  "pid_reference": "current target state (reactive)",
+  "predictive_controller_reference": "target state shifted by lead",
+  "controllers": [
+    "PID",
+    "Linear MPC",
+    "EDMDc-MPC"
+  ],
+  "model": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\attitude_capacity_learning_v1\\models\\dictionary_physics42_f100.pkl",
+  "linear_config": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\linear_guard_validation_n20\\selected_config.json",
+  "edmd_config": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\mpc_retuning_v3_broad\\candidate19_smooth_config.json",
+  "reactive_config": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_waypoint_v2\\reactive_pid_tuning_100hz\\selected_config.json",
+  "tuned_config": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\interception_linear_tuning_broad_v2\\frozen_config.json"
+}

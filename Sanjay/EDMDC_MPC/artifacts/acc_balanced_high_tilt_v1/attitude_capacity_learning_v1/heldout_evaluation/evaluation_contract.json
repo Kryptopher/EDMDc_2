@@ -1,0 +1,88 @@
+{
+  "continuous_prefixes_seconds": [
+    1.0,
+    2.0
+  ],
+  "data_file": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\runs_mixed_n360_high_tilt.pkl",
+  "data_sha256": "17f9045739ec05f500004d28bb242ea63f2fe0f53ca5cf1058c747531c505089",
+  "format": "edmdc_prediction_evaluation_v1",
+  "horizons_seconds": [
+    0.1,
+    0.5,
+    1.0,
+    2.0
+  ],
+  "models": {
+    "accepted_full56_f100": {
+      "dt": 0.01,
+      "input_downsampling": "interval_mean",
+      "input_source": "outer_command",
+      "path": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\training_ablation\\edmdc_outer_attitude_error_dt001_augmented_none.pkl",
+      "sha256": "74484db2c8ef6c4934240a17e43fd5c5ffbf270228fd6f6f75063a667e206973"
+    },
+    "dictionary_physics42_f100": {
+      "dt": 0.01,
+      "input_downsampling": "interval_mean",
+      "input_source": "outer_command",
+      "path": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\attitude_capacity_learning_v1\\models\\dictionary_physics42_f100.pkl",
+      "sha256": "d8cca95439cbba24561fd9dbce63729f3e06618f839bf834867197256f7fc4f9"
+    },
+    "dictionary_state13_f100": {
+      "dt": 0.01,
+      "input_downsampling": "interval_mean",
+      "input_source": "outer_command",
+      "path": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\attitude_capacity_learning_v1\\models\\dictionary_state13_f100.pkl",
+      "sha256": "2aaaddad6aae8124552edd5563289013b75e49395e8ae7422afa4376eee84c49"
+    },
+    "dictionary_trig19_f100": {
+      "dt": 0.01,
+      "input_downsampling": "interval_mean",
+      "input_source": "outer_command",
+      "path": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\attitude_capacity_learning_v1\\models\\dictionary_trig19_f100.pkl",
+      "sha256": "1453f56c3f6307cfc5bd96aef3ffaf270c879afa6edf26a6c2e72427dfa11dc3"
+    },
+    "learning_full56_f010": {
+      "dt": 0.01,
+      "input_downsampling": "interval_mean",
+      "input_source": "outer_command",
+      "path": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\attitude_capacity_learning_v1\\models\\learning_full56_f010.pkl",
+      "sha256": "2f0d9bfee2c6a67f3e5fe2b0946426cf9c8ca643378612b62b64a9dad2098deb"
+    },
+    "learning_full56_f025": {
+      "dt": 0.01,
+      "input_downsampling": "interval_mean",
+      "input_source": "outer_command",
+      "path": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\attitude_capacity_learning_v1\\models\\learning_full56_f025.pkl",
+      "sha256": "86fede1c94f52ade766c73294f850db64ed96e8fb38324c69e4ae72d4a3ed738"
+    },
+    "learning_full56_f050": {
+      "dt": 0.01,
+      "input_downsampling": "interval_mean",
+      "input_source": "outer_command",
+      "path": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\attitude_capacity_learning_v1\\models\\learning_full56_f050.pkl",
+      "sha256": "86a5a5ff4cb45806027fb616d442deed9abf58a044e0606155703f2ab38046a5"
+    }
+  },
+  "test_indices": [
+    39,
+    59,
+    129,
+    155,
+    210,
+    356,
+    357,
+    358,
+    359
+  ],
+  "validation_indices": [
+    38,
+    58,
+    128,
+    154,
+    209,
+    352,
+    353,
+    354,
+    355
+  ]
+}

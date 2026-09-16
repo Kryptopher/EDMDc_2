@@ -3,6 +3,8 @@ import pickle
 import numpy as np
 import scipy.sparse as sp
 
+from Helperfcts import helperfcts
+
 try:
     from threadpoolctl import threadpool_limits
 except ModuleNotFoundError:
@@ -29,11 +31,26 @@ RAW_INPUT_DIM = 4
 RAW_INPUT_LABELS = ["thrust", "tau_roll", "tau_pitch", "tau_yaw"]
 INPUT_LIFT_TYPE = "thrust_direction_rate_coupling"
 LEGACY_INPUT_LIFT_TYPE = "thrust_direction"
+OUTER_RAW_INPUT_LIFT_TYPE = "raw_outer_command"
+OUTER_ATTITUDE_INPUT_LIFT_TYPE = "outer_attitude_error_thrust_vector"
 INPUT_LIFT_LABELS = RAW_INPUT_LABELS + [
     "thrust_x", "thrust_y", "thrust_z",
     "tau_roll_p", "tau_pitch_q", "tau_yaw_r",
 ]
 LEGACY_INPUT_LIFT_LABELS = RAW_INPUT_LABELS + ["thrust_x", "thrust_y", "thrust_z"]
+OUTER_RAW_INPUT_LABELS = ["thrust", "phi_des", "theta_des", "psi_des"]
+OUTER_ATTITUDE_INPUT_LIFT_LABELS = OUTER_RAW_INPUT_LABELS + [
+    "desired_thrust_x", "desired_thrust_y", "desired_thrust_z",
+    "sin_phi_des", "cos_phi_des",
+    "sin_theta_des", "cos_theta_des",
+    "sin_psi_des", "cos_psi_des",
+    "phi_error", "theta_error", "psi_error",
+]
+
+
+def wrap_angle_pi(angle):
+    """Wrap an angle or array of angles to [-pi, pi)."""
+    return (np.asarray(angle, dtype=float) + np.pi) % (2.0 * np.pi) - np.pi
 
 
 def thrust_direction_from_state_phys(states_phys):
@@ -98,11 +115,148 @@ def lift_inputs_from_phys(states_phys, raw_inputs):
     return lifted[0] if scalar else lifted
 
 
-def scaled_lifted_input_from_phys(state_phys, raw_input, u_scaler):
-    lifted = lift_inputs_from_phys(state_phys, raw_input)
+def outer_command_lift_from_phys(states_phys, raw_inputs, input_lift_type=None):
+    """Lift [thrust, desired roll, pitch, yaw] using the current attitude.
+
+    The nonlinear lift exposes the desired world thrust vector and the attitude
+    errors that actually drive the inner attitude controller.  Raw mode remains
+    available for a controlled ablation against the original affine interface.
+    """
+    lift_type = input_lift_type or OUTER_RAW_INPUT_LIFT_TYPE
+    states = np.asarray(states_phys, dtype=float)
+    raw = np.asarray(raw_inputs, dtype=float)
+    scalar = states.ndim == 1 and raw.ndim == 1
+    states_2d = np.atleast_2d(states)
+    raw_2d = np.atleast_2d(raw)
+
+    if states_2d.shape[1] < STATE_DIM:
+        raise ValueError(
+            f"Expected at least {STATE_DIM} state entries, got {states_2d.shape[1]}"
+        )
+    if raw_2d.shape[1] < RAW_INPUT_DIM:
+        raise ValueError(
+            f"Expected {RAW_INPUT_DIM} outer-command channels, got {raw_2d.shape[1]}"
+        )
+    if states_2d.shape[0] == 1 and raw_2d.shape[0] > 1:
+        states_2d = np.repeat(states_2d, raw_2d.shape[0], axis=0)
+    elif raw_2d.shape[0] == 1 and states_2d.shape[0] > 1:
+        raw_2d = np.repeat(raw_2d, states_2d.shape[0], axis=0)
+    if states_2d.shape[0] != raw_2d.shape[0]:
+        raise ValueError(
+            f"State/input sample mismatch: {states_2d.shape[0]} vs {raw_2d.shape[0]}"
+        )
+
+    raw_4 = raw_2d[:, :RAW_INPUT_DIM]
+    if lift_type == OUTER_RAW_INPUT_LIFT_TYPE:
+        return raw_4[0] if scalar else raw_4
+    if lift_type != OUTER_ATTITUDE_INPUT_LIFT_TYPE:
+        raise ValueError(f"Unsupported outer-command input lift {lift_type!r}")
+
+    desired_attitude_state = np.zeros((raw_4.shape[0], STATE_DIM), dtype=float)
+    desired_attitude_state[:, 6:9] = raw_4[:, 1:4]
+    desired_thrust = raw_4[:, :1] * thrust_direction_from_state_phys(
+        desired_attitude_state
+    )
+    desired_angles = raw_4[:, 1:4]
+    angle_features = np.column_stack([
+        np.sin(desired_angles[:, 0]), np.cos(desired_angles[:, 0]),
+        np.sin(desired_angles[:, 1]), np.cos(desired_angles[:, 1]),
+        np.sin(desired_angles[:, 2]), np.cos(desired_angles[:, 2]),
+    ])
+    attitude_error = desired_angles - states_2d[:, 6:9]
+    attitude_error[:, 2] = wrap_angle_pi(attitude_error[:, 2])
+    lifted = np.hstack([raw_4, desired_thrust, angle_features, attitude_error])
+    return lifted[0] if scalar else lifted
+
+
+def scaled_lifted_input_from_phys(
+    state_phys, raw_input, u_scaler, input_lift_type=None
+):
+    if input_lift_type in (
+        OUTER_RAW_INPUT_LIFT_TYPE, OUTER_ATTITUDE_INPUT_LIFT_TYPE
+    ):
+        lifted = outer_command_lift_from_phys(
+            state_phys, raw_input, input_lift_type=input_lift_type
+        )
+    else:
+        lifted = lift_inputs_from_phys(state_phys, raw_input)
     expected = int(getattr(u_scaler, "n_features_in_", np.asarray(lifted).shape[-1]))
+    if np.asarray(lifted).shape[-1] < expected:
+        raise ValueError(
+            f"Input lift produced {np.asarray(lifted).shape[-1]} features; "
+            f"model scaler expects {expected}"
+        )
     lifted = np.asarray(lifted, dtype=float)[..., :expected]
     return u_scaler.transform(np.atleast_2d(lifted)).flatten()
+
+
+def outer_command_lift_jacobians_scaled(
+    state_phys, raw_input, state_scaler, u_scaler
+):
+    """Jacobians of the nonlinear outer lift in standardized coordinates.
+
+    Returns derivatives with respect to standardized physical state and the
+    first four standardized raw commands. This keeps MPC decision variables at
+    [thrust, desired roll, desired pitch, desired yaw], never at 16 fictitious
+    independently controllable lifted channels.
+    """
+    state = np.asarray(state_phys, dtype=float).reshape(-1)
+    raw = np.asarray(raw_input, dtype=float).reshape(-1)[:RAW_INPUT_DIM]
+    if state.size < STATE_DIM:
+        raise ValueError(f"Expected {STATE_DIM} states, got {state.size}")
+    if getattr(u_scaler, "n_features_in_", 0) != len(
+        OUTER_ATTITUDE_INPUT_LIFT_LABELS
+    ):
+        raise ValueError("Outer attitude-error lift requires a 16-feature scaler")
+
+    thrust, phi, theta, psi = raw
+    s_phi, c_phi = np.sin(phi), np.cos(phi)
+    s_theta, c_theta = np.sin(theta), np.cos(theta)
+    s_psi, c_psi = np.sin(psi), np.cos(psi)
+    direction = np.array([
+        c_psi*s_theta*c_phi + s_psi*s_phi,
+        s_psi*s_theta*c_phi - c_psi*s_phi,
+        c_theta*c_phi,
+    ])
+    direction_derivatives = np.column_stack([
+        np.array([
+            -c_psi*s_theta*s_phi + s_psi*c_phi,
+            -s_psi*s_theta*s_phi - c_psi*c_phi,
+            -c_theta*s_phi,
+        ]),
+        np.array([
+            c_psi*c_theta*c_phi,
+            s_psi*c_theta*c_phi,
+            -s_theta*c_phi,
+        ]),
+        np.array([
+            -s_psi*s_theta*c_phi + c_psi*s_phi,
+            c_psi*s_theta*c_phi + s_psi*s_phi,
+            0.0,
+        ]),
+    ])
+
+    n_lift = len(OUTER_ATTITUDE_INPUT_LIFT_LABELS)
+    jac_u_phys = np.zeros((n_lift, RAW_INPUT_DIM), dtype=float)
+    jac_x_phys = np.zeros((n_lift, STATE_DIM), dtype=float)
+    jac_u_phys[:RAW_INPUT_DIM] = np.eye(RAW_INPUT_DIM)
+    jac_u_phys[4:7, 0] = direction
+    jac_u_phys[4:7, 1:4] = thrust * direction_derivatives
+    jac_u_phys[7, 1] = c_phi
+    jac_u_phys[8, 1] = -s_phi
+    jac_u_phys[9, 2] = c_theta
+    jac_u_phys[10, 2] = -s_theta
+    jac_u_phys[11, 3] = c_psi
+    jac_u_phys[12, 3] = -s_psi
+    jac_u_phys[13:16, 1:4] = np.eye(3)
+    jac_x_phys[13:16, 6:9] = -np.eye(3)
+
+    lift_scale = np.asarray(u_scaler.scale_, dtype=float)
+    raw_scale = np.asarray(u_scaler.scale_[:RAW_INPUT_DIM], dtype=float)
+    state_scale = np.asarray(state_scaler.scale_[:STATE_DIM], dtype=float)
+    jac_u_std = (jac_u_phys * raw_scale[None, :]) / lift_scale[:, None]
+    jac_x_std = (jac_x_phys * state_scale[None, :]) / lift_scale[:, None]
+    return jac_x_std, jac_u_std
 
 
 # File I/O
@@ -110,10 +264,24 @@ def load_edmdc_model(filename):
     with open(filename, "rb") as f:
         return pickle.load(f)
 
-def load_simulation_runs(filename):
+def load_simulation_runs(filename, input_source="applied_wrench"):
     with open(filename, "rb") as f:
         data = pickle.load(f)
-    return data["t"], data["states"], data["U"], data["ref_traj_list"]
+    source = str(input_source).strip().lower()
+    if source == "applied_wrench":
+        key = "U"
+    elif source == "outer_command":
+        key = "U_outer"
+    else:
+        raise ValueError(
+            "input_source must be applied_wrench or outer_command, "
+            f"got {input_source!r}"
+        )
+    if key not in data:
+        raise ValueError(
+            f"Dataset lacks {key}; regenerate it with dual-input logging."
+        )
+    return data["t"], data["states"], data[key], data["ref_traj_list"]
 
 # State lifting
 # The current lifted model uses the full 12-state vector:
@@ -490,7 +658,7 @@ class EDMDcMPC_QP:
         self.l = np.concatenate([self._delta_l, motor_l])
         self.u_bound = np.concatenate([self._delta_u, motor_u])
 
-    def _input_lift_jacobian(self):
+    def _input_lift_jacobian(self, state_phys=None):
         """
         Map raw standardized command deltas to lifted standardized input deltas.
 
@@ -505,7 +673,11 @@ class EDMDcMPC_QP:
         J = np.zeros((self.model_nu, self.nu))
         J[:self.nu, :self.nu] = np.eye(self.nu)
 
-        thrust_dir = thrust_direction_from_state_phys(self._lift_state_phys)
+        state_phys = (
+            self._lift_state_phys if state_phys is None
+            else np.asarray(state_phys, dtype=float)
+        )
+        thrust_dir = thrust_direction_from_state_phys(state_phys)
         thrust_scale = self.u_scaler.scale_[0]
         for axis in range(3):
             lifted_idx = RAW_INPUT_DIM + axis
@@ -515,7 +687,7 @@ class EDMDcMPC_QP:
                 thrust_scale * thrust_dir[axis] / self.u_scaler.scale_[lifted_idx]
             )
         rate_start = RAW_INPUT_DIM + 3
-        rates = self._lift_state_phys[9:12]
+        rates = state_phys[9:12]
         for axis in range(3):
             lifted_idx = rate_start + axis
             raw_idx = 1 + axis
@@ -617,11 +789,20 @@ class EDMDcMPC_QP:
             self.Su_phys.T @ (self.Qbar @ (x_free - x_ref))
         ).reshape(-1)
 
-    def compute(self, z0, x_ref_std_horizon, u_nominal_raw=None):
+    def compute(
+        self, z0, x_ref_std_horizon, u_nominal_raw=None,
+        u_nominal_raw_horizon=None,
+    ):
         self._set_lift_state_from_z(z0)
-        if u_nominal_raw is not None:
+        if u_nominal_raw_horizon is not None:
+            nominal = np.asarray(u_nominal_raw_horizon, dtype=float)
+            self._set_nominal_input(nominal[0] if nominal.ndim == 2 else nominal)
+        elif u_nominal_raw is not None:
             self._set_nominal_input(u_nominal_raw)
 
+        # The EDMDc model is re-linearized at the measured state every control
+        # tick. Keeping that local input map fixed within one QP is more robust
+        # than extrapolating the bilinear input lift far from logged data.
         if self.uses_lifted_input:
             self._refresh_prediction_model()
             self.prob.update(Px=self.P.data)
@@ -648,11 +829,361 @@ class EDMDcMPC_QP:
         return u0_raw  # [thrust, tau_roll, tau_pitch, optional tau_yaw]
 
 
+class OuterCommandEDMDcMPC_SQP:
+    """Sequentially linearized MPC for an outer desired-attitude EDMDc model.
+
+    The nonlinear 16-feature input lift is evaluated along a nominal predicted
+    trajectory. Each SQP iteration includes both its state and command
+    Jacobians, while the QP retains only four physical command decisions.
+    """
+
+    def __init__(
+        self, A, B, Cz, N, NC, Q, R, Rd, state_scaler, u_scaler,
+        u_min_raw, u_max_raw, du_max_raw, max_iterations=2,
+        Q_terminal=None, trust_region_scale=1.0, move_block_steps=1,
+        attitude_error_max_raw=None, first_move_rd_scale=1.0,
+        command_slew_max_raw=None,
+    ):
+        if osqp is None:
+            raise ModuleNotFoundError("osqp is required for outer-command MPC")
+        self.A = np.asarray(A, dtype=float)
+        self.B = np.asarray(B, dtype=float)
+        self.Cz = np.asarray(Cz, dtype=float)
+        self.N = int(N)
+        self.NC = int(NC)
+        self.Q = np.asarray(Q, dtype=float)
+        self.Q_terminal = (
+            self.Q if Q_terminal is None else np.asarray(Q_terminal, dtype=float)
+        )
+        self.R = np.asarray(R, dtype=float)
+        self.Rd = np.asarray(Rd, dtype=float)
+        self.state_scaler = state_scaler
+        self.u_scaler = u_scaler
+        self.nz = self.A.shape[0]
+        self.nx = self.Cz.shape[0]
+        self.nu = RAW_INPUT_DIM
+        self.nvar = self.NC * self.nu
+        self.max_iterations = int(max_iterations)
+        self.trust_region_scale = float(trust_region_scale)
+        self.move_block_steps = int(move_block_steps)
+        self.attitude_error_max_raw = (
+            None if attitude_error_max_raw is None
+            else np.broadcast_to(
+                np.asarray(attitude_error_max_raw, dtype=float), (2,)
+            ).copy()
+        )
+        self.first_move_rd_scale = float(first_move_rd_scale)
+        if self.first_move_rd_scale < 0.0:
+            raise ValueError("first_move_rd_scale must be nonnegative")
+        if self.B.shape[1] != len(OUTER_ATTITUDE_INPUT_LIFT_LABELS):
+            raise ValueError("Outer-command SQP requires the 16-feature input lift")
+        if self.Cz.shape != (STATE_DIM, self.nz):
+            raise ValueError("Cz must decode the 12 standardized physical states")
+        if not 1 <= self.NC <= self.N or self.max_iterations < 1:
+            raise ValueError("Require 1 <= NC <= N and at least one SQP iteration")
+        if self.move_block_steps < 1:
+            raise ValueError("move_block_steps must be positive")
+
+        self.raw_mean = np.asarray(u_scaler.mean_[:self.nu], dtype=float)
+        self.raw_scale = np.asarray(u_scaler.scale_[:self.nu], dtype=float)
+        self.state_mean = np.asarray(
+            state_scaler.mean_[:STATE_DIM], dtype=float
+        )
+        self.state_scale = np.asarray(
+            state_scaler.scale_[:STATE_DIM], dtype=float
+        )
+        self.lift_mean = np.asarray(u_scaler.mean_, dtype=float)
+        self.lift_scale = np.asarray(u_scaler.scale_, dtype=float)
+        self.u_min_std = (
+            np.asarray(u_min_raw, dtype=float) - self.raw_mean
+        ) / self.raw_scale
+        self.u_max_std = (
+            np.asarray(u_max_raw, dtype=float) - self.raw_mean
+        ) / self.raw_scale
+        self.du_max_std = (
+            np.asarray(du_max_raw, dtype=float) / self.raw_scale
+        ) * self.trust_region_scale
+        self.command_slew_max_std = (
+            None if command_slew_max_raw is None else
+            np.asarray(command_slew_max_raw, dtype=float) / self.raw_scale
+        )
+        if any(values.shape != (self.nu,) for values in (
+            self.u_min_std, self.u_max_std, self.du_max_std
+        )):
+            raise ValueError("Outer-command bounds must contain four entries")
+
+        q_blocks = [sp.csc_matrix(self.Q) for _ in range(max(self.N - 1, 0))]
+        q_blocks.append(sp.csc_matrix(self.Q_terminal))
+        self.Qbar = sp.block_diag(q_blocks, format="csc").toarray()
+        self.Rbar = sp.block_diag(
+            [sp.csc_matrix(self.R) for _ in range(self.NC)], format="csc"
+        ).toarray()
+        self.D = self._difference_matrix()
+        self.Rdbar = (
+            sp.block_diag(
+                [sp.csc_matrix(self.Rd) for _ in range(self.NC - 1)],
+                format="csc",
+            ).toarray()
+            if self.NC > 1 else None
+        )
+        self._p_rows, self._p_cols = np.triu_indices(self.nvar)
+        initial_p = self._upper_matrix(np.eye(self.nvar))
+        self._identity_constraints = sp.eye(self.nvar, format="csc")
+        self.prob = osqp.OSQP()
+        self.prob.setup(
+            P=initial_p,
+            q=np.zeros(self.nvar),
+            A=self._identity_constraints,
+            l=-np.ones(self.nvar),
+            u=np.ones(self.nvar),
+            warm_start=True,
+            verbose=False,
+            polish=False,
+        )
+        self.last_prediction = None
+        self.last_commands_raw = None
+        self.last_status = "not run"
+        self.last_iterations = 0
+        self.last_delta_norm = np.nan
+        self.previous_command_raw = None
+        # Optional online additive model-defect estimate. The default zero
+        # preserves all previously frozen outer-command MPC behavior.
+        self.additive_defect_z = np.zeros(self.nz, dtype=float)
+
+    def _difference_matrix(self):
+        if self.NC <= 1:
+            return None
+        D = np.zeros(((self.NC - 1) * self.nu, self.nvar), dtype=float)
+        for k in range(self.NC - 1):
+            row = slice(k * self.nu, (k + 1) * self.nu)
+            D[row, k * self.nu:(k + 1) * self.nu] = -np.eye(self.nu)
+            D[row, (k + 1) * self.nu:(k + 2) * self.nu] = np.eye(self.nu)
+        return D
+
+    def _upper_matrix(self, matrix):
+        values = np.asarray(matrix, dtype=float)[self._p_rows, self._p_cols]
+        return sp.csc_matrix(
+            (values, (self._p_rows, self._p_cols)),
+            shape=(self.nvar, self.nvar),
+        )
+
+    def _decode_state(self, z):
+        x_std = self.Cz @ np.asarray(z, dtype=float)
+        return x_std * self.state_scale + self.state_mean
+
+    def _scaled_lift_fast(self, state, raw):
+        lifted = outer_command_lift_from_phys(
+            state, raw, input_lift_type=OUTER_ATTITUDE_INPUT_LIFT_TYPE
+        )
+        return (np.asarray(lifted, dtype=float) - self.lift_mean) / self.lift_scale
+
+    def _raw_from_std(self, command_std):
+        return np.asarray(command_std, dtype=float) * self.raw_scale + self.raw_mean
+
+    def _std_from_raw(self, command_raw):
+        return (np.asarray(command_raw, dtype=float) - self.raw_mean) / self.raw_scale
+
+    def _prepare_reference_commands(self, commands_raw, state_phys):
+        commands = np.asarray(commands_raw, dtype=float)
+        if commands.ndim == 1:
+            commands = np.repeat(commands.reshape(1, -1), self.NC, axis=0)
+        if commands.shape[1] != self.nu:
+            raise ValueError("Reference outer commands must have four columns")
+        if len(commands) >= self.N:
+            commands = commands[
+                np.minimum(
+                    np.arange(self.NC) * self.move_block_steps,
+                    len(commands) - 1,
+                )
+            ]
+        if len(commands) < self.NC:
+            commands = np.vstack([
+                commands,
+                np.repeat(commands[-1:], self.NC - len(commands), axis=0),
+            ])
+        commands = commands[:self.NC].copy()
+        commands[:, 3] = np.unwrap(
+            np.concatenate([[state_phys[8]], commands[:, 3]])
+        )[1:]
+        return self._std_from_raw(commands)
+
+    def _nominal_rollout_and_sensitivity(self, z0, command_std):
+        z = np.asarray(z0, dtype=float).reshape(self.nz).copy()
+        sensitivity = np.zeros((self.nz, self.nvar), dtype=float)
+        predicted = np.zeros((self.N + 1, self.nz), dtype=float)
+        output_sensitivity = np.zeros((self.N * self.nx, self.nvar), dtype=float)
+        predicted[0] = z
+
+        for k in range(self.N):
+            move = min(k // self.move_block_steps, self.NC - 1)
+            raw = self._raw_from_std(command_std[move])
+            state = self._decode_state(z)
+            lifted_scaled = self._scaled_lift_fast(state, raw)
+            jac_x, jac_u = outer_command_lift_jacobians_scaled(
+                state, raw, self.state_scaler, self.u_scaler
+            )
+            local_A = self.A + self.B @ jac_x @ self.Cz
+            injection = np.zeros((self.B.shape[1], self.nvar), dtype=float)
+            columns = slice(move * self.nu, (move + 1) * self.nu)
+            injection[:, columns] = jac_u
+            sensitivity = local_A @ sensitivity + self.B @ injection
+            z = self.A @ z + self.B @ lifted_scaled + self.additive_defect_z
+            predicted[k + 1] = z
+            output_sensitivity[k*self.nx:(k+1)*self.nx] = self.Cz @ sensitivity
+        return predicted, output_sensitivity
+
+    def _nominal_rollout(self, z0, command_std):
+        """Roll out the nonlinear lifted model without QP sensitivities."""
+        z = np.asarray(z0, dtype=float).reshape(self.nz).copy()
+        predicted = np.zeros((self.N + 1, self.nz), dtype=float)
+        predicted[0] = z
+        for k in range(self.N):
+            move = min(k // self.move_block_steps, self.NC - 1)
+            raw = self._raw_from_std(command_std[move])
+            state = self._decode_state(z)
+            lifted_scaled = self._scaled_lift_fast(state, raw)
+            z = self.A @ z + self.B @ lifted_scaled + self.additive_defect_z
+            predicted[k + 1] = z
+        return predicted
+
+    def compute(self, z0, x_ref_std_horizon, u_reference_raw_horizon,
+                previous_command_raw=None):
+        z0 = np.asarray(z0, dtype=float).reshape(self.nz)
+        reference = np.asarray(x_ref_std_horizon, dtype=float)
+        if reference.shape != (self.N, self.nx):
+            raise ValueError(
+                f"Reference state horizon must be {(self.N, self.nx)}, "
+                f"got {reference.shape}"
+            )
+        state_phys = self._decode_state(z0)
+        command_reference = self._prepare_reference_commands(
+            u_reference_raw_horizon, state_phys
+        )
+        if previous_command_raw is None:
+            previous_command_raw = self.previous_command_raw
+        if previous_command_raw is None:
+            previous_command_std = command_reference[0].copy()
+        else:
+            previous_command_raw = np.asarray(
+                previous_command_raw, dtype=float
+            ).reshape(self.nu).copy()
+            # Desired yaw is periodic. Put the previous command on the same
+            # branch as the current state before forming a command increment.
+            previous_command_raw[3] = (
+                state_phys[8]
+                + wrap_angle_pi(previous_command_raw[3] - state_phys[8])
+            )
+            previous_command_std = self._std_from_raw(previous_command_raw)
+        command_nominal = command_reference.copy()
+        status = "not solved"
+        delta_norm = np.inf
+
+        for iteration in range(self.max_iterations):
+            predicted, Su = self._nominal_rollout_and_sensitivity(
+                z0, command_nominal
+            )
+            predicted_states = (self.Cz @ predicted[1:].T).T.reshape(-1)
+            error = predicted_states - reference.reshape(-1)
+            command_offset = (command_nominal - command_reference).reshape(-1)
+            P = Su.T @ self.Qbar @ Su + self.Rbar
+            q = Su.T @ (self.Qbar @ error) + self.Rbar @ command_offset
+            if self.D is not None and self.Rdbar is not None:
+                smooth = self.D @ command_nominal.reshape(-1)
+                P += self.D.T @ self.Rdbar @ self.D
+                q += self.D.T @ (self.Rdbar @ smooth)
+            # Penalize the first optimized move against the command actually
+            # applied at the preceding controller update. Without this term,
+            # receding-horizon replanning can alternate its first action even
+            # when every individual predicted sequence is internally smooth.
+            if self.first_move_rd_scale > 0.0:
+                first_error = command_nominal[0] - previous_command_std
+                first_rd = self.first_move_rd_scale * self.Rd
+                P[:self.nu, :self.nu] += first_rd
+                q[:self.nu] += first_rd @ first_error
+            P = 0.5 * (P + P.T) + 1e-9 * np.eye(self.nvar)
+
+            lower_absolute = np.tile(self.u_min_std, self.NC) - command_nominal.reshape(-1)
+            upper_absolute = np.tile(self.u_max_std, self.NC) - command_nominal.reshape(-1)
+            trust = np.tile(self.du_max_std, self.NC)
+            lower = np.maximum(lower_absolute, -trust)
+            upper = np.minimum(upper_absolute, trust)
+            if self.command_slew_max_std is not None:
+                lower[:self.nu] = np.maximum(
+                    lower[:self.nu],
+                    previous_command_std - self.command_slew_max_std
+                    - command_nominal[0],
+                )
+                upper[:self.nu] = np.minimum(
+                    upper[:self.nu],
+                    previous_command_std + self.command_slew_max_std
+                    - command_nominal[0],
+                )
+            if self.attitude_error_max_raw is not None:
+                # Keep desired roll/pitch within the input-lift domain observed
+                # during identification.  Each control move is constrained
+                # around the attitude of its nominal predicted state.
+                for move in range(self.NC):
+                    prediction_index = min(
+                        move * self.move_block_steps + 1, self.N
+                    )
+                    predicted_state = self._decode_state(
+                        predicted[prediction_index]
+                    )
+                    for local, raw_index in enumerate((1, 2)):
+                        column = move * self.nu + raw_index
+                        lower_raw = (
+                            predicted_state[6 + local]
+                            - self.attitude_error_max_raw[local]
+                        )
+                        upper_raw = (
+                            predicted_state[6 + local]
+                            + self.attitude_error_max_raw[local]
+                        )
+                        lower_std = (
+                            lower_raw - self.raw_mean[raw_index]
+                        ) / self.raw_scale[raw_index]
+                        upper_std = (
+                            upper_raw - self.raw_mean[raw_index]
+                        ) / self.raw_scale[raw_index]
+                        lower[column] = max(
+                            lower[column],
+                            lower_std - command_nominal[move, raw_index],
+                        )
+                        upper[column] = min(
+                            upper[column],
+                            upper_std - command_nominal[move, raw_index],
+                        )
+            if np.any(lower > upper + 1e-12):
+                status = "infeasible command increment bounds"
+                break
+            P_upper = self._upper_matrix(P)
+            self.prob.update(Px=P_upper.data, q=q, l=lower, u=upper)
+            self.prob.warm_start(x=np.zeros(self.nvar))
+            result = self.prob.solve()
+            status = str(result.info.status)
+            if status not in ("solved", "solved inaccurate"):
+                break
+            delta = np.asarray(result.x, dtype=float).reshape(self.NC, self.nu)
+            command_nominal += delta
+            delta_norm = float(np.max(np.abs(delta)))
+            if delta_norm < 1e-4:
+                iteration += 1
+                break
+
+        commands_raw = self._raw_from_std(command_nominal)
+        # The final nonlinear rollout was previously recomputed only for this
+        # diagnostic field. Preserve the final SQP linearization trajectory;
+        # the applied command and optimization result are unchanged.
+        self.last_prediction = predicted
+        self.last_commands_raw = commands_raw
+        self.last_status = status
+        self.last_iterations = iteration + 1
+        self.last_delta_norm = delta_norm
+        self.previous_command_raw = commands_raw[0].copy()
+        return commands_raw[0].copy()
+
+
 # Reference processing
-def wrap_angle_pi(angle):
-    return (np.asarray(angle, dtype=float) + np.pi) % (2.0 * np.pi) - np.pi
-
-
 def reference_yaw_arrays(ref_traj, dt=None):
     """Return unwrapped yaw and yaw-rate references for a trajectory list."""
     yaw = np.unwrap([
@@ -680,26 +1211,109 @@ def extract_ref_xyz(ref_traj):
     return np.array([wp["pos"][:3] for wp in ref_traj], dtype=float)
 
 
-def precompute_ref_std(ref_traj, scaler, n_states=None, dt=None):
-    """Build a standardized reference trajectory using position, velocity, and yaw."""
+def outer_command_reference_array(ref_traj, quad):
+    """Build feedforward [thrust, roll_des, pitch_des, yaw_des] commands."""
+    if not ref_traj:
+        return np.empty((0, RAW_INPUT_DIM), dtype=float)
+    yaw, _ = reference_yaw_arrays(ref_traj)
+    commands = np.zeros((len(ref_traj), RAW_INPUT_DIM), dtype=float)
+    for k, waypoint in enumerate(ref_traj):
+        velocity = np.asarray(waypoint.get("vel", np.zeros(3)), dtype=float)
+        acceleration = np.asarray(waypoint.get("acc", np.zeros(3)), dtype=float)
+        force_world = (
+            float(quad.m) * (
+                acceleration + np.array([0.0, 0.0, float(quad.g)])
+            )
+            + float(quad.k_drag_linear) * velocity
+        )
+        rotation = helperfcts.fct_desired_rotation_from_force_and_yaw(
+            force_world, yaw[k]
+        )
+        phi, theta, _ = helperfcts.fct_euler_from_R(rotation)
+        commands[k] = [np.linalg.norm(force_world), phi, theta, yaw[k]]
+    return commands
+
+
+def hover_yaw_command_reference_array(ref_traj, hover_thrust_n):
+    """Return information-minimal [hover thrust, 0, 0, yaw] commands."""
+    if not ref_traj:
+        return np.empty((0, RAW_INPUT_DIM), dtype=float)
+    yaw, _ = reference_yaw_arrays(ref_traj)
+    commands = np.zeros((len(ref_traj), RAW_INPUT_DIM), dtype=float)
+    commands[:, 0] = float(hover_thrust_n)
+    commands[:, 3] = yaw
+    return commands
+
+
+def reference_state_array(ref_traj, dt, quad=None):
+    """Build a dynamically consistent 12-state reference trajectory.
+
+    When a plant is supplied, desired roll and pitch follow from the force
+    required by the reference acceleration. Body rates are then derived from
+    that attitude history. Without a plant, the unavailable attitude channels
+    remain zero for backward compatibility.
+    """
+    if dt is None or dt <= 0.0:
+        raise ValueError("A positive reference sample time is required")
+    if not ref_traj:
+        return np.empty((0, STATE_DIM), dtype=float)
+
+    X_ref = np.zeros((len(ref_traj), STATE_DIM), dtype=float)
+    X_ref[:, 0:3] = np.asarray([wp["pos"][:3] for wp in ref_traj], dtype=float)
+    X_ref[:, 3:6] = np.asarray([
+        wp.get("vel", np.zeros(3))[:3] for wp in ref_traj
+    ], dtype=float)
+    yaw, yaw_rate = reference_yaw_arrays(ref_traj, dt=dt)
+    X_ref[:, 8] = yaw
+    X_ref[:, 11] = yaw_rate
+
+    if quad is None:
+        return X_ref
+
+    for k, wp in enumerate(ref_traj):
+        acc = np.asarray(wp.get("acc", np.zeros(3)), dtype=float)
+        force_world = (
+            float(quad.m) * (acc + np.array([0.0, 0.0, float(quad.g)]))
+            + float(quad.k_drag_linear) * X_ref[k, 3:6]
+        )
+        R_des = helperfcts.fct_desired_rotation_from_force_and_yaw(
+            force_world, yaw[k]
+        )
+        phi, theta, _ = helperfcts.fct_euler_from_R(R_des)
+        X_ref[k, 6] = phi
+        X_ref[k, 7] = theta
+
+    angles = X_ref[:, 6:9].copy()
+    angles[:, 2] = np.unwrap(angles[:, 2])
+    if len(ref_traj) == 1:
+        euler_dot = np.zeros_like(angles)
+    else:
+        edge_order = 2 if len(ref_traj) >= 3 else 1
+        euler_dot = np.gradient(angles, dt, axis=0, edge_order=edge_order)
+    for k, (phi, theta, _) in enumerate(angles):
+        X_ref[k, 9:12] = np.linalg.solve(
+            quad.fct_W_matrix(phi, theta), euler_dot[k]
+        )
+    # Retain explicitly capped yaw-rate commands instead of replacing them
+    # with numerical differentiation noise.
+    X_ref[:, 11] = yaw_rate
+    return X_ref
+
+
+def precompute_ref_std(ref_traj, scaler, n_states=None, dt=None, quad=None):
+    """Build the standardized physical-state reference used by MPC."""
     T = len(ref_traj)
     expected_dim = _scaler_state_dim(scaler)
     if n_states is None or n_states != expected_dim:
         n_states = expected_dim
 
-    X_ref = np.zeros((T, n_states))
-    yaw_values = None
-    yaw_rate_values = None
     if n_states >= STATE_DIM:
-        yaw_values, yaw_rate_values = reference_yaw_arrays(ref_traj, dt=dt)
-
-    for k in range(T):
-        X_ref[k, 0:3] = ref_traj[k]["pos"][:3]
-        X_ref[k, 3:6] = ref_traj[k]["vel"][:3]
-        if yaw_values is not None:
-            X_ref[k, 8] = yaw_values[k]
-        if yaw_rate_values is not None:
-            X_ref[k, 11] = yaw_rate_values[k]
+        X_ref = reference_state_array(ref_traj, dt=dt, quad=quad)
+    else:
+        X_ref = np.zeros((T, n_states))
+        for k in range(T):
+            X_ref[k, 0:3] = ref_traj[k]["pos"][:3]
+            X_ref[k, 3:6] = ref_traj[k].get("vel", np.zeros(3))[:3]
     return scaler.transform(X_ref)
 
 

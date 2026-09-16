@@ -1,0 +1,60 @@
+{
+  "experiment_role": "confirmation",
+  "screening_only": false,
+  "nominal_plant": true,
+  "reference_information_contract": {
+    "reactive_pid": "current position, velocity, and yaw reference only",
+    "predictive_controllers": "identical future position, velocity, and yaw preview",
+    "equal_preview_between_mpc_controllers": true,
+    "reactive_pid_has_future_preview": false
+  },
+  "reference_mode": "kinematic_hover_yaw",
+  "preview_seconds": 0.5,
+  "scales": [
+    1.75
+  ],
+  "run_index_start": 790000,
+  "run_index_end": 793009,
+  "model_path": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\attitude_capacity_learning_v1\\models\\dictionary_physics42_f100.pkl",
+  "model_sha256": "d8cca95439cbba24561fd9dbce63729f3e06618f839bf834867197256f7fc4f9",
+  "linear_config_path": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\linear_guard_validation_n20\\selected_config.json",
+  "linear_config_sha256": "00d397e72d321094dd0d9c4097191a11f6220db25dbe3025f701a0536c3d1019",
+  "edmd_config_path": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\mpc_retuning_v3_broad\\candidate19_smooth_config.json",
+  "edmd_config_sha256": "6648a3b0719faad6a594694a82cd3fe5e91687d02fd14323de2eb15b3920fac1",
+  "reactive_config_path": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_waypoint_v2\\reactive_pid_tuning_100hz\\selected_config.json",
+  "reactive_config_sha256": "35844f1c35ab8a3b8679c54e4fee6a4fb3e71c01486a11bea037e6695a7d4d6b",
+  "paired_trajectory_seeds_across_scales": true,
+  "families": [
+    "helix",
+    "figure8",
+    "lissajous",
+    "waypoint"
+  ],
+  "runs_per_family": 10,
+  "controllers": [
+    "reactive_pid",
+    "yaw_scheduled_hover",
+    "edmdc"
+  ],
+  "duration_seconds": 30.0,
+  "runtime_environment": {
+    "platform": "Windows-10-10.0.26100-SP0",
+    "machine": "AMD64",
+    "processor": "AMD64 Family 26 Model 68 Stepping 0, AuthenticAMD",
+    "cpu_model": "AMD Ryzen 9 9950X 16-Core Processor",
+    "logical_cpu_count": 32,
+    "python_version": "3.10.11",
+    "package_versions": {
+      "numpy": "1.26.4",
+      "scipy": "1.14.1",
+      "osqp": "1.0.5"
+    },
+    "osqp_settings": {
+      "warm_starting": true,
+      "verbose": false,
+      "polishing": false,
+      "remaining_settings": "OSQP package defaults"
+    },
+    "timing_scope": "controller optimization call only"
+  }
+}

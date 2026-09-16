@@ -80,6 +80,9 @@ class QuadPIDController6Fixed:
         u3 = float(np.clip(u3, -self.torque_max, self.torque_max))
         u4 = self.pid_psi.fct_control_with_error_rate(psi_ref - psi, -r, dt)
         u4 = float(np.clip(u4, -self.yaw_tau_max, self.yaw_tau_max))
+        self.last_outer_command = np.array(
+            [u1, phi_des, theta_des, psi_ref], dtype=float
+        )
         u_requested = np.array([u1, u2, u3, u4], dtype=float)
         omega_cmd, u_applied, _, _ = pid_mixer.fct_allocate_wrench(
             u_requested, self.quad.kT, self.quad.kD, self.quad.l,
@@ -155,6 +158,9 @@ class QuadIPIDController6Fixed:
         u2 = float(np.clip(u2, -self.torque_max, self.torque_max))
         u3 = float(np.clip(u3, -self.torque_max, self.torque_max))
         u4 = 0
+        self.last_outer_command = np.array(
+            [u1, phi_des, theta_des, psi_des], dtype=float
+        )
         u_requested = np.array([u1, u2, u3, u4], dtype=float)
         omega_cmd, u_applied, _, _ = pid_mixer.fct_allocate_wrench(
             u_requested, self.quad.kT, self.quad.kD, self.quad.l,
@@ -183,8 +189,10 @@ class QuadPX4LikeController:
         acc_max_xy=5.0,
         acc_max_z=5.0,
         tilt_max_deg=45.0,
+        thrust_min_ratio=0.05,
         thrust_max=12.0,
         torque_max=(0.12, 0.12, 0.02),
+        use_trajectory_feedforward=True,
     ):
         self.quad = quad
         self.max_speed = float(max_speed)
@@ -203,11 +211,15 @@ class QuadPX4LikeController:
         self.acc_max_xy = float(acc_max_xy)
         self.acc_max_z = float(acc_max_z)
         self.tilt_max = np.deg2rad(float(tilt_max_deg))
+        self.thrust_min = float(thrust_min_ratio) * self.quad.m * self.quad.g
         self.thrust_max = float(thrust_max)
         self.torque_max = np.array(torque_max, dtype=float)
+        self.use_trajectory_feedforward = bool(use_trajectory_feedforward)
+        self._last_outer_yaw = None
 
     def fct_reset(self):
         self.vel_integral[:] = 0.0
+        self._last_outer_yaw = None
 
     def _limit_xy(self, v, limit):
         out = np.array(v, dtype=float)
@@ -217,58 +229,69 @@ class QuadPX4LikeController:
         return out
 
     def _limit_tilt(self, acc_sp):
+        """Limit the commanded total thrust vector, not acceleration alone.
+
+        Roll and pitch orient ``m * (acc_sp + gravity)``.  Limiting horizontal
+        acceleration against ``g`` allowed a sufficiently negative vertical
+        command to flip that vector below the horizon and request an inverted
+        attitude.  Bound its vertical component first, then apply the tilt
+        cone to the actual specific-force vector.
+        """
         out = np.array(acc_sp, dtype=float)
+        min_specific_force_z = self.thrust_min / self.quad.m
+        specific_force_z = max(self.quad.g + out[2], min_specific_force_z)
+        out[2] = specific_force_z - self.quad.g
         horizontal = np.linalg.norm(out[:2])
-        max_horizontal = self.quad.g * np.tan(self.tilt_max)
+        max_horizontal = specific_force_z * np.tan(self.tilt_max)
         if horizontal > max_horizontal > 0.0:
             out[:2] *= max_horizontal / horizontal
         return out
 
-    def fct_step(self, state, ref, dt):
-        x, y, z, vx, vy, vz, phi, theta, psi, p, q, r = state
+    def fct_attitude_step(self, state, outer_command, dt, yaw_rate_ref=None):
+        """Apply ``[thrust, roll_des, pitch_des, yaw_des]`` through the inner loop.
 
-        pos = np.array([x, y, z], dtype=float)
-        vel = np.array([vx, vy, vz], dtype=float)
-        rates = np.array([p, q, r], dtype=float)
+        This is the explicit offboard attitude-command boundary.  It bypasses
+        the position/velocity loop while retaining the exact attitude/rate
+        controller, torque limits, motor allocator, and plant input contract
+        used by :meth:`fct_step` during data generation.
+        """
+        command = np.asarray(outer_command, dtype=float).reshape(4)
+        _, _, _, _, _, _, phi, theta, psi, p, q, r = state
+        thrust = float(np.clip(command[0], self.thrust_min, self.thrust_max))
+        phi_des = float(np.clip(command[1], -self.tilt_max, self.tilt_max))
+        theta_des = float(np.clip(command[2], -self.tilt_max, self.tilt_max))
+        yaw_near = float(psi + helperfcts.wrap_angle(command[3] - psi))
 
-        pos_ref = np.asarray(ref["pos"], dtype=float)
-        vel_ref = np.asarray(ref.get("vel", np.zeros(3)), dtype=float)
-        acc_ref = np.asarray(ref.get("acc", np.zeros(3)), dtype=float)
-        yaw_ref = float(ref.get("yaw", 0.0))
-        yaw_rate_ref = float(np.clip(ref.get("yaw_rate", 0.0), -self.rate_sp_max[2], self.rate_sp_max[2]))
+        if yaw_rate_ref is None:
+            if self._last_outer_yaw is None:
+                yaw_rate = 0.0
+            else:
+                yaw_rate = helperfcts.wrap_angle(
+                    yaw_near - self._last_outer_yaw
+                ) / float(dt)
+        else:
+            yaw_rate = float(yaw_rate_ref)
+        yaw_rate = float(np.clip(
+            yaw_rate, -self.rate_sp_max[2], self.rate_sp_max[2]
+        ))
+        self._last_outer_yaw = yaw_near
 
-        pos_error = pos_ref - pos
-        vel_sp = vel_ref + self.pos_p * pos_error
-        vel_sp = self._limit_xy(vel_sp, self.vel_sp_max_xy)
-        vel_sp[2] = float(np.clip(vel_sp[2], -self.vel_sp_max_z, self.vel_sp_max_z))
-
-        vel_error = vel_sp - vel
-        self.vel_integral += vel_error * dt
-        self.vel_integral = np.clip(self.vel_integral, -self.vel_int_limit, self.vel_int_limit)
-
-        drag_comp = self.quad.k_drag_linear / self.quad.m
-        acc_sp = acc_ref + drag_comp * vel_ref + self.vel_p * vel_error + self.vel_i * self.vel_integral
-        acc_sp = self._limit_xy(acc_sp, self.acc_max_xy)
-        acc_sp[2] = float(np.clip(acc_sp[2], -self.acc_max_z, self.acc_max_z))
-        acc_sp = self._limit_tilt(acc_sp)
-
-        force_world = self.quad.m * (acc_sp + np.array([0.0, 0.0, self.quad.g]))
-        yaw_near = psi + helperfcts.wrap_angle(yaw_ref - psi)
-        R_des = helperfcts.fct_desired_rotation_from_force_and_yaw(force_world, yaw_near)
+        R_des = self.quad.fct_R_matrix(phi_des, theta_des, yaw_near)
         R = self.quad.fct_R_matrix(phi, theta, psi)
-
         attitude_error = 0.5 * _vee(R.T @ R_des - R_des.T @ R)
         rate_sp = self.att_p * attitude_error
-        rate_sp += R_des.T @ np.array([0.0, 0.0, yaw_rate_ref])
+        rate_sp += R_des.T @ np.array([0.0, 0.0, yaw_rate])
         rate_sp = np.clip(rate_sp, -self.rate_sp_max, self.rate_sp_max)
+        torque = np.clip(
+            self.rate_p * (rate_sp - np.array([p, q, r], dtype=float)),
+            -self.torque_max, self.torque_max,
+        )
 
-        rate_error = rate_sp - rates
-        torque = self.rate_p * rate_error
-        torque = np.clip(torque, -self.torque_max, self.torque_max)
-
-        u1 = float(np.clip(np.linalg.norm(force_world), 0.0, self.thrust_max))
+        self.last_outer_command = np.array(
+            [thrust, phi_des, theta_des, yaw_near], dtype=float
+        )
         u_requested = np.array(
-            [u1, float(torque[0]), float(torque[1]), float(torque[2])],
+            [thrust, float(torque[0]), float(torque[1]), float(torque[2])],
             dtype=float,
         )
         omega_cmd, u_applied, _, _ = pid_mixer.fct_allocate_wrench(
@@ -279,3 +302,66 @@ class QuadPX4LikeController:
         self.last_requested_wrench = u_requested
         self.last_applied_wrench = u_applied
         return omega_cmd, u_applied
+
+    def fct_step(self, state, ref, dt):
+        x, y, z, vx, vy, vz, phi, theta, psi, p, q, r = state
+
+        pos = np.array([x, y, z], dtype=float)
+        vel = np.array([vx, vy, vz], dtype=float)
+        rates = np.array([p, q, r], dtype=float)
+
+        pos_ref = np.asarray(ref["pos"], dtype=float)
+        if self.use_trajectory_feedforward:
+            vel_ref = np.asarray(ref.get("vel", np.zeros(3)), dtype=float)
+            acc_ref = np.asarray(ref.get("acc", np.zeros(3)), dtype=float)
+            yaw_rate_ref = float(np.clip(
+                ref.get("yaw_rate", 0.0),
+                -self.rate_sp_max[2], self.rate_sp_max[2],
+            ))
+        else:
+            # Pure feedback baseline: the reference supplies position and yaw
+            # setpoints only. Velocity feedback still provides the derivative
+            # action of the cascaded controller, but no trajectory derivative
+            # or plant-model feedforward enters the command.
+            vel_ref = np.zeros(3)
+            acc_ref = np.zeros(3)
+            yaw_rate_ref = 0.0
+        yaw_ref = float(ref.get("yaw", 0.0))
+
+        pos_error = pos_ref - pos
+        vel_sp = vel_ref + self.pos_p * pos_error
+        vel_sp = self._limit_xy(vel_sp, self.vel_sp_max_xy)
+        vel_sp[2] = float(np.clip(vel_sp[2], -self.vel_sp_max_z, self.vel_sp_max_z))
+
+        vel_error = vel_sp - vel
+        self.vel_integral += vel_error * dt
+        self.vel_integral = np.clip(self.vel_integral, -self.vel_int_limit, self.vel_int_limit)
+
+        drag_feedforward = (
+            self.quad.k_drag_linear / self.quad.m * vel_ref
+            if self.use_trajectory_feedforward else np.zeros(3)
+        )
+        acc_sp = (
+            acc_ref + drag_feedforward
+            + self.vel_p * vel_error + self.vel_i * self.vel_integral
+        )
+        acc_sp = self._limit_xy(acc_sp, self.acc_max_xy)
+        acc_sp[2] = float(np.clip(acc_sp[2], -self.acc_max_z, self.acc_max_z))
+        acc_sp = self._limit_tilt(acc_sp)
+
+        force_world = self.quad.m * (acc_sp + np.array([0.0, 0.0, self.quad.g]))
+        yaw_near = psi + helperfcts.wrap_angle(yaw_ref - psi)
+        R_des = helperfcts.fct_desired_rotation_from_force_and_yaw(force_world, yaw_near)
+        phi_des, theta_des, _ = helperfcts.fct_euler_from_R(R_des)
+        u1 = float(np.clip(
+            np.linalg.norm(force_world), self.thrust_min, self.thrust_max
+        ))
+        # Preserve both command spaces.  The outer command is the interface
+        # used by the original paper (extended with yaw); the wrench below is
+        # what the inner attitude/rate loop asks the motor allocator to apply.
+        # Store yaw_near instead of the wrapped Euler extraction so the logged
+        # command remains continuous across +/-pi.
+        return self.fct_attitude_step(
+            state, [u1, phi_des, theta_des, yaw_near], dt,
+            yaw_rate_ref=yaw_rate_ref,
+        )

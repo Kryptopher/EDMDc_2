@@ -1,0 +1,4 @@
+controller,scenarios,captures,capture_rate,successful_capture_mean_s,failure_aware_capture_mean_s,minimum_separation_mean_m,successful_relative_speed_mean_mps,qualified_captures_2_mps,qualified_captures_3_mps,qualified_captures_5_mps,mean_solve_ms,failed_solves,allocator_altered_steps
+PID,40,40,1.0,5.40025,5.40025,0.17463478843080343,7.205246819215935,37,38,38,0.0,0,0
+Linear MPC,40,40,1.0,3.4274999999999998,3.4274999999999998,0.019385115671918068,1.2115154624655724,40,40,40,4.783090423756221,0,0
+EDMDc-MPC,40,40,1.0,3.283,3.283,0.02320488419972167,0.9380106888375005,40,40,40,3.628505270034657,0,0

@@ -1,0 +1,497 @@
+\documentclass[letterpaper,10pt,conference]{ieeeconf}
+
+\IEEEoverridecommandlockouts
+\overrideIEEEmargins
+
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{bm}
+\usepackage{hyperref}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{xcolor}
+
+\DeclareMathOperator{\EX}{\mathbb{E}}
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+% Upload the five frozen-result PNG/PDF files to this Overleaf directory.
+% The local source paths are recorded in PAPER_FIGURE_MANIFEST.md.
+\graphicspath{{Figures_R1/}}
+
+\begin{document}
+
+\title{Drone Interception via EDMDc-Based Model Predictive Control}
+
+\author{Sanjay Maharjan, Darren Johnson, Animesh Bangal, Yousuf Atteia,
+Tariq Hlayel, and Adrian Stein%
+\thanks{S. Maharjan, D. Johnson, A. Bangal, Y. Atteia, T. Hlayel, and
+A. Stein are with the Department of Mechanical and Industrial Engineering,
+Louisiana State University, Baton Rouge, LA 70803, USA.
+{\tt\small \{smaha12,djoh378,abanga4,yattei1,thlaye1,astein\}@lsu.edu}.}}
+
+\maketitle
+
+\begin{abstract}
+This work presents an Extended Dynamic Mode Decomposition with control
+(EDMDc) framework for quadrotor trajectory tracking and moving-target
+interception. A lifted predictor is identified at 100~Hz from the response of
+a nonlinear 12-state quadrotor and its cascaded attitude controller to
+four-dimensional outer-loop commands: collective thrust and desired
+roll, pitch, and yaw. The resulting model is embedded in a constrained
+receding-horizon controller and compared with a tuned reactive cascaded PID
+and a yaw-scheduled hover-linear MPC on paired, previously unseen scenarios.
+Across 40 aggressive tracking cases, EDMDc-MPC obtains 0.097~m mean position
+RMSE, compared with 0.774~m for PID, and avoids the severe error tail observed
+for the simple linear MPC. Its advantage over linear MPC is regime dependent:
+the linear controller remains highly accurate on some mild trajectories and
+EDMDc has lower error in 10 of 40 paired cases. In 40 moving-target trials,
+both predictive controllers satisfy a distance--relative-speed dwell
+criterion in all cases; EDMDc reduces mean qualified-capture time from
+3.628~s to 3.483~s. Mean EDMDc optimization time is 3.995~ms in tracking;
+the 99th percentile remains below the 10~ms period, while the largest sampled
+solve is 14.329~ms. The results support EDMDc as a
+computationally practical nonlinear predictive model, while also identifying
+the operating regimes in which a local linear model remains sufficient.
+\end{abstract}
+
+\begin{keywords}
+UAV interception, Koopman operator, data-driven modeling, EDMDc, model
+predictive control
+\end{keywords}
+
+\section{Introduction}
+
+The rapid proliferation of unmanned aerial vehicles (UAVs) has introduced
+significant challenges for public safety and critical-infrastructure
+protection. Autonomous interception of non-cooperative drones has therefore
+become an active research area, with approaches ranging from visual servoing
+\cite{yang_autonomous_2020,yang_high-speed_2025} and competition-driven
+capture systems \cite{garcia_autonomous_2020} to reinforcement learning
+\cite{darwish_drone_2023} and proportional-navigation methods
+\cite{pliska_towards_2024}. These approaches demonstrate the difficulty of
+combining rapid relative motion, limited actuation, and real-time onboard
+computation.
+
+Quadrotor dynamics are nonlinear and strongly coupled. Cascaded PID remains
+common because of its simplicity \cite{wang_dynamics_2016}, whereas linear
+quadratic and model predictive controllers introduce prediction and explicit
+constraints \cite{ahmad_simulation_2020,kouvaritakis_model_2016}. Nonlinear
+MPC can model aggressive flight accurately, but its online nonlinear program
+may be difficult to solve at high rate
+\cite{merabti_nonlinear_2015,magni_nonlinear_2009,schwenzer_review_2021}.
+
+Koopman-based identification offers an intermediate representation: nonlinear
+state evolution is approximated by linear dynamics in a lifted observable
+space. Dynamic Mode Decomposition and EDMD approximate this operator from
+snapshot data \cite{schmid_dynamic_2022,williams_datadriven_2015}; EDMDc
+extends the construction to controlled systems. Prediction quality depends on
+the dictionary and excitation data \cite{li_extended_2017}, and convergence
+results apply under appropriate sampling assumptions
+\cite{korda_convergence_2018}. Recent work has considered learned
+eigenfunctions \cite{folkestad_extended_2020} and analytically constructed
+observables \cite{netto_analytical_2021}.
+
+This paper studies whether a structured EDMDc model improves closed-loop
+performance when it replaces only the outer-loop prediction model of a
+Pixhawk-like cascaded controller. Relative to our earlier fixed-yaw
+formulation, the principal revisions are: (i) a complete 12-state model that
+includes yaw and yaw rate; (ii) identification from aligned
+$(x_k,u_k,x_{k+1})$ samples using the outer commands actually presented to the
+inner controller; (iii) evaluation at 100~Hz on fresh paired tracking and
+interception cases; and (iv) a qualified interception metric requiring both
+proximity and low relative speed for a dwell interval. EDMDc is compared with
+a tuned reactive PID and a deliberately simple hover-linear MPC. The goal is
+not to claim universal superiority over linear control, but to characterize
+where nonlinear lifted prediction changes the outcome.
+
+\section{System Modeling}
+\label{sec:system_modeling}
+
+\subsection{Nonlinear Quadrotor}
+
+The X-configuration quadrotor state is
+\begin{align}
+x=\begin{bmatrix}p_W^\top&v_W^\top&\eta^\top&\omega_B^\top\end{bmatrix}^\top
+\in\mathbb{R}^{12},
+\end{align}
+where $p_W=[x\;y\;z]^\top$, $v_W=[v_x\;v_y\;v_z]^\top$,
+$\eta=[\phi\;\theta\;\psi]^\top$, and
+$\omega_B=[p\;q\;r]^\top$. With
+$R(\eta)=R_z(\psi)R_y(\theta)R_x(\phi)$, the translational and rotational
+dynamics are
+\begin{subequations}
+\begin{align}
+\dot p_W &= v_W,\\
+\dot v_W &= m^{-1}\!\left(R(\eta)e_3T-k_vv_W+f_{\mathrm{ext}}\right)-ge_3,\\
+\dot\eta &= W(\phi,\theta)\omega_B,\\
+\dot\omega_B &= I^{-1}\!\left(\tau-k_\omega\omega_B-omega_B\times I\omega_B\right).
+\end{align}
+\end{subequations}
+The rotor allocator maps four nonnegative rotor forces to
+$[T,\tau_\phi,\tau_\theta,\tau_\psi]^\top$ and applies motor feasibility
+limits before the wrench reaches the plant. The requested and applied wrenches
+are logged separately. The present nominal study sets $f_{\mathrm{ext}}=0$;
+no external force is applied in the nominal study.
+
+\subsection{Cascaded Command Interface}
+\label{sec:cascade}
+
+The compared outer-loop controllers do not command rotor speed or body torque
+directly. They generate
+\begin{align}
+u_k=[T_k,\phi_k^*,\theta_k^*,\psi_k^*]^\top,
+\label{eq:outer_input}
+\end{align}
+which is passed through the same cascaded attitude/rate controller, motor
+allocator, and nonlinear plant. Thus, EDMDc identifies the response of the
+combined inner-loop/plant subsystem,
+\begin{align}
+(x_k,u_k)\longmapsto x_{k+1}.
+\end{align}
+This interface mirrors offboard attitude control on a flight controller while
+retaining the full yaw dynamics. Simulations initialize at the first reference
+yaw and cap path yaw-rate commands at 0.8~rad/s to avoid artificial yaw steps.
+
+\subsection{EDMDc Identification}
+\label{sec:edmdc}
+
+Let $z_k=\Phi(x_k)$ be a vector of observables. EDMDc fits
+\begin{align}
+z_{k+1}=Az_k+Bv(x_k,u_k)
+\label{eq:edmdc}
+\end{align}
+by regularized least squares on aligned snapshot triples. Physical states are
+the first 12 lifted coordinates, so $\hat x_k=C_z z_k$.
+
+The selected 42-dimensional observable dictionary contains the 12 physical
+states, sine and cosine of all Euler angles, attitude--rate and
+velocity--attitude products, quadratic velocity/rate/attitude terms,
+body-frame velocity, the body thrust direction, and a constant. This
+physics-structured dictionary represents the gravity--attitude coupling,
+coordinate rotation, angular coupling, and affine trim without a neural
+network. States and inputs are standardized using statistics computed only
+from the training split.
+
+The raw input has four components, but the regression uses the
+16-dimensional feature vector
+\begin{align}
+v(x,u)=\big[&u^\top,;(T R(\eta^*)e_3)^\top,
+\sin\eta^{*\top},\cos\eta^{*\top},
+(\eta^*-\eta)_{\mathrm{wrap}}^\top\big]^\top.
+\label{eq:input_lift}
+\end{align}
+Consequently, $A\in\mathbb{R}^{42\times42}$ and
+$B\in\mathbb{R}^{42\times16}$. The yaw error is wrapped to
+$[-\pi,\pi)$. This construction resolves the ambiguity between the four
+physical commands optimized by MPC and the 16 features presented to the
+identified predictor.
+
+\section{Control Formulation}
+\label{sec:control_formulation}
+
+\subsection{EDMDc-MPC}
+
+At each 10~ms update, EDMDc-MPC minimizes
+\begin{align}
+J=&\sum_{i=0}^{N-1}\|C_zz_i-x_i^{\mathrm{ref}}\|_Q^2
++\sum_{i=0}^{N_c-1}\|u_i-u_{\mathrm{trim}}\|_R^2 \nonumber\\
+&+\sum_{i=0}^{N_c-1}\|u_i-u_{i-1}\|_{R_d}^2
++\|C_zz_N-x_N^{\mathrm{ref}}\|_{Q_f}^2,
+\label{eq:mpc_cost}
+\end{align}
+subject to \eqref{eq:edmdc}, collective-thrust limits, and
+$|\phi^*|,|\theta^*|\le45^\circ$. Because the input features in
+\eqref{eq:input_lift} depend on state and command, one sequential convex
+linearization is solved at each control update using OSQP and a warm start.
+The selected tracking controller uses $N=50$ (0.5~s), $N_c=1$, and a terminal
+weight twice the stage-state weight. Its physical state-weight diagonal before
+standardization is
+\begin{align}
+q=&[180,180,220,16,16,20,0.2,0.2,4,0.05,0.05,1],
+\end{align}
+obtained by applying the selected position and velocity multipliers to the
+base weights. The selected input multiplier is 0.1, and the input-rate
+penalty multiplier is 300. The command trust region is 12~N in thrust and
+0.45~rad in desired roll and pitch. Controller parameters are chosen on
+validation trajectories before the fresh confirmation experiments.
+
+\subsection{Baselines and Information Contract}
+
+The first baseline is a tuned cascaded PID that uses only the current
+position/velocity reference and contains no trajectory feedforward. It is
+therefore a reactive baseline. The second is a yaw-scheduled hover-linear MPC:
+the translational model uses the local small-angle gravity coupling and is
+rotated by the current yaw. It receives the same future kinematic reference as
+EDMDc-MPC. Both predictive controllers use the same outer-command interface,
+plant, actuator limits, update rate, and paired references, but each is tuned
+on a separate validation set. Task-specific gains are used for tracking and
+interception. We therefore compare two predictive models under matched
+preview, while the PID comparison quantifies the benefit of the complete
+predictive architecture rather than model fidelity alone.
+
+\subsection{Qualified Interception}
+
+For interception, the reference horizon is formed from the target's current
+kinematic state. Merely crossing a capture sphere at high relative speed is
+not considered a successful rendezvous. A qualified capture occurs at the
+last sample of the first 20-sample window satisfying
+\begin{align}
+\|p_I-p_T\|_2\le0.75~\mathrm{m},\qquad
+\|v_I-v_T\|_2\le3~\mathrm{m/s}.
+\label{eq:capture}
+\end{align}
+At 100~Hz, this sampled convention corresponds to a 0.2~s dwell requirement.
+An unsuccessful 20~s episode is assigned 20~s in the failure-aware mean.
+
+\section{Simulation Protocol}
+\label{sec:simulation_setup}
+
+\subsection{Identification Data and Split}
+
+The base dataset contains 300 closed-loop runs: 50 helix, 50 figure-eight,
+50 Lissajous, 50 waypoint, 30 hover-excitation, and 70 bounded closed-loop
+yaw-PRBS runs. Base runs last 100~s at 100~Hz. Sixty additional 60~s runs span
+commanded tilt bands of 7.5, 15, 22.5, and 30 degrees. Mixing truncates runs to
+the common 60~s duration, producing 360 runs. Training uses 342 runs and
+2,051,658 aligned transitions; nine runs are reserved for validation and nine
+for prediction testing. The original five validation indices
+$[38,58,128,154,209]$ and test indices $[39,59,129,155,210]$ are retained,
+with four high-tilt runs added to each split. The ridge penalty
+$\lambda=7.5$ is selected on validation rollouts.
+
+The PRBS excitation commands bounded yaw rate through the closed-loop inner
+controller. It does not substitute desired attitude for the plant input.
+Alongside $u_k$ in \eqref{eq:outer_input}, the dataset records the requested
+wrench and motor-feasible applied wrench for actuator diagnostics. Every
+transition retains the alignment $(x_k,u_k,x_{k+1})$.
+
+\subsection{Prediction and Closed-Loop Tests}
+
+The model is assessed with rolling 2~s open-loop predictions. On the five
+standard held-out families, position RMSE ranges from 0.007 to 0.047~m and
+velocity RMSE from 0.010 to 0.063~m/s. Two of four high-tilt held-outs show
+larger errors, especially in lateral velocity and yaw rate; these cases bound
+the model-validity claim rather than being discarded.
+
+Tracking confirmation uses 40 fresh 30~s trajectories---10 each from helix,
+figure-eight, Lissajous, and waypoint families---at 1.75 times the nominal
+reference speed. The mean reference 95th-percentile implied tilt is
+18.17 degrees. Interception confirmation uses 40 fresh 20~s targets---10 each
+from straight, accelerating, helix, and weaving families. All comparisons are
+paired by trajectory seed. We report mean, median, 90th percentile, and worst
+position RMSE for tracking; capture rate and failure-aware qualified-capture
+time are reported for interception. Paired differences use 20,000-resample
+bootstrap confidence intervals.
+
+Optimization timing is measured around the solver call on an AMD Ryzen~9
+9950X workstation running Windows build 26100, Python 3.10.11, and OSQP 1.0.5.
+OSQP uses warm starting with verbose output and polishing disabled; all other
+solver settings retain the package defaults. The reported desktop timing is
+not an embedded hard real-time guarantee.
+
+\section{Results}
+\label{sec:results}
+
+\subsection{Open-Loop Prediction}
+
+Figure~\ref{fig:rollout} shows a representative two-second rollout of all 12
+states. Position and attitude remain close to the nonlinear simulation over
+the MPC-relevant horizon; the largest displayed discrepancy occurs in pitch
+rate. Across the five conventional held-out families, the worst position
+RMSE is 0.047~m. High-tilt tests reach 0.161~m position RMSE and reveal larger
+$v_y$ and $r$ errors, so the data do not support a claim of uniform accuracy
+throughout all aggressive flight.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{3_EDMDc_Rollout.png}
+    \caption{Representative 2~s open-loop EDMDc prediction on the held-out
+    Lissajous trajectory. The model is initialized once and propagated using
+    the recorded outer commands; it is not reset at each sample.}
+    \label{fig:rollout}
+\end{figure}
+
+\subsection{Observable Capacity and Learning Curve}
+
+Table~\ref{tab:capacity} uses the same nine-run validation and nine-run test
+splits for every model. The state-only and trigonometric dictionaries
+underfit, whereas the 42-term physics dictionary and 56-term extension are
+nearly indistinguishable. We use the predeclared parsimony rule---select the
+smaller model when validation position RMSE differs by less than 0.01~m---so
+the 42-term model is retained. A 20-case control-validation check with fixed
+MPC weights also produced nearly identical behavior for 42 and 56 terms; both
+shared the same isolated Lissajous tail. The 56-term learning curve plateaus
+on the fixed test split by 10\% of the runs, although validation error improves
+from 0.0655 to 0.0505~m as the training set grows. Thus added data reduce the
+selection-set error but do not support a claim that all 56 terms are needed.
+
+\begin{table}[t]
+\centering
+\caption{Two-Second Rolling Position RMSE [m]}
+\label{tab:capacity}
+\begin{tabular}{lrrcc}
+\toprule
+Dictionary & $n_z$ & Runs & Validation & Test\\
+\midrule
+State+bias & 13 & 342 & 0.1379 & 0.2016\\
+State+trig. & 19 & 342 & 0.1377 & 0.2015\\
+Physics & 42 & 342 & \textbf{0.0452} & 0.0776\\
+Full & 56 & 34 & 0.0655 & \textbf{0.0742}\\
+Full & 56 & 86 & 0.0651 & 0.0789\\
+Full & 56 & 171 & 0.0581 & 0.0772\\
+Full & 56 & 342 & 0.0505 & 0.0785\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Aggressive Trajectory Tracking}
+
+\begin{table}[t]
+\centering
+\caption{Fresh Paired Tracking Confirmation ($n=40$)}
+\label{tab:tracking}
+\begin{tabular}{lrrrr}
+\toprule
+Controller & Mean & Median & P90 & $>1$ m\\
+& \multicolumn{3}{c}{Position RMSE [m]} & \\
+\midrule
+Reactive PID & 0.774 & 0.799 & 1.085 & 11\\
+Hover-linear MPC & 1.140 & \textbf{0.027} & 4.216 & 7\\
+EDMDc-MPC & \textbf{0.097} & 0.067 & \textbf{0.310} & \textbf{0}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:tracking} and Fig.~\ref{fig:tracking_summary} show the full
+distribution. EDMDc-MPC beats reactive PID in all 40 paired scenarios. Its
+mean paired RMSE difference is $-0.677$~m, with a 95\% bootstrap interval of
+$[-0.758,-0.597]$~m. The EDMDc mean-RMSE interval is
+$[0.065,0.134]$~m, and no EDMDc case exceeds 0.51~m.
+
+The linear result is bimodal rather than uniformly poor. It is best on the
+helix family (0.010~m family-mean RMSE versus 0.028~m for EDMDc) and
+figure-eight family (0.038~m versus 0.068~m), but it develops a severe tail on
+the Lissajous family. EDMDc has lower paired RMSE in 10 of 40 linear
+comparisons, yet its mean paired advantage is 1.044~m
+(95\% bootstrap interval $[0.321,1.925]$~m) because it suppresses this tail.
+Figure~\ref{fig:tracking_case} therefore presents a bounded middle-ground
+example: all controllers complete the waypoint trajectory, while EDMDc
+reduces RMSE from 0.894~m for linear MPC to 0.078~m. These results support a
+regime-dependent benefit, not universal dominance over linear MPC.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{4_Tracking_Summary.png}
+    \caption{Position-RMSE distribution, empirical CDF, family means, and tail
+    statistics across 40 paired aggressive trajectories. A logarithmic scale
+    exposes the hover-linear controller's bimodal error distribution.}
+    \label{fig:tracking_summary}
+\end{figure}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.95\linewidth]{5_Waypoint_Tracking.png}
+    \caption{Representative fresh waypoint confirmation (run 793008).
+    Position RMSE is 0.401~m for reactive PID, 0.894~m for hover-linear MPC,
+    and 0.078~m for EDMDc-MPC. The reference requires a 27.7-degree
+    95th-percentile implied tilt.}
+    \label{fig:tracking_case}
+\end{figure}
+
+Mean tracking solve times are 1.649~ms for hover-linear MPC and 3.995~ms for
+EDMDc-MPC. All three methods have zero solver failures and zero steps at which
+the allocator changes the requested wrench in the accepted tracking runs.
+The worst episode-level 99th percentiles are 2.997~ms and 6.784~ms,
+respectively. The largest individual samples are 7.655~ms and 14.329~ms, so
+the desktop experiment does not establish a hard 10~ms bound.
+The larger EDMDc cost follows from its 42-state lifted prediction and
+sequential input-feature linearization.
+
+\subsection{Moving-Target Interception}
+
+\begin{table}[t]
+\centering
+\caption{Nominal Qualified Interception ($n=40$)}
+\label{tab:interception}
+\begin{tabular}{lrrr}
+\toprule
+Controller & Geometric & Qualified & Failure-aware\\
+& captures & captures & mean [s]\\
+\midrule
+Reactive PID & 40 & 38 & 13.265\\
+Hover-linear MPC & 40 & 40 & 3.628\\
+EDMDc-MPC & \textbf{40} & \textbf{40} & \textbf{3.483}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Both predictive controllers qualify on all 40 targets
+(Table~\ref{tab:interception}). EDMDc is faster than linear MPC in 28 cases,
+with a mean paired difference of $-0.1445$~s and a 95\% bootstrap interval of
+$[-0.251,-0.036]$~s. This is a small timing advantage, not a capture-rate
+advantage. PID often reaches the capture sphere first, but its mean relative
+speed at first entry is 7.205~m/s, compared with 1.212~m/s for linear MPC and
+0.938~m/s for EDMDc-MPC. Consequently, PID frequently fails the low-relative-
+speed dwell requirement. Figure~\ref{fig:interception_traces} distinguishes
+first entry from qualified dwell completion.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{6_Interception_Traces.png}
+    \caption{Representative separation and relative-speed histories for the
+    four target families. Open triangles mark first sphere entry and filled
+    circles mark completion of the qualified-capture dwell.}
+    \label{fig:interception_traces}
+\end{figure}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{7_Interception_Summary.png}
+    \caption{Qualified-capture time, capture-rate sensitivity, and relative
+    speed at first sphere entry for 40 paired nominal targets. Reported times
+    correspond to the end of the qualifying window.}
+    \label{fig:interception_summary}
+\end{figure}
+
+In the nominal interception set, both predictive controllers have zero solver
+failures and zero allocator-altered steps. Their maximum per-episode
+95th-percentile solve times are 5.976~ms for EDMDc and 7.500~ms for linear MPC,
+below the 10~ms update period. These statistics do not establish hard
+worst-case timing on embedded hardware.
+
+\subsection{Limitations}
+
+The results are simulation-only. An offboard hardware implementation using
+the same flight-controller-style cascaded interface is in progress, but
+quantitative flight tracking has not yet been completed. The qualified-capture thresholds are task
+definitions and must be validated against the physical capture mechanism.
+Moreover, scripted sharp and adaptive-evasion stress tests expose an important
+boundary: EDMDc does not consistently outperform the tuned linear controller,
+and sustained two-second low-speed capture is not achieved by EDMDc in the
+sharpest tested cases. The reported sample-wise timing is measured on the
+desktop test CPU and is not a hard real-time bound on embedded hardware.
+These limitations motivate hardware timing, disturbance, and evasive-target
+studies rather than a claim of general interception robustness.
+
+\section{Conclusions}
+\label{sec:conclusions}
+
+A 42-state EDMDc predictor was identified at 100~Hz for a nonlinear
+quadcopter controlled through collective-thrust and desired-attitude commands.
+In fresh aggressive tracking tests, EDMDc-MPC reduced mean position RMSE from
+0.774~m for reactive PID to 0.097~m and avoided the severe tail of a simple
+hover-linear MPC. The linear controller remained best on some mild cases,
+showing that EDMDc's advantage depends on excitation of nonlinear flight
+dynamics. In nominal interception, EDMDc and linear MPC both qualified on all
+40 targets; EDMDc provided a modest 0.1445~s mean timing advantage and lower
+first-entry relative speed. Aggressive evasive tests delimit the present
+model's validity. Future
+work will prioritize quantitative flight validation, measured worst-case
+embedded timing, and identification data that cover sharp pursuit maneuvers.
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}

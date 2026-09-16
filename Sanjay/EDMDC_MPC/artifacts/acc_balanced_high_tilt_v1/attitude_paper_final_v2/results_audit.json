@@ -1,0 +1,182 @@
+{
+  "audit_pass": true,
+  "tracking": {
+    "summary": {
+      "reactive_pid": {
+        "episodes": 40,
+        "mean_position_rmse_m": 0.773559494494148,
+        "mean_ci95_m": [
+          0.6846169439655967,
+          0.8617849033790789
+        ],
+        "median_position_rmse_m": 0.7989113233339004,
+        "p90_position_rmse_m": 1.0847807785823114,
+        "worst_position_rmse_m": 1.3277301338863086,
+        "episodes_over_1m_rmse": 11,
+        "mean_velocity_rmse_mps": 0.4172147906921374,
+        "mean_yaw_rmse_rad": 0.11286579415962557,
+        "mean_solve_ms": 0.0,
+        "worst_episode_p95_solve_ms": 0.0,
+        "worst_episode_p99_solve_ms": 0.0,
+        "worst_sample_solve_ms": 0.0
+      },
+      "yaw_scheduled_hover": {
+        "episodes": 40,
+        "mean_position_rmse_m": 1.1401694430361191,
+        "mean_ci95_m": [
+          0.39043353234528966,
+          2.0565822495240558
+        ],
+        "median_position_rmse_m": 0.026796316620843086,
+        "p90_position_rmse_m": 4.215525571963352,
+        "worst_position_rmse_m": 11.636959724083635,
+        "episodes_over_1m_rmse": 7,
+        "mean_velocity_rmse_mps": 0.6517164306653476,
+        "mean_yaw_rmse_rad": 0.012364861807404499,
+        "mean_solve_ms": 1.6494861937553318,
+        "worst_episode_p95_solve_ms": 2.7016599953640252,
+        "worst_episode_p99_solve_ms": 2.996649999404326,
+        "worst_sample_solve_ms": 7.655300025362521
+      },
+      "edmdc": {
+        "episodes": 40,
+        "mean_position_rmse_m": 0.09659944643827978,
+        "mean_ci95_m": [
+          0.06541882068062994,
+          0.1342768726555686
+        ],
+        "median_position_rmse_m": 0.06726506759271408,
+        "p90_position_rmse_m": 0.3099837363585611,
+        "worst_position_rmse_m": 0.506819842113383,
+        "episodes_over_1m_rmse": 0,
+        "mean_velocity_rmse_mps": 0.07551488749916406,
+        "mean_yaw_rmse_rad": 0.01164308966676446,
+        "mean_solve_ms": 3.9948161587174082,
+        "worst_episode_p95_solve_ms": 6.331580012920313,
+        "worst_episode_p99_solve_ms": 6.783951995312236,
+        "worst_sample_solve_ms": 14.329099998576567
+      }
+    },
+    "paired_comparisons": {
+      "reactive_pid": {
+        "mean_difference_m": -0.6769600480558682,
+        "mean_difference_ci95_m": [
+          -0.7577721205855595,
+          -0.5969669566574258
+        ],
+        "edmd_better_scenarios": 40,
+        "pairs": 40
+      },
+      "yaw_scheduled_hover": {
+        "mean_difference_m": -1.0435699965978391,
+        "mean_difference_ci95_m": [
+          -1.9251823729251403,
+          -0.3206783422448452
+        ],
+        "edmd_better_scenarios": 10,
+        "pairs": 40
+      }
+    },
+    "family_mean_position_rmse_m": {
+      "helix": {
+        "reactive_pid": 0.4617858577348182,
+        "yaw_scheduled_hover": 0.00985382133015124,
+        "edmdc": 0.027693739795845912
+      },
+      "figure8": {
+        "reactive_pid": 1.03445049546774,
+        "yaw_scheduled_hover": 0.03784720274975032,
+        "edmdc": 0.06812559103927515
+      },
+      "lissajous": {
+        "reactive_pid": 1.048194080377239,
+        "yaw_scheduled_hover": 4.394285904535269,
+        "edmdc": 0.23626011839625183
+      },
+      "waypoint": {
+        "reactive_pid": 0.5498075443967948,
+        "yaw_scheduled_hover": 0.11869084352930556,
+        "edmdc": 0.0543183365217463
+      }
+    }
+  },
+  "nominal_interception": {
+    "nominal": {
+      "PID": {
+        "episodes": 40,
+        "geometric_captures": 40,
+        "qualified_captures_3_mps": 38,
+        "mean_geometric_failure_aware_time_s": 5.40025,
+        "mean_qualified_failure_aware_time_s": 13.264500000000002,
+        "mean_qualified_time_ci95_s": [
+          12.22320625,
+          14.262
+        ],
+        "mean_contact_speed_mps": 7.205246819215935,
+        "mean_solve_ms": 0.0
+      },
+      "Linear MPC": {
+        "episodes": 40,
+        "geometric_captures": 40,
+        "qualified_captures_3_mps": 40,
+        "mean_geometric_failure_aware_time_s": 3.4274999999999998,
+        "mean_qualified_failure_aware_time_s": 3.6275,
+        "mean_qualified_time_ci95_s": [
+          3.4842500000000003,
+          3.769006249999999
+        ],
+        "mean_contact_speed_mps": 1.2115154624655724,
+        "mean_solve_ms": 4.783090423756221
+      },
+      "EDMDc-MPC": {
+        "episodes": 40,
+        "geometric_captures": 40,
+        "qualified_captures_3_mps": 40,
+        "mean_geometric_failure_aware_time_s": 3.283,
+        "mean_qualified_failure_aware_time_s": 3.4829999999999997,
+        "mean_qualified_time_ci95_s": [
+          3.41275,
+          3.5484999999999998
+        ],
+        "mean_contact_speed_mps": 0.9380106888375005,
+        "mean_solve_ms": 3.628505270034657
+      },
+      "paired_qualified_time_differences": {
+        "PID": {
+          "mean_difference_s": -9.781500000000001,
+          "mean_difference_ci95_s": [
+            -10.73976875,
+            -8.79025
+          ],
+          "edmd_faster_scenarios": 40,
+          "pairs": 40
+        },
+        "Linear MPC": {
+          "mean_difference_s": -0.14450000000000002,
+          "mean_difference_ci95_s": [
+            -0.25100625000000004,
+            -0.035750000000000046
+          ],
+          "edmd_faster_scenarios": 28,
+          "pairs": 40
+        }
+      }
+    }
+  },
+  "mismatch_interception": null,
+  "provenance": {
+    "tracking_manifest_sha256": "00f0872e722f2d7586c6f421b13ebe90aad146c49e2878bef90e3560779fe2de",
+    "nominal_manifest_sha256": "1159eca8cc309b482995740349bc1ac15f0d7ca8e0689cd41fa51e15aeb0d6bb",
+    "mismatch_manifest_sha256": null,
+    "tracking_episodes_sha256": "ec3da1425ec736d5d60aadf502383290f878998531177c460a32d1d954d5f74f",
+    "nominal_episodes_sha256": "961a5d08772438d079a9a969e28d2ac689eab45e0c89b7d0105bb75b036070e7",
+    "mismatch_episodes_sha256": null
+  },
+  "metadata_note": null,
+  "limitations": [
+    "Simulation only; no flight-control or hardware performance claim.",
+    "Tracking and interception use different selected MPC configurations.",
+    "PID is reactive; predictive controllers receive future target state.",
+    "The legacy wrench-level publication campaign is a separate architecture."
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "accepted_model": {
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\attitude_capacity_learning_v1\\models\\dictionary_physics42_f100.pkl": "d8cca95439cbba24561fd9dbce63729f3e06618f839bf834867197256f7fc4f9"
+  },
+  "controller_configs": {
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\linear_guard_validation_n20\\selected_config.json": "00d397e72d321094dd0d9c4097191a11f6220db25dbe3025f701a0536c3d1019",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\mpc_retuning_v3_broad\\candidate19_smooth_config.json": "6648a3b0719faad6a594694a82cd3fe5e91687d02fd14323de2eb15b3920fac1",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_waypoint_v2\\reactive_pid_tuning_100hz\\selected_config.json": "35844f1c35ab8a3b8679c54e4fee6a4fb3e71c01486a11bea037e6695a7d4d6b"
+  },
+  "created_utc": "2026-09-16T19:36:50.762378+00:00",
+  "data": {
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\runs_mixed_n360_high_tilt.pkl": "17f9045739ec05f500004d28bb242ea63f2fe0f53ca5cf1058c747531c505089"
+  },
+  "freeze_id": "acc_attitude_command_publication_v2",
+  "results_and_paper": {
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\attitude_capacity_learning_v1\\capacity_learning_curve.png": "13b0783b9d7398775b7b786a2f45e8a60ae998db7fdc6c75517ec51094a3c34a",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\attitude_capacity_learning_v1\\heldout_evaluation\\rolling_aggregate.csv": "f821dd6b2d8c95408585f4e4e3ca841c6694f40bcf51fc758de8f32d3568cbfa",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\attitude_capacity_learning_v1\\heldout_summary.csv": "78db235c7de94dc286df7681ccfb8d28ba15cf674acde1db6ed05fefbcaf299d",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\attitude_capacity_learning_v1\\manifest.json": "d1226d129f3b01da1e6e70ed5e2e1bf4d63c6cdd60dcdf0a8ae4306afc635363",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\attitude_paper_final_v2\\results_audit.json": "27bca55dd5d51a65c247c5e27dc88a35631d757473d75ac45cd48567bfd482ea",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\interception_physics42_confirmation_n40\\episodes.csv": "961a5d08772438d079a9a969e28d2ac689eab45e0c89b7d0105bb75b036070e7",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\interception_physics42_confirmation_n40\\manifest.json": "1159eca8cc309b482995740349bc1ac15f0d7ca8e0689cd41fa51e15aeb0d6bb",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\interception_physics42_confirmation_n40\\plots_qualified\\qualified_interception_overall.png": "75052af8eb963edf31ac65b1e28fe01238e070d81b01f0acda256030206d842a",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\interception_physics42_confirmation_n40\\plots_qualified\\qualified_interception_traces_rep0.png": "316a7618d478d5e5d140e32e3e19da9ed6c14ea573b91a7ad1ed534c7442e438",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\tracking_physics42_confirmation_fresh_n40\\episodes.csv": "ec3da1425ec736d5d60aadf502383290f878998531177c460a32d1d954d5f74f",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\tracking_physics42_confirmation_fresh_n40\\manifest.json": "00f0872e722f2d7586c6f421b13ebe90aad146c49e2878bef90e3560779fe2de",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\tracking_physics42_confirmation_fresh_n40\\plots\\paired_position_rmse.png": "4ee6ae48afd46b20c59218bf8c9147e7eb1f0ed27c47d95f611998597df7ccba",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\tracking_physics42_confirmation_fresh_n40\\plots\\tracking_comparison_summary.png": "5b236911617f2b083afdad388c4e859cba4ad5aeb49d1273e449f91b2f4f3b23",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\tracking_physics42_confirmation_fresh_n40\\representative_rep8\\waypoint_trajectory.png": "9441c6811875c6cc36ff46b9597a9371a9da96f4d6a4886634ae91e256cdc339",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\tracking_physics42_confirmation_fresh_n40\\summary.csv": "cd7455d42bd1eba740ed96a49eaa270d7ec3cd8f764a7594687835974880d504",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\paper_acc_revision\\PAPER_FIGURE_MANIFEST.md": "3cf45c6d60be1c32d2dd05207faf8c1269b67541be17bbfe7d158486a0a0a73a",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\paper_acc_revision\\main_revised.tex": "3a9f89435161d5f670216f72609d819152b64dda9ea0c51ee5520747f6b77671"
+  },
+  "source": {
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\Cascaded_Controllers.py": "032890d773512b5b452b032d009800d7a872ce5c230a84d65348d320fd566a72",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\Closed_loop.py": "5e0d027e009ade51bef9f1b7ffb8b3687b9c761771bc45690798ddac9a0a2c97",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\EDMDc_training.py": "ec53e62b496394936b133bfbb066c065bb8a05a862634997c3f482bcfa4861b3",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\PID_Mixer.py": "67648a4c96f0fec930ba381b30c4cd1da29f30f33a61993aead97e26b0de1a80",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\Simulation.py": "d89f139ad885a1467f5df075f5542319caed8c45f5a10409e2f6fb528ad2d72c",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\aggressiveness_crossover.py": "1226ba7a2a72bc6bbba6a04c25977f1d1f621aaee7dfa8e1fd2f41f8ffca0172",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\append_high_tilt_augmentation.py": "24758642b7d8ac22ddf8a7f24d7f355eee241b2dceab2db71024e99f3dce3942",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\audit_linear_tracking_guard.py": "e357c3a0e9452ae17ef6800f1db5f41425064cdb84a64c96cfe6972ca32c3211",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\edmdc_mpc.py": "a9884524e39dded05c2738b55e0c28fe21578d5f4c63bf03a13978654568a4f6",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\evaluate_edmdc_training.py": "9d6c9af9e9997e0fd099e32ecf44a06abd87edbe2322427068f6ceffe3d37a16",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\finalize_attitude_results.py": "6d1dd01d0e0fe4953b6783beaa706aba1428973a73ae75cc081f04b85f2c33a5",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\generate_high_tilt_augmentation.py": "82028073b1da8f8080299168bd7e40d26eee629617ce9a1ca99584ed008453ee",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\interception_comparison_attitude.py": "75db71fd6f7f48f269706f14b26c65cc04884e376ff86acf03b7d00b12deee19",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\mix_traj.py": "6df1ecf55b53d02ff167c6648205bfecc5629bacccff9a0c035ef9b3dfaad0b0",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\outer_command_mpc.py": "e78743639e662b41649c2bdb7344ffd8e93aae2b1154994b6a1356ae51309ace",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\outer_ltv_mpc.py": "03eec36e60c4e4b3bab135292d6e410c3888f8b8b3f9478d1eb31b7a7b6bd2ab",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\parallel_sim.py": "d15e69e9e16894bc4d5cf182dac3d4420ac28d0486c5366b308d4ebb9f327674",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\plot_aggressive_tracking_comparison.py": "791d055d69ec651296c3754f977f0c5486dec44d43d3b584e9648d81e380aca3",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\plot_confirmed_tracking_traces.py": "d82027490581a51c81e9494f867220d83d8fe67789c006e7e104ae64cdc7cfb3",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\publication_scenarios.py": "fb4479ee0cfae44def50d26ab460f179a29c728feed317b66d34bcd3cdbd7427",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\quadcopter.py": "120469050255c5f0e45b0c0486bb13b9325d04619129098a7f9e03178862858f",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\reactive_pid_tracking.py": "7f530aeac836ca6a2bb5374be26f34f7ed81804f4cebf65b1efd370f7cd01a8f",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\run_attitude_capacity_learning_study.py": "3a1346c7605ac1f6232c032ce85d4b2c3752d15dc8200ba035cf4c70d7f48828",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\summarize_attitude_capacity_learning.py": "c1eb7721def335db25240bc172de0ed271e42571db8808ea462d264058eb60db"
+  },
+  "source_base_commit_at_freeze": "7cf8686ae7f2ec0c24dab37ba21a2e822a518476",
+  "source_base_commit_short_at_freeze": "7cf8686",
+  "working_tree_clean": false
+}

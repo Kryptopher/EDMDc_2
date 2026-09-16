@@ -1,0 +1,36 @@
+{
+  "controller": "reactive_pid",
+  "controller_period_s": 0.01,
+  "data_file": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_waypoint_v2\\runs_mixed_n300_waypoint_v2.pkl",
+  "data_sha256": "5e10c52897777b9c62f72b4191dc7cdddad5e2b96042a9d33cd28f712c1f6fb6",
+  "full_validation_finalists": 8,
+  "gain_multipliers": {
+    "int_xy": 2.7960824131687056,
+    "int_z": 1.0903094537873677,
+    "pos_xy": 3.49318391731306,
+    "pos_z": 1.083017763728972,
+    "vel_xy": 0.8032624037640885,
+    "vel_z": 0.7616272275725788
+  },
+  "objective": "position_rmse + 0.10*velocity_rmse + 0.15*worst_family_position_rmse",
+  "search_seed": 20260831,
+  "selection_score": 0.5076694401555816,
+  "stage1_candidates_including_baseline": 97,
+  "test_indices_locked_during_selection": [
+    39,
+    59,
+    129,
+    155,
+    210
+  ],
+  "trajectory_feedforward": false,
+  "validation_indices": [
+    38,
+    58,
+    128,
+    154,
+    209
+  ],
+  "validation_position_rmse_m": 0.40376430818081044,
+  "validation_velocity_rmse_mps": 0.17457103681959218
+}

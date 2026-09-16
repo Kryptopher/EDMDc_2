@@ -45,6 +45,19 @@ def infer_family_label(data, filename):
 def combine_run_files(file_list, output_file):
     datasets = [load_simulation_runs(f) for f in file_list]
 
+    profiles = [d.get("dataset_profile", "custom") for d in datasets]
+    if len(set(profiles)) != 1:
+        raise ValueError(
+            f"dataset_profile mismatch: {profiles}. Do not mix paper and "
+            "ACC-balanced trajectory files."
+        )
+    profile_configs = [d.get("trajectory_profile_config") for d in datasets]
+    if any(config != profile_configs[0] for config in profile_configs[1:]):
+        raise ValueError(
+            "trajectory_profile_config mismatch. All family files must come "
+            "from the same generation configuration."
+        )
+
     if not all(d.get("input_type") == "applied_wrench" for d in datasets):
         raise ValueError(
             "Every source file must log applied_wrench inputs. Regenerate legacy data "
@@ -55,13 +68,26 @@ def combine_run_files(file_list, output_file):
             "Every source file must retain U_requested actuator diagnostics. "
             "Regenerate legacy data with parallel_sim.py before mixing."
         )
+    if not all("U_outer" in d for d in datasets):
+        raise ValueError(
+            "Every source file must retain U_outer desired-attitude commands. "
+            "Regenerate the data with the dual-logging parallel_sim.py."
+        )
+    if not all(d.get("schema_version") == "yaw_dual_input_v1" for d in datasets):
+        raise ValueError(
+            "Every source file must use schema_version=yaw_dual_input_v1; "
+            "do not mix files produced before and after the dual-logging change."
+        )
 
     # Keep full yaw-aware logs:
     # states = [x, y, z, vx, vy, vz, phi, theta, psi, p, q, r]
     # U      = realized [thrust, tau_roll, tau_pitch, tau_yaw]
     # U_requested is retained when each source file provides it.
     for f, d in zip(file_list, datasets):
-        print(f"{Path(f).name}: states shape = {d['states'].shape}, U shape = {d['U'].shape}")
+        print(
+            f"{Path(f).name}: states shape = {d['states'].shape}, "
+            f"U shape = {d['U'].shape}, U_outer shape = {d['U_outer'].shape}"
+        )
 
     # Compatibility checks against first file
     ref = datasets[0]
@@ -74,6 +100,8 @@ def combine_run_files(file_list, output_file):
             raise ValueError(f"states shape mismatch at file {i}")
         if ref["U"].shape[1:] != data["U"].shape[1:]:
             raise ValueError(f"U shape mismatch at file {i}")
+        if ref["U_outer"].shape[1:] != data["U_outer"].shape[1:]:
+            raise ValueError(f"U_outer shape mismatch at file {i}")
         if ref["t"].shape[1:] != data["t"].shape[1:]:
             raise ValueError(f"t shape mismatch at file {i}")
 
@@ -84,12 +112,37 @@ def combine_run_files(file_list, output_file):
     U_requested_combined = np.concatenate(
         [d["U_requested"] for d in datasets], axis=0
     )
+    U_outer_combined = np.concatenate(
+        [d["U_outer"] for d in datasets], axis=0
+    )
+    has_allocator_inputs = all("U_allocator" in d for d in datasets)
+    U_allocator_combined = (
+        np.concatenate([d["U_allocator"] for d in datasets], axis=0)
+        if has_allocator_inputs else None
+    )
     ref_combined = sum([list(d["ref_traj_list"]) for d in datasets], [])
+    reference_metrics = sum(
+        [list(d.get("reference_metrics", [])) for d in datasets], []
+    )
+    simulation_metrics = sum(
+        [list(d.get("simulation_metrics", [])) for d in datasets], []
+    )
+    run_seeds = sum([list(d.get("run_seeds", [])) for d in datasets], [])
 
-    family_labels = sum([
-        [infer_family_label(d, f)] * d["n"]
-        for d, f in zip(datasets, file_list)
-    ], [])
+    family_labels = []
+    for data, filename in zip(datasets, file_list):
+        existing = list(data.get("family_labels", []))
+        if existing:
+            if len(existing) != int(data["n"]):
+                raise ValueError(
+                    f"family_labels length mismatch in {filename}: "
+                    f"expected {data['n']}, got {len(existing)}"
+                )
+            family_labels.extend(existing)
+        else:
+            family_labels.extend(
+                [infer_family_label(data, filename)] * int(data["n"])
+            )
 
     combined_data = {
         "traj": "mixed",
@@ -103,10 +156,48 @@ def combine_run_files(file_list, output_file):
         "family_labels": family_labels,
         "source_files": [str(f) for f in file_list],
         "dataset_profile": ref.get("dataset_profile", "custom"),
+        "trajectory_profile_config": ref.get("trajectory_profile_config"),
         "input_type": "applied_wrench",
         "input_labels": ["thrust", "tau_roll", "tau_pitch", "tau_yaw"],
+        "outer_input_type": "desired_attitude",
+        "outer_input_labels": ["thrust", "phi_des", "theta_des", "psi_des"],
+        "schema_version": "yaw_dual_input_v1",
     }
     combined_data["U_requested"] = U_requested_combined
+    combined_data["U_outer"] = U_outer_combined
+    if has_allocator_inputs:
+        combined_data["U_allocator"] = U_allocator_combined
+    mismatch_identities = [d.get("hidden_plant_identity") for d in datasets]
+    if all(identity is not None for identity in mismatch_identities):
+        if any(identity != mismatch_identities[0] for identity in mismatch_identities[1:]):
+            raise ValueError("hidden_plant_identity mismatch across family files")
+        combined_data["hidden_plant_identity"] = mismatch_identities[0]
+        combined_data["controller_parameter_source"] = "nominal"
+    if len(reference_metrics) == combined_data["n"]:
+        combined_data["reference_metrics"] = reference_metrics
+    if len(simulation_metrics) == combined_data["n"]:
+        combined_data["simulation_metrics"] = simulation_metrics
+    if len(run_seeds) == combined_data["n"]:
+        combined_data["run_seeds"] = run_seeds
+    if any("trajectory_speed_scales" in data for data in datasets):
+        speed_scales = sum([
+            list(data["trajectory_speed_scales"])
+            if "trajectory_speed_scales" in data
+            else [float("nan")] * int(data["n"])
+            for data in datasets
+        ], [])
+        if len(speed_scales) != combined_data["n"]:
+            raise ValueError("trajectory_speed_scales length mismatch")
+        combined_data["trajectory_speed_scales"] = speed_scales
+    for metadata_key in (
+        "quadratic_drag", "motor_lag_s", "identification_protocol_sha256"
+    ):
+        values = [data.get(metadata_key) for data in datasets]
+        present = [value for value in values if value is not None]
+        if present:
+            if any(value != present[0] for value in present[1:]):
+                raise ValueError(f"{metadata_key} mismatch across family files")
+            combined_data[metadata_key] = present[0]
 
     with open(output_file, "wb") as f:
         pickle.dump(combined_data, f)
@@ -117,7 +208,9 @@ def combine_run_files(file_list, output_file):
     print(f"states shape: {combined_data['states'].shape}")
     print(f"U shape:      {combined_data['U'].shape}")
     print(f"Requested U:  {'present' if has_requested_inputs else 'not available'}")
+    print(f"Outer U:      {combined_data['U_outer'].shape}")
     print(f"Families:     {set(family_labels)}")
+    print(f"Profile:      {combined_data['dataset_profile']}")
 
 
 if __name__ == "__main__":
@@ -125,8 +218,11 @@ if __name__ == "__main__":
         description="Combine yaw-aware trajectory families into one EDMDc dataset."
     )
     parser.add_argument(
-        "--profile", choices=("paper", "compact"), default="paper",
-        help="paper combines the old 300-run family composition (default).",
+        "--profile", choices=("paper", "acc_balanced", "compact"), default="paper",
+        help=(
+            "paper combines the old 300-run composition (default); "
+            "acc_balanced combines the same counts from 60 s balanced runs."
+        ),
     )
     parser.add_argument(
         "--input-dir", type=Path, default=Path(__file__).resolve().parent,
@@ -145,10 +241,10 @@ if __name__ == "__main__":
         help="Output dataset path (default: runs_mixed_n<3*runs>.pkl in --input-dir).",
     )
     args = parser.parse_args()
-    if args.profile == "paper":
+    if args.profile in ("paper", "acc_balanced"):
         if args.runs_per_family is not None or args.prbs_runs is not None:
             parser.error(
-                "The paper profile has fixed 50/50/50/50/30/70 counts. "
+                f"The {args.profile} profile has fixed 50/50/50/50/30/70 counts. "
                 "Use --profile compact for a custom mix."
             )
         file_specs = [(1, 50), (2, 50), (3, 50), (4, 50), (5, 30)]

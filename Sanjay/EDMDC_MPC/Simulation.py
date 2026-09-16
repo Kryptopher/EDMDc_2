@@ -4,6 +4,66 @@ from quadcopter import quadcopter
 from Cascaded_Controllers import QuadPIDController6Fixed, QuadPX4LikeController
 from Closed_loop import ClosedLoopQuad
 
+
+ACC_BALANCED_PROFILE_CONFIG = {
+    "version": "acc_balanced_waypoint_v2",
+    "duration_seconds": 60.0,
+    "ramp_duration_seconds": 5.0,
+    "max_reference_speed_mps": 5.0,
+    "max_reference_acceleration_mps2": 6.0,
+    "helix_target_cruise_speed_mps": [1.0, 2.5],
+    "figure8_size_m": [20.0, 30.0],
+    "lissajous_xy_size_m": [12.0, 20.0],
+    "waypoint_xy_range_m": [12.0, 20.0],
+    "waypoint_max_reference_speed_mps": 3.5,
+    "waypoint_max_reference_acceleration_mps2": 4.0,
+    "start_ramp_families": ["waypoint", "hover_excitation"],
+    "family_parameters": {
+        "helix": {
+            "radius_m": [3.0, 10.0],
+            "z_end_m": [3.0, 10.0],
+            "target_cruise_speed_mps": [1.0, 2.5],
+            "turns": "solved_from_target_speed",
+        },
+        "figure8": {
+            "a_m": [20.0, 30.0],
+            "b_m": [20.0, 30.0],
+            "loops": 1.0,
+            "tilt_deg": [10.0, 80.0],
+        },
+        "lissajous": {
+            "xy_amplitude_m": [12.0, 20.0],
+            "z_amplitude_m": [3.0, 7.0],
+            "center_z_m": [1.0, 4.0],
+            "axis_frequencies": [1.0, 2.0, 3.0],
+            "phase_y_z_rad": [0.0, "pi"],
+        },
+        "waypoint": {
+            "count": [5, 15],
+            "xy_range_m": [12.0, 20.0],
+            "z_lower_m": 0.5,
+            "z_upper_m": [3.0, 8.0],
+            "interpolation": "natural_cubic_spline",
+            "max_reference_speed_mps": 3.5,
+            "max_reference_acceleration_mps2": 4.0,
+        },
+        "hover_excitation": {
+            "xy_amplitude_m": [2.0, 4.0],
+            "z_amplitude_m": [1.0, 2.0],
+            "xy_base_frequency_hz": [0.05, 0.12],
+            "z_base_frequency_hz": [0.06, 0.15],
+            "yaw_amplitude_deg": [2.0, 8.0],
+            "sine_count": [2, 4],
+        },
+        "yaw_prbs": {
+            "yaw_rate_radps": [-0.8, 0.8],
+            "hold_seconds_at_100hz": [0.4, 1.2],
+            "seed_start": 7000,
+        },
+    },
+}
+
+
 class quad_sim:
     # Simulation Parameters
     q_mass = 3.33819 # kg
@@ -74,6 +134,7 @@ class quad_sim:
         self.time = np.arange(0.0, 45.0, self.dt)
         self.last_requested_inputs = None
         self.last_applied_inputs = None
+        self.last_outer_inputs = None
 
     def fct_unwrap_trajectory_yaw(self, traj):
         yaws = np.unwrap([r["yaw"] for r in traj])
@@ -109,9 +170,93 @@ class quad_sim:
             point["yaw_rate"] = float(yaw_rate_value)
         return traj
 
-    def fct_smooth_time_scaling(self, tau, T):
-        ramp_fraction = 0.3
-        r = ramp_fraction
+    def fct_scale_trajectory_to_limits(
+        self,
+        traj,
+        max_speed=5.0,
+        max_acceleration=6.0,
+    ):
+        """Uniformly reduce path scale until reference kinematics are feasible.
+
+        Position displacement, velocity, and acceleration are scaled by the
+        same factor, preserving their derivative relationship and path shape.
+        Heading and heading rate are unchanged because a positive uniform
+        spatial scale does not change the path tangent direction.
+        """
+        if not traj:
+            return traj
+        if max_speed <= 0.0 or max_acceleration <= 0.0:
+            raise ValueError("trajectory limits must be positive")
+
+        peak_speed = max(float(np.linalg.norm(point["vel"])) for point in traj)
+        peak_acceleration = max(
+            float(np.linalg.norm(point["acc"])) for point in traj
+        )
+        scale = min(
+            1.0,
+            max_speed / max(peak_speed, 1e-12),
+            max_acceleration / max(peak_acceleration, 1e-12),
+        )
+        if scale >= 1.0:
+            return traj
+
+        origin = np.asarray(traj[0]["pos"], dtype=float).copy()
+        for point in traj:
+            point["pos"] = origin + scale * (
+                np.asarray(point["pos"], dtype=float) - origin
+            )
+            point["vel"] = scale * np.asarray(point["vel"], dtype=float)
+            point["acc"] = scale * np.asarray(point["acc"], dtype=float)
+        return traj
+
+    def fct_ramp_trajectory_start(self, traj, time, ramp_duration_seconds=5.0):
+        """Apply a derivative-consistent quintic startup ramp to a reference."""
+        if not traj:
+            return traj
+        time = np.asarray(time, dtype=float)
+        if len(traj) != len(time):
+            raise ValueError("Trajectory and time vectors must have equal length")
+        if ramp_duration_seconds <= 0.0:
+            raise ValueError("ramp_duration_seconds must be positive")
+
+        phase = np.clip(
+            (time - time[0]) / float(ramp_duration_seconds), 0.0, 1.0
+        )
+        window = 6.0 * phase**5 - 15.0 * phase**4 + 10.0 * phase**3
+        positions = np.asarray([point["pos"] for point in traj], dtype=float)
+        origin = positions[0].copy()
+        positions = origin + window[:, None] * (positions - origin)
+
+        yaw = np.unwrap(np.asarray([point["yaw"] for point in traj], dtype=float))
+        yaw = yaw[0] + window * (yaw - yaw[0])
+        edge_order = 2 if len(time) >= 3 else 1
+        velocities = np.gradient(positions, time, axis=0, edge_order=edge_order)
+        accelerations = np.gradient(
+            velocities, time, axis=0, edge_order=edge_order
+        )
+        yaw_rate = np.gradient(yaw, time, edge_order=edge_order)
+
+        for k, point in enumerate(traj):
+            point["pos"] = positions[k]
+            point["vel"] = velocities[k]
+            point["acc"] = accelerations[k]
+            point["yaw"] = float(yaw[k])
+            point["yaw_rate"] = float(yaw_rate[k])
+        return self.fct_limit_trajectory_yaw_rate(traj, time)
+
+    def fct_smooth_time_scaling(self, tau, T, ramp_duration_seconds=None):
+        """Return normalized path distance, speed, and acceleration.
+
+        ``None`` retains the paper profile's original 30%-of-run ramp exactly.
+        ACC-balanced trajectories instead pass a fixed duration so shortening a
+        run does not consume most of it in near-stationary startup/shutdown.
+        """
+        if ramp_duration_seconds is None:
+            r = 0.3
+        else:
+            if ramp_duration_seconds <= 0.0:
+                raise ValueError("ramp_duration_seconds must be positive")
+            r = float(np.clip(ramp_duration_seconds / T, 1e-9, 0.49))
         cruise_scale = 1.0 / (1.0 - r)
 
         def ramp_distance(xi):
@@ -146,7 +291,8 @@ class quad_sim:
                                     z_start=0.5,
                                     z_end=3.0,
                                     n_turns=3.0,
-                                    yaw_follows_path=True):
+                                    yaw_follows_path=True,
+                                    ramp_duration_seconds=None):
         """
         Make a helical trajectory:
         - circle of given radius around (cx, cy)
@@ -175,7 +321,9 @@ class quad_sim:
         traj = []
         for t in time:
             tau = (t - t0) / T  # normalized time in [0,1]
-            sigma, sigma_dot, sigma_ddot = self.fct_smooth_time_scaling(tau, T)
+            sigma, sigma_dot, sigma_ddot = self.fct_smooth_time_scaling(
+                tau, T, ramp_duration_seconds=ramp_duration_seconds
+            )
 
             # Angle (n_turns full revolutions)
             theta = 2.0 * np.pi * n_turns * sigma
@@ -225,7 +373,8 @@ class quad_sim:
                                     n_loops=1.0,
                                     tilt_deg=30.0,
                                     yaw_follows_path=True,
-                                    yaw_constant=0.0):
+                                    yaw_constant=0.0,
+                                    ramp_duration_seconds=None):
         """
         Make a 3D figure-8 trajectory.
 
@@ -278,7 +427,9 @@ class quad_sim:
         traj = []
         for t in time:
             tau = (t - t0) / T
-            sigma, sigma_dot, sigma_ddot = self.fct_smooth_time_scaling(tau, T)
+            sigma, sigma_dot, sigma_ddot = self.fct_smooth_time_scaling(
+                tau, T, ramp_duration_seconds=ramp_duration_seconds
+            )
 
             # ---- base planar figure-8 (XY plane) ----
             s    = 2.0 * np.pi * n_loops * sigma - 0.25 * np.pi
@@ -367,7 +518,8 @@ class quad_sim:
                                       harmonic_phase_x=0.0,
                                       harmonic_phase_y=0.0,
                                       yaw_follows_path=True,
-                                      yaw_constant=0.0):
+                                      yaw_constant=0.0,
+                                      ramp_duration_seconds=None):
         """
         Make a 3D Lissajous trajectory with smooth start/stop timing.
 
@@ -389,7 +541,9 @@ class quad_sim:
 
         for t in time:
             tau = (t - t0) / T
-            sigma, sigma_dot, sigma_ddot = self.fct_smooth_time_scaling(tau, T)
+            sigma, sigma_dot, sigma_ddot = self.fct_smooth_time_scaling(
+                tau, T, ramp_duration_seconds=ramp_duration_seconds
+            )
 
             s = 2.0 * np.pi * sigma
             s_dot = 2.0 * np.pi * sigma_dot
@@ -518,9 +672,17 @@ class quad_sim:
         xy_range=3.0,
         z_range=(0.5, 4.0),
         smooth_sigma=50,
+        interpolation="legacy_gaussian",
     ):
-        """Generate the old-paper random-waypoint family, yaw-aware."""
+        """Generate a deterministic, yaw-aware random-waypoint family.
+
+        ``legacy_gaussian`` preserves the original paper construction.
+        ``natural_cubic_spline`` evaluates position, velocity, and acceleration
+        analytically in physical time so the ACC waypoint has continuous
+        fly-through velocity and acceleration at every interior waypoint.
+        """
         from scipy.ndimage import gaussian_filter1d
+        from scipy.interpolate import CubicSpline
 
         time = np.asarray(time, dtype=float)
         n_samples = len(time)
@@ -529,31 +691,43 @@ class quad_sim:
 
         waypoint_indices = np.linspace(0, n_samples - 1, n_waypoints).astype(int)
         sample_indices = np.arange(n_samples)
-        x_raw = np.interp(
-            sample_indices, waypoint_indices,
+        waypoint_values = np.column_stack([
             [rng.uniform(-xy_range, xy_range) for _ in range(n_waypoints)],
-        )
-        y_raw = np.interp(
-            sample_indices, waypoint_indices,
             [rng.uniform(-xy_range, xy_range) for _ in range(n_waypoints)],
-        )
-        z_raw = np.interp(
-            sample_indices, waypoint_indices,
             [rng.uniform(*z_range) for _ in range(n_waypoints)],
-        )
-        x = gaussian_filter1d(x_raw, smooth_sigma)
-        y = gaussian_filter1d(y_raw, smooth_sigma)
-        z = gaussian_filter1d(z_raw, smooth_sigma)
+        ])
+
+        if interpolation == "legacy_gaussian":
+            positions = np.column_stack([
+                gaussian_filter1d(
+                    np.interp(sample_indices, waypoint_indices, waypoint_values[:, axis]),
+                    smooth_sigma,
+                )
+                for axis in range(3)
+            ])
+            dt = float(np.median(np.diff(time)))
+            velocities = np.gradient(positions, dt, axis=0)
+            accelerations = np.gradient(velocities, dt, axis=0)
+        elif interpolation == "natural_cubic_spline":
+            waypoint_times = time[waypoint_indices]
+            spline = CubicSpline(
+                waypoint_times, waypoint_values, axis=0, bc_type="natural"
+            )
+            positions = np.asarray(spline(time), dtype=float)
+            velocities = np.asarray(spline(time, 1), dtype=float)
+            accelerations = np.asarray(spline(time, 2), dtype=float)
+        else:
+            raise ValueError(
+                "interpolation must be legacy_gaussian or natural_cubic_spline"
+            )
 
         # As in the old generator, starts are translated to the origin.  Do
         # this before differentiating so the position and derivative fields
         # remain exactly consistent.
-        x -= x[0]
-        y -= y[0]
-        z -= z[0]
-        dt = float(np.median(np.diff(time)))
-        vx, vy, vz = (np.gradient(values, dt) for values in (x, y, z))
-        ax, ay, az = (np.gradient(values, dt) for values in (vx, vy, vz))
+        positions -= positions[0]
+        x, y, z = positions.T
+        vx, vy, vz = velocities.T
+        ax, ay, az = accelerations.T
         yaw = np.unwrap(np.arctan2(vy, vx))
         yaw_rate = (vx * ay - vy * ax) / (vx**2 + vy**2 + 1e-12)
 
@@ -569,14 +743,125 @@ class quad_sim:
         ]
         return self.fct_limit_trajectory_yaw_rate(traj, time)
 
-    def fct_sample_trajectory(self, traj, rng):
-        """Sample the deterministic old-paper trajectory distribution.
+    def fct_sample_trajectory(self, traj, rng, profile="paper"):
+        """Sample a deterministic paper or ACC-balanced trajectory.
 
         The seed convention is managed by :meth:`fct_run_simulation`: run
         ``i`` from family ``traj`` always uses ``1000 * traj + i``.  The
-        ranges below reproduce the original paper's reference-data setup;
-        yaw and accelerations are supplied by the current, yaw-aware builders.
+        ``paper`` branch reproduces the original reference-data setup.  The
+        ``acc_balanced`` branch uses 60-second runs with a fixed five-second
+        parametric ramp, deliberately raises helix speed, and limits the
+        already-aggressive families to 5 m/s and 6 m/s^2.
         """
+        if profile == "acc_balanced":
+            ramp = ACC_BALANCED_PROFILE_CONFIG["ramp_duration_seconds"]
+            max_speed = ACC_BALANCED_PROFILE_CONFIG["max_reference_speed_mps"]
+            max_acceleration = ACC_BALANCED_PROFILE_CONFIG[
+                "max_reference_acceleration_mps2"
+            ]
+
+            if traj == 1:
+                radius = rng.uniform(3.0, 10.0)
+                z_end = rng.uniform(3.0, 10.0)
+                target_speed = rng.uniform(1.0, 2.5)
+                duration = float(self.time[-1] - self.time[0])
+                cruise_duration = max(duration - ramp, self.dt)
+                target_path_length = target_speed * cruise_duration
+                horizontal_length = np.sqrt(
+                    max(target_path_length**2 - z_end**2, 0.0)
+                )
+                n_turns = max(horizontal_length / (2.0 * np.pi * radius), 0.25)
+                result = self.fct_make_helical_trajectory(
+                    self.time,
+                    center=(0.0, 0.0),
+                    radius=radius,
+                    z_start=0.0,
+                    z_end=z_end,
+                    n_turns=n_turns,
+                    yaw_follows_path=True,
+                    ramp_duration_seconds=ramp,
+                )
+            elif traj == 2:
+                result = self.fct_make_figure8_trajectory(
+                    self.time,
+                    center=(0.0, 0.0, 0.0),
+                    a=rng.uniform(20.0, 30.0),
+                    b=rng.uniform(20.0, 30.0),
+                    n_loops=1.0,
+                    tilt_deg=rng.uniform(10.0, 80.0),
+                    yaw_follows_path=True,
+                    ramp_duration_seconds=ramp,
+                )
+            elif traj == 3:
+                result = self.fct_make_lissajous_trajectory(
+                    self.time,
+                    center=(0.0, 0.0, rng.uniform(1.0, 4.0)),
+                    ax=rng.uniform(12.0, 20.0),
+                    ay=rng.uniform(12.0, 20.0),
+                    az=rng.uniform(3.0, 7.0),
+                    fx=rng.choice([1.0, 2.0, 3.0]),
+                    fy=rng.choice([1.0, 2.0, 3.0]),
+                    fz=rng.choice([1.0, 2.0, 3.0]),
+                    phase_y=rng.uniform(0.0, np.pi),
+                    phase_z=rng.uniform(0.0, np.pi),
+                    yaw_follows_path=True,
+                    ramp_duration_seconds=ramp,
+                )
+            elif traj == 4:
+                result = self.fct_make_random_waypoint_trajectory(
+                    self.time,
+                    rng=rng,
+                    n_waypoints=rng.randint(5, 15),
+                    xy_range=rng.uniform(12.0, 20.0),
+                    z_range=(0.5, rng.uniform(3.0, 8.0)),
+                    interpolation="natural_cubic_spline",
+                )
+            elif traj == 5:
+                result = self.fct_make_hover_excitation_trajectory(
+                    self.time,
+                    rng=rng,
+                    xyz_amp=(
+                        rng.uniform(2.0, 4.0),
+                        rng.uniform(2.0, 4.0),
+                        rng.uniform(1.0, 2.0),
+                    ),
+                    xyz_freq=(
+                        rng.uniform(0.05, 0.12),
+                        rng.uniform(0.05, 0.12),
+                        rng.uniform(0.06, 0.15),
+                    ),
+                    yaw_amp_deg=rng.uniform(2.0, 8.0),
+                    n_sines_range=(2, 4),
+                )
+            else:
+                raise ValueError("traj must be an integer from 1 through 5")
+
+            if traj in (4, 5):
+                result = self.fct_ramp_trajectory_start(
+                    result,
+                    self.time,
+                    ramp_duration_seconds=ramp,
+                )
+            family_max_speed = (
+                ACC_BALANCED_PROFILE_CONFIG["waypoint_max_reference_speed_mps"]
+                if traj == 4 else max_speed
+            )
+            family_max_acceleration = (
+                ACC_BALANCED_PROFILE_CONFIG[
+                    "waypoint_max_reference_acceleration_mps2"
+                ]
+                if traj == 4 else max_acceleration
+            )
+            return self.fct_scale_trajectory_to_limits(
+                result,
+                max_speed=family_max_speed,
+                max_acceleration=family_max_acceleration,
+            )
+
+        if profile not in ("paper", "compact", "custom"):
+            raise ValueError(
+                "profile must be paper, acc_balanced, compact, or custom"
+            )
         if traj == 1:
             return self.fct_make_helical_trajectory(
                 self.time,
@@ -639,12 +924,12 @@ class quad_sim:
             )
         raise ValueError("traj must be an integer from 1 through 5")
 
-    def fct_run_single_simulation(self, traj, run_index):
+    def fct_run_single_simulation(self, traj, run_index, profile="paper"):
         """Run one deterministic realization from a trajectory family."""
         import random
 
         rng = random.Random(1000 * traj + run_index)
-        ref_traj = self.fct_sample_trajectory(traj, rng)
+        ref_traj = self.fct_sample_trajectory(traj, rng, profile=profile)
 
         # Keep the original paper's origin convention for every family.
         p0 = ref_traj[0]["pos"].copy()
@@ -655,12 +940,13 @@ class quad_sim:
         # transition into an artificial yaw-setpoint transient.
         init_state = np.zeros(12)
         init_state[8] = float(ref_traj[0].get("yaw", 0.0))
-        t, states, _, U, U_requested = self.sim_PID.fct_simulate(
-            self.time, self.dt, ref_traj, init_state, return_requested=True
+        t, states, _, U, U_requested, U_outer = self.sim_PID.fct_simulate(
+            self.time, self.dt, ref_traj, init_state,
+            return_requested=True, return_outer=True,
         )
-        return t, states, U, U_requested, ref_traj
+        return t, states, U, U_requested, U_outer, ref_traj
 
-    def fct_run_simulation(self, traj, n):
+    def fct_run_simulation(self, traj, n, profile="paper"):
         """
         Run n simulations using a single trajectory type.
 
@@ -694,17 +980,20 @@ class quad_sim:
         states_runs = []
         U_runs = []
         U_requested_runs = []
+        U_outer_runs = []
         ref_traj_list = []
 
         for i in range(n):
-            t_i, states_i, U_i, U_requested_i, ref_traj = (
-                self.fct_run_single_simulation(traj, i)
+            t_i, states_i, U_i, U_requested_i, U_outer_i, ref_traj = (
+                self.fct_run_single_simulation(traj, i, profile=profile)
             )
 
             t_runs.append(t_i)
             states_runs.append(states_i)
             U_runs.append(U_i)
             U_requested_runs.append(U_requested_i)
+            U_outer_runs.append(U_outer_i)
+            ref_traj_list.append(ref_traj)
 
         # =====================================================
         # Stack results
@@ -714,6 +1003,7 @@ class quad_sim:
         U = np.stack(U_runs, axis=0)
         self.last_requested_inputs = np.stack(U_requested_runs, axis=0)
         self.last_applied_inputs = U
+        self.last_outer_inputs = np.stack(U_outer_runs, axis=0)
 
         return t, states, U, ref_traj_list
 

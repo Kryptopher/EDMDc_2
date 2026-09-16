@@ -7,6 +7,14 @@ from sklearn.preprocessing import StandardScaler
 from pathlib import Path
 import matplotlib.pyplot as plt
 
+from edmdc_mpc import (
+    OUTER_ATTITUDE_INPUT_LIFT_LABELS,
+    OUTER_ATTITUDE_INPUT_LIFT_TYPE,
+    OUTER_RAW_INPUT_LABELS,
+    OUTER_RAW_INPUT_LIFT_TYPE,
+    outer_command_lift_from_phys,
+)
+
 
 
 # Configuration
@@ -18,15 +26,87 @@ ROLLING_WINDOW_STRIDE_SECONDS = 0.1
 SWEEP_ROLLING_WINDOW_STRIDE_SECONDS = 1.0
 STATE_DIM = 12
 STATE_LABELS = ['x','y','z','vx','vy','vz','phi','theta','psi','p','q','r']
-RAW_INPUT_DIM = 4
-RAW_INPUT_LABELS = ["thrust", "tau_roll", "tau_pitch", "tau_yaw"]
-INPUT_LIFT_TYPE = "thrust_direction_rate_coupling"
-INPUT_LIFT_LABELS = RAW_INPUT_LABELS + [
-    "thrust_x", "thrust_y", "thrust_z",
-    "tau_roll_p", "tau_pitch_q", "tau_yaw_r",
+FULL_OBSERVABLE_LABELS = STATE_LABELS + [
+    'sin_phi','cos_phi','sin_theta','cos_theta','sin_psi','cos_psi',
+    'phi*p','theta*q','psi*r','vx*phi','vy*theta','vx*psi','vy*psi','vz*theta',
+    'v_sq','omega_sq','vz^2','phi^2','theta^2','psi^2','p*q','q*r','p*r',
+    'x*y','x*vx','y*vy','x*vy','y*vx','vx*vy',
+    'x^2','y^2','vx^2','vy^2','x*theta','y*phi','vx*theta','vy*phi',
+    'body_vx','body_vy','body_vz','thrust_dir_x','thrust_dir_y','thrust_dir_z',
+    'bias',
 ]
+OBSERVABLE_SET = os.environ.get("EDMDC_OBSERVABLE_SET", "full56").strip().lower()
+OBSERVABLE_SETS = {
+    "state13": list(range(12)) + [55],
+    "trig19": list(range(18)) + [55],
+    "physics42": list(range(35)) + list(range(49, 56)),
+    "full56": list(range(56)),
+}
+if OBSERVABLE_SET not in OBSERVABLE_SETS:
+    raise ValueError(
+        "EDMDC_OBSERVABLE_SET must be one of " + ", ".join(OBSERVABLE_SETS)
+    )
+OBSERVABLE_INDICES = OBSERVABLE_SETS[OBSERVABLE_SET]
+OBSERVABLE_LABELS = [FULL_OBSERVABLE_LABELS[i] for i in OBSERVABLE_INDICES]
+TRAIN_FRACTION = float(os.environ.get("EDMDC_TRAIN_FRACTION", "1.0"))
+if not 0.0 < TRAIN_FRACTION <= 1.0:
+    raise ValueError("EDMDC_TRAIN_FRACTION must be in (0, 1]")
+RAW_INPUT_DIM = 4
+INPUT_SOURCE = os.environ.get("EDMDC_INPUT_SOURCE", "applied_wrench").strip().lower()
+if INPUT_SOURCE == "applied_wrench":
+    DATA_INPUT_KEY = "U"
+    RAW_INPUT_LABELS = ["thrust", "tau_roll", "tau_pitch", "tau_yaw"]
+    INPUT_LIFT_TYPE = "thrust_direction_rate_coupling"
+    INPUT_LIFT_LABELS = RAW_INPUT_LABELS + [
+        "thrust_x", "thrust_y", "thrust_z",
+        "tau_roll_p", "tau_pitch_q", "tau_yaw_r",
+    ]
+    MODEL_INPUT_TYPE = "applied_wrench"
+    MODEL_U_TYPE = "wrench"
+elif INPUT_SOURCE == "outer_command":
+    DATA_INPUT_KEY = "U_outer"
+    RAW_INPUT_LABELS = list(OUTER_RAW_INPUT_LABELS)
+    requested_outer_lift = os.environ.get(
+        "EDMDC_OUTER_INPUT_LIFT", OUTER_RAW_INPUT_LIFT_TYPE
+    ).strip().lower()
+    outer_lift_aliases = {
+        "raw": OUTER_RAW_INPUT_LIFT_TYPE,
+        OUTER_RAW_INPUT_LIFT_TYPE: OUTER_RAW_INPUT_LIFT_TYPE,
+        "attitude_error": OUTER_ATTITUDE_INPUT_LIFT_TYPE,
+        "nonlinear": OUTER_ATTITUDE_INPUT_LIFT_TYPE,
+        OUTER_ATTITUDE_INPUT_LIFT_TYPE: OUTER_ATTITUDE_INPUT_LIFT_TYPE,
+    }
+    if requested_outer_lift not in outer_lift_aliases:
+        raise ValueError(
+            "EDMDC_OUTER_INPUT_LIFT must be raw, attitude_error, or "
+            f"{OUTER_ATTITUDE_INPUT_LIFT_TYPE}; got {requested_outer_lift!r}"
+        )
+    INPUT_LIFT_TYPE = outer_lift_aliases[requested_outer_lift]
+    INPUT_LIFT_LABELS = (
+        list(OUTER_RAW_INPUT_LABELS)
+        if INPUT_LIFT_TYPE == OUTER_RAW_INPUT_LIFT_TYPE
+        else list(OUTER_ATTITUDE_INPUT_LIFT_LABELS)
+    )
+    MODEL_INPUT_TYPE = "desired_attitude"
+    MODEL_U_TYPE = "outer_command"
+else:
+    raise ValueError(
+        "EDMDC_INPUT_SOURCE must be applied_wrench or outer_command, "
+        f"got {INPUT_SOURCE!r}"
+    )
 DATA_FILE = Path(os.environ.get("EDMDC_DATA_FILE", SCRIPT_DIR / "runs_mixed_n300.pkl"))
 MODEL_FILE = Path(os.environ.get("EDMDC_MODEL_FILE", SCRIPT_DIR / "edmdc_model_yaw_wrench.pkl"))
+PLOT_DIR = Path(os.environ.get(
+    "EDMDC_PLOT_DIR", MODEL_FILE.parent / f"{MODEL_FILE.stem}_plots"
+))
+
+
+def save_training_figure(fig, stem):
+    """Save a training diagnostic in both review and publication formats."""
+    PLOT_DIR.mkdir(parents=True, exist_ok=True)
+    fig.savefig(PLOT_DIR / f"{stem}.png", dpi=220, bbox_inches="tight")
+    fig.savefig(PLOT_DIR / f"{stem}.pdf", bbox_inches="tight")
+    plt.close(fig)
 
 TARGET_FAMILIES = (
     "helix", "fig8", "lissajous", "waypoint", "hover_excitation", "yaw_prbs",
@@ -61,6 +141,22 @@ EARLY_TRANSIENT_SECONDS = 2.0
 EARLY_TRANSIENT_WEIGHT = 8.0
 EARLY_TRANSIENT_STEPS = int(round(EARLY_TRANSIENT_SECONDS / dt))
 
+# Optional operating-envelope balancing for augmentation studies.  The legacy
+# behavior remains unchanged unless EDMDC_TILT_WEIGHTING=balanced is set.
+TILT_WEIGHTING = os.environ.get("EDMDC_TILT_WEIGHTING", "none").strip().lower()
+TILT_WEIGHT_BINS_DEG = np.asarray([
+    float(value) for value in os.environ.get(
+        "EDMDC_TILT_WEIGHT_BINS_DEG", "0,5,10,15,20,25,30,45,90"
+    ).split(",") if value.strip()
+])
+TILT_WEIGHT_CAP = float(os.environ.get("EDMDC_TILT_WEIGHT_CAP", "12.0"))
+if TILT_WEIGHTING not in ("none", "balanced"):
+    raise ValueError("EDMDC_TILT_WEIGHTING must be none or balanced")
+if len(TILT_WEIGHT_BINS_DEG) < 2 or np.any(np.diff(TILT_WEIGHT_BINS_DEG) <= 0):
+    raise ValueError("EDMDC_TILT_WEIGHT_BINS_DEG must be strictly increasing")
+if TILT_WEIGHT_CAP < 1.0:
+    raise ValueError("EDMDC_TILT_WEIGHT_CAP must be at least 1")
+
 ENFORCE_KINEMATIC_ROWS = True
 
 # Tikhonov regularization candidates
@@ -86,6 +182,7 @@ PLOT_STATE_SCORE_WEIGHTS = np.array([
 # Adjust them if your project has stricter or looser tracking requirements.
 SHORT_HORIZON_LIMITS = {
     "rolling_pos": 0.20,
+    "rolling_vel": 0.25,
     "y": 0.20,
     "vy": 0.20,
     "yaw": 0.25,
@@ -98,6 +195,7 @@ SHORT_HORIZON_LIMITS = {
 # The held-out test split remains untouched until final evaluation.
 VALIDATION_SCORE_LIMITS = {
     "rolling_pos": SHORT_HORIZON_LIMITS["rolling_pos"],
+    "rolling_vel": SHORT_HORIZON_LIMITS["rolling_vel"],
     "yaw": SHORT_HORIZON_LIMITS["yaw"],
     "r": SHORT_HORIZON_LIMITS["r"],
 }
@@ -116,7 +214,22 @@ def load_simulation_runs(filename):
         raise ValueError(
             "Dataset lacks U_requested diagnostics; regenerate it with parallel_sim.py."
         )
-    return data["t"], data["states"], data["U"], data["ref_traj_list"]
+    if DATA_INPUT_KEY not in data:
+        raise ValueError(
+            f"Dataset lacks {DATA_INPUT_KEY}; regenerate it with the dual-logging "
+            "parallel_sim.py before training this input source."
+        )
+    if INPUT_SOURCE == "outer_command":
+        if data.get("schema_version") != "yaw_dual_input_v1":
+            raise ValueError(
+                "Outer-command training requires schema_version=yaw_dual_input_v1."
+            )
+        if data.get("outer_input_type") != "desired_attitude":
+            raise ValueError("U_outer must declare outer_input_type=desired_attitude")
+    return (
+        data["t"], data["states"], data[DATA_INPUT_KEY],
+        data["ref_traj_list"],
+    )
 
 
 def thrust_direction_from_state_phys(states_phys):
@@ -148,10 +261,10 @@ def thrust_direction_from_state_phys(states_phys):
 
 def lift_inputs_from_phys(states_phys, raw_inputs):
     """
-    Keep the logged 4 wrench commands, then add thrust projected through current attitude.
+    Construct the configured EDMDc input vector.
 
-    The plant/controller still uses raw commands. The EDMDc regression sees these
-    extra channels because lateral acceleration is mainly thrust times attitude.
+    Applied-wrench models add thrust direction and torque/rate products. The
+    outer-command model uses the selected raw or attitude-error lift.
     """
     states = np.asarray(states_phys, dtype=float)
     raw = np.asarray(raw_inputs, dtype=float)
@@ -176,6 +289,13 @@ def lift_inputs_from_phys(states_phys, raw_inputs):
         )
 
     raw_4 = raw_2d[:, :RAW_INPUT_DIM]
+    if INPUT_SOURCE == "outer_command":
+        return outer_command_lift_from_phys(
+            states if scalar else states_2d,
+            raw if scalar else raw_2d,
+            input_lift_type=INPUT_LIFT_TYPE,
+        )
+
     thrust = raw_4[:, :1]
     thrust_dir = thrust_direction_from_state_phys(states_2d)
     rates = states_2d[:, 9:12]
@@ -214,15 +334,26 @@ train_indices = [
 ]
 if not train_indices:
     raise ValueError("No training indices remain after validation/test splitting.")
+all_train_indices = list(train_indices)
+if TRAIN_FRACTION < 1.0:
+    # Deterministically spread the retained runs across the complete ordered
+    # training list; validation and test indices remain unchanged.
+    keep = max(1, int(round(TRAIN_FRACTION * len(all_train_indices))))
+    positions = np.linspace(0, len(all_train_indices) - 1, keep, dtype=int)
+    train_indices = [all_train_indices[i] for i in np.unique(positions)]
 
 print("Target families:", ", ".join(TARGET_FAMILIES))
 print("Validation indices:", validation_indices)
 print("Held-out test indices:", test_indices)
 print(f"Loaded file: {DATA_FILE.name}")
-print("Training input: applied motor-feasible wrench U")
+print(f"Training input source: {INPUT_SOURCE} ({DATA_INPUT_KEY})")
+print("Training raw input labels:", RAW_INPUT_LABELS)
 print("Total runs:", n_runs)
 print("Target runs:", len(target_indices))
 print("Training runs:", len(train_indices))
+print("Available training runs:", len(all_train_indices))
+print("Training fraction:", TRAIN_FRACTION)
+print("Observable set:", OBSERVABLE_SET, f"({len(OBSERVABLE_INDICES)} terms)")
 print("t shape:", t_all.shape)
 print("states shape (raw 12):", states_all.shape)
 print("U shape (raw):", U_all.shape)
@@ -264,8 +395,7 @@ if states_all.shape[2] != STATE_DIM:
 
 if U_all.shape[2] != RAW_INPUT_DIM:
     raise ValueError(
-        f"Expected {RAW_INPUT_DIM} wrench inputs "
-        f"[thrust, tau_roll, tau_pitch, tau_yaw], got {U_all.shape[2]}"
+        f"Expected {RAW_INPUT_DIM} inputs {RAW_INPUT_LABELS}, got {U_all.shape[2]}"
     )
 
 print(f"Downsampled shape: states={states_all.shape}, U={U_all.shape}")
@@ -295,12 +425,45 @@ Xn = np.vstack(Xn_list).T          # (12, K)
 U_train = np.hstack(U_list)        # (4, K)
 sample_weights = np.concatenate(W_list)
 
+tilt_weight_diagnostics = {"mode": TILT_WEIGHTING}
+if TILT_WEIGHTING == "balanced":
+    # Exact body-z tilt from Euler roll/pitch.  Weight populated bins toward
+    # equal total influence, while capping rare-bin leverage for robustness.
+    tilt_deg = np.degrees(np.arccos(np.clip(
+        np.cos(Xc[6, :]) * np.cos(Xc[7, :]), -1.0, 1.0
+    )))
+    bin_index = np.clip(
+        np.digitize(tilt_deg, TILT_WEIGHT_BINS_DEG) - 1,
+        0, len(TILT_WEIGHT_BINS_DEG) - 2,
+    )
+    counts = np.bincount(bin_index, minlength=len(TILT_WEIGHT_BINS_DEG) - 1)
+    populated = counts > 0
+    target_count = float(np.mean(counts[populated]))
+    multipliers = np.ones_like(counts, dtype=float)
+    multipliers[populated] = np.minimum(
+        TILT_WEIGHT_CAP, target_count / counts[populated]
+    )
+    transition_weights = multipliers[bin_index]
+    transition_weights /= np.mean(transition_weights)
+    sample_weights *= transition_weights
+    tilt_weight_diagnostics = {
+        "mode": TILT_WEIGHTING,
+        "bins_deg": TILT_WEIGHT_BINS_DEG.tolist(),
+        "counts": counts.tolist(),
+        "multipliers_before_normalization": multipliers.tolist(),
+        "cap": TILT_WEIGHT_CAP,
+        "transition_weight_mean": float(np.mean(transition_weights)),
+        "transition_weight_min": float(np.min(transition_weights)),
+        "transition_weight_max": float(np.max(transition_weights)),
+    }
+
 print("\n========== SNAPSHOT DEBUG ==========")
 print("Xc shape:", Xc.shape)
 print("Xn shape:", Xn.shape)
 print("U_train shape:", U_train.shape)
 print("Sample weights shape:", sample_weights.shape)
 print("Early transient weight:", EARLY_TRANSIENT_WEIGHT)
+print("Tilt weighting:", tilt_weight_diagnostics)
 print("Number of transitions per run:", states_all.shape[1] - 1)
 print("Expected total transitions:", len(train_indices) * (states_all.shape[1] - 1))
 print("====================================")
@@ -398,7 +561,7 @@ def observables_legacy_10state(x, scaler):
     return np.array(obs, dtype=float)
 
 
-def observables(x, scaler):
+def observables_full(x, scaler):
     """
     Return the lifted observable vector for a standardized 12-state input.
     Must match edmdc_mpc.py exactly.
@@ -488,6 +651,11 @@ def observables(x, scaler):
     obs.append(1.0)
 
     return np.array(obs, dtype=float)
+
+
+def observables(x, scaler):
+    """Return the configured capacity-ablation subset of the full lift."""
+    return observables_full(x, scaler)[OBSERVABLE_INDICES]
 
 
 # Test observable dimension
@@ -668,6 +836,10 @@ family_names = {
     59: "figure-8",
     128: "lissajous-validation",
     129: "lissajous",
+    154: "waypoint-validation",
+    155: "waypoint",
+    209: "hover-excitation-validation",
+    210: "hover-excitation",
 }
 
 n_obs = Psi.shape[0]
@@ -687,6 +859,7 @@ print(f"{'='*60}")
 best_lam = 0
 best_score = float("inf")
 best_avg_roll_pos = float("inf")
+best_avg_roll_vel = float("inf")
 best_avg_yaw = float("inf")
 best_avg_r = float("inf")
 best_avg_plot_score = float("inf")
@@ -701,13 +874,14 @@ for lam in LAMBDA_CANDIDATES:
     per_traj = {}
     total_score = 0.0
     total_roll_pos = 0.0
+    total_roll_vel = 0.0
     total_yaw = 0.0
     total_r = 0.0
     total_plot_score = 0.0
     for tidx in validation_indices:
         name = family_names.get(tidx, str(tidx))
         try:
-            pos_r, _, _, per_state = rolling_horizon_rmse(
+            pos_r, vel_r, _, per_state = rolling_horizon_rmse(
                 states_all[tidx], U_all[tidx],
                 A_try, B_try, scaler, u_scaler, h,
                 observables, stride=sweep_rolling_stride
@@ -719,38 +893,45 @@ for lam in LAMBDA_CANDIDATES:
             )
             yaw_r = per_state[8]
             r_r = per_state[11]
-            per_traj[name] = (pos_r, yaw_r, r_r)
+            per_traj[name] = (pos_r, vel_r, yaw_r, r_r)
             total_roll_pos += pos_r
+            total_roll_vel += vel_r
             total_yaw += yaw_r
             total_r += r_r
             total_score += (
                 pos_r / VALIDATION_SCORE_LIMITS["rolling_pos"]
+                + vel_r / VALIDATION_SCORE_LIMITS["rolling_vel"]
                 + yaw_r / VALIDATION_SCORE_LIMITS["yaw"]
                 + r_r / VALIDATION_SCORE_LIMITS["r"]
-            ) / 3.0
+            ) / 4.0
             total_plot_score += plot_score
         except Exception:
-            per_traj[name] = (float("inf"),) * 3
+            per_traj[name] = (float("inf"),) * 4
             total_score = float("inf")
             total_roll_pos = float("inf")
+            total_roll_vel = float("inf")
             total_yaw = float("inf")
             total_r = float("inf")
             total_plot_score = float("inf")
 
     avg_roll_pos = total_roll_pos / len(validation_indices)
+    avg_roll_vel = total_roll_vel / len(validation_indices)
     avg_yaw = total_yaw / len(validation_indices)
     avg_r = total_r / len(validation_indices)
     avg_plot_score = total_plot_score / len(validation_indices)
     worst_roll_pos = max(metrics[0] for metrics in per_traj.values())
+    worst_roll_vel = max(metrics[1] for metrics in per_traj.values())
     score = total_score / len(validation_indices)
     detail = "  ".join(
-        f"{name}:pos={metrics[0]:.4f},yaw={metrics[1]:.4f},r={metrics[2]:.4f}"
+        f"{name}:pos={metrics[0]:.4f},vel={metrics[1]:.4f},"
+        f"yaw={metrics[2]:.4f},r={metrics[3]:.4f}"
         for name, metrics in per_traj.items()
     )
     print(
         f"  lam={lam:.0e}  score={score:.4f}  "
-        f"roll_pos={avg_roll_pos:.4f}  yaw={avg_yaw:.4f}  r={avg_r:.4f}  "
-        f"worst={worst_roll_pos:.4f}  "
+        f"roll_pos={avg_roll_pos:.4f}  roll_vel={avg_roll_vel:.4f}  "
+        f"yaw={avg_yaw:.4f}  r={avg_r:.4f}  "
+        f"worst_pos={worst_roll_pos:.4f}  worst_vel={worst_roll_vel:.4f}  "
         f"plot_score={avg_plot_score:.4f}  "
         f"{detail}"
     )
@@ -758,15 +939,27 @@ for lam in LAMBDA_CANDIDATES:
         "lambda": lam,
         "score": score,
         "rolling_pos": avg_roll_pos,
+        "rolling_vel": avg_roll_vel,
         "yaw": avg_yaw,
         "r": avg_r,
         "worst_roll_pos": worst_roll_pos,
+        "worst_roll_vel": worst_roll_vel,
         "plot_score": avg_plot_score,
+        "per_trajectory": {
+            name: {
+                "rolling_pos": metrics[0],
+                "rolling_vel": metrics[1],
+                "yaw": metrics[2],
+                "r": metrics[3],
+            }
+            for name, metrics in per_traj.items()
+        },
     })
 
     if score < best_score:
         best_score = score
         best_avg_roll_pos = avg_roll_pos
+        best_avg_roll_vel = avg_roll_vel
         best_avg_yaw = avg_yaw
         best_avg_r = avg_r
         best_avg_plot_score = avg_plot_score
@@ -775,6 +968,7 @@ for lam in LAMBDA_CANDIDATES:
 print(
     f"\nBest lambda: {best_lam:.0e} "
     f"(score={best_score:.4f}, rolling pos={best_avg_roll_pos:.4f}, "
+    f"rolling vel={best_avg_roll_vel:.4f}, "
     f"yaw={best_avg_yaw:.4f}, r={best_avg_r:.4f}, "
     f"plot score={best_avg_plot_score:.4f})"
 )
@@ -787,11 +981,13 @@ if finite_sweep_rows:
     lam_values = np.array([row["lambda"] for row in finite_sweep_rows], dtype=float)
     score_values = np.array([row["score"] for row in finite_sweep_rows], dtype=float)
     rolling_values = np.array([row["rolling_pos"] for row in finite_sweep_rows], dtype=float)
+    velocity_values = np.array([row["rolling_vel"] for row in finite_sweep_rows], dtype=float)
     plot_values = np.array([row["plot_score"] for row in finite_sweep_rows], dtype=float)
 
     fig_sweep, ax_sweep = plt.subplots(figsize=(9, 5))
     ax_sweep.plot(lam_values, score_values, marker="o", linewidth=2.0, label="selection score")
     ax_sweep.plot(lam_values, rolling_values, marker="s", linewidth=1.6, label="rolling position RMSE")
+    ax_sweep.plot(lam_values, velocity_values, marker="d", linewidth=1.6, label="rolling velocity RMSE")
     ax_sweep.plot(lam_values, plot_values, marker="^", linewidth=1.6, label="first-rollout plot score")
     ax_sweep.axvline(best_lam, color="black", linestyle="--", linewidth=1.2, label=f"chosen lambda={best_lam:.0e}")
     ax_sweep.set_xscale("symlog", linthresh=1e-3)
@@ -801,6 +997,7 @@ if finite_sweep_rows:
     ax_sweep.grid(True, which="both", alpha=0.3)
     ax_sweep.legend()
     fig_sweep.tight_layout()
+    save_training_figure(fig_sweep, "regularization_sweep")
 
 # ============================================================
 # FINAL MODEL WITH BEST LAMBDA
@@ -845,6 +1042,7 @@ lifted_labels = ['sin_phi','cos_phi','sin_theta','cos_theta','sin_psi','cos_psi'
                  'x^2','y^2','vx^2','vy^2','x*theta','y*phi','vx*theta','vy*phi',
                  'body_vx','body_vy','body_vz','thrust_dir_x','thrust_dir_y','thrust_dir_z',
                  'bias']
+lifted_labels = OBSERVABLE_LABELS[STATE_DIM:]
 for i, lbl in enumerate(lifted_labels):
     print(f"  {lbl:>12s}: {np.linalg.norm(B[STATE_DIM+i,:]):.6f}")
 print("==================================")
@@ -950,8 +1148,8 @@ for test_idx in test_indices:
     y_edmd = x_pred[1, :]
     z_edmd = x_pred[2, :]
 
-    fig = plt.figure(figsize=(7, 5))
-    ax = fig.add_subplot(111, projection="3d")
+    fig_trajectory = plt.figure(figsize=(7, 5))
+    ax = fig_trajectory.add_subplot(111, projection="3d")
     ax.plot(x_sim, y_sim, z_sim, linewidth=2, label="True")
     ax.plot(x_edmd, y_edmd, z_edmd, '--', linewidth=2, label="EDMDc")
     ax.set_xlabel("X [m]")
@@ -960,12 +1158,17 @@ for test_idx in test_indices:
     ax.set_title(f"{name}: short-horizon rollout ({h} steps)")
     ax.legend()
     ax.grid(True)
+    plot_stem = (
+        f"run_{test_idx:03d}_{name.lower().replace(' ', '_')}"
+    ).replace("-", "_")
+    fig_trajectory.tight_layout()
+    save_training_figure(fig_trajectory, f"{plot_stem}_trajectory")
 
     # Per-state time-series plots
     n_states = len(labels)
     n_cols = 4
     n_rows = int(np.ceil(n_states / n_cols))
-    fig, axs = plt.subplots(n_rows, n_cols, figsize=(20, 7))
+    fig_states, axs = plt.subplots(n_rows, n_cols, figsize=(20, 7))
     axs = np.asarray(axs).reshape(n_rows, n_cols)
     for i in range(n_states):
         row, col = divmod(i, n_cols)
@@ -981,8 +1184,11 @@ for test_idx in test_indices:
     for j in range(n_states, n_rows * n_cols):
         row, col = divmod(j, n_cols)
         axs[row, col].axis("off")
-    fig.suptitle(f"{name}: short-horizon state prediction", fontsize=14, y=0.98)
-    fig.tight_layout(rect=[0.0, 0.0, 1.0, 0.94])
+    fig_states.suptitle(
+        f"{name}: short-horizon state prediction", fontsize=14, y=0.98
+    )
+    fig_states.tight_layout(rect=[0.0, 0.0, 1.0, 0.94])
+    save_training_figure(fig_states, f"{plot_stem}_all_states")
 
 print("\n========== SHORT-HORIZON SUMMARY ==========")
 for name, idx, rmse_one, rmse_roll, pos_rmse_roll, vel_rmse_roll, full_rmse_roll, per_state_rmse_roll, rmse_each in summary_rows:
@@ -1011,15 +1217,17 @@ print("\n========== SHORT-HORIZON GATE ==========")
 print(
     "Limits: "
     f"pos<{SHORT_HORIZON_LIMITS['rolling_pos']:.2f}m, "
+    f"velocity<{SHORT_HORIZON_LIMITS['rolling_vel']:.2f}m/s, "
     f"y<{SHORT_HORIZON_LIMITS['y']:.2f}m, "
     f"vy<{SHORT_HORIZON_LIMITS['vy']:.2f}m/s, "
     f"yaw<{SHORT_HORIZON_LIMITS['yaw']:.2f}rad, "
     f"r<{SHORT_HORIZON_LIMITS['r']:.2f}rad/s"
 )
 gate_all_pass = True
-for name, idx, _, _, pos_rmse_roll, _, _, per_state_rmse_roll, _ in summary_rows:
+for name, idx, _, _, pos_rmse_roll, vel_rmse_roll, _, per_state_rmse_roll, _ in summary_rows:
     checks = {
         "rolling_pos": pos_rmse_roll,
+        "rolling_vel": vel_rmse_roll,
         "y": per_state_rmse_roll[1],
         "vy": per_state_rmse_roll[4],
         "yaw": per_state_rmse_roll[8],
@@ -1031,6 +1239,7 @@ for name, idx, _, _, pos_rmse_roll, _, _, per_state_rmse_roll, _ in summary_rows
     print(
         f"{status:>6s}  {name:<18s} "
         f"pos={checks['rolling_pos']:.4f}  "
+        f"vel={checks['rolling_vel']:.4f}  "
         f"y={checks['y']:.4f}  "
         f"vy={checks['vy']:.4f}  "
         f"yaw={checks['yaw']:.4f}  "
@@ -1050,9 +1259,11 @@ model_data = {
     "lambda": best_lam,
     "lambda_selection_score": best_score,
     "lambda_selection_rolling_pos": best_avg_roll_pos,
+    "lambda_selection_rolling_vel": best_avg_roll_vel,
     "lambda_selection_yaw": best_avg_yaw,
     "lambda_selection_r": best_avg_r,
     "lambda_selection_plot_score": best_avg_plot_score,
+    "regularization_sweep": sweep_rows,
     "validation_score_limits": VALIDATION_SCORE_LIMITS,
     "first_rollout_score_weight": FIRST_ROLLOUT_SCORE_WEIGHT,
     "worst_rollout_score_weight": WORST_ROLLOUT_SCORE_WEIGHT,
@@ -1065,8 +1276,11 @@ model_data = {
     "target_indices": target_indices,
     "validation_indices": validation_indices,
     "train_indices": train_indices,
+    "available_train_indices": all_train_indices,
+    "train_fraction": TRAIN_FRACTION,
     "early_transient_seconds": EARLY_TRANSIENT_SECONDS,
     "early_transient_weight": EARLY_TRANSIENT_WEIGHT,
+    "tilt_weighting": tilt_weight_diagnostics,
     "enforce_kinematic_rows": ENFORCE_KINEMATIC_ROWS,
     "state_labels": labels,
     "raw_input_dim": RAW_INPUT_DIM,
@@ -1074,11 +1288,30 @@ model_data = {
     "u_labels": INPUT_LIFT_LABELS,
     "input_lift_type": INPUT_LIFT_TYPE,
     "input_lift_labels": INPUT_LIFT_LABELS,
-    "observable_labels": STATE_LABELS + lifted_labels,
+    "observable_set": OBSERVABLE_SET,
+    "observable_labels": OBSERVABLE_LABELS,
+    "active_observable_indices": OBSERVABLE_INDICES,
     "source_file": DATA_FILE.name,
     "test_indices": test_indices,
-    "u_type": "wrench",
-    "input_type": "applied_wrench",
+    "input_source": INPUT_SOURCE,
+    "data_input_key": DATA_INPUT_KEY,
+    "u_type": MODEL_U_TYPE,
+    "input_type": MODEL_INPUT_TYPE,
+    "downsampling": {
+        "source_dt_seconds": float(sim_dt),
+        "state_method": (
+            f"take every {step}th state" if step > 1 else "native"
+        ),
+        "input_method": "interval_mean" if step > 1 else "native",
+        "input_description": (
+            f"mean input over each {step}-sample transition"
+            if step > 1 else "native aligned input"
+        ),
+        "transition_alignment": (
+            f"(x[{step}k], mean(u[{step}k:{step}(k+1)]), x[{step}(k+1)])"
+            if step > 1 else "(x[k], u[k], x[k+1])"
+        ),
+    },
 }
 
 with open(MODEL_FILE, "wb") as f:
@@ -1086,5 +1319,12 @@ with open(MODEL_FILE, "wb") as f:
 
 print(f"\nSaved model to {MODEL_FILE.name}")
 print(f"A: {A.shape}, B: {B.shape}, n_obs: {n_obs}, lambda: {best_lam:.0e}")
+print(f"Saved open-loop rollout plots to {PLOT_DIR.resolve()}")
 
-plt.show()
+if "agg" in plt.get_backend().lower():
+    # Headless paper runs save the numeric model and console log.  Calling
+    # show() on Agg only emits a warning, which PowerShell can misreport as a
+    # failed training process even though the model was written successfully.
+    plt.close("all")
+else:
+    plt.show()

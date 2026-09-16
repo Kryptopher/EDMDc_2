@@ -1,0 +1,34 @@
+{
+  "experiment": "hover_linear_attitude_guard_validation",
+  "selection_split": "fresh_validation_only",
+  "validation_run_index_start": 760000,
+  "validation_episodes": 20,
+  "speed_scale": 1.75,
+  "selection_reason": "Lowest mean, p90, worst-case, and runs-over-1m error with zero solver failures and zero allocator alterations.",
+  "source_config": "artifacts/acc_balanced_waypoint_v2/simple_baseline_equal_information_tuning/selected_config.json",
+  "single_changed_factor": "attitude_error_max_rad",
+  "selected": {
+    "hover_linear": {
+      "attitude_error_max_rad": null,
+      "attitude_trust_rad": 0.45,
+      "control_horizon_seconds": 0.2,
+      "controller": "hover_linear",
+      "horizon_seconds": 0.5,
+      "q_position_scale": 4.0,
+      "q_velocity_scale": 0.25,
+      "r_scale": 0.01,
+      "terminal_scale": 1.0,
+      "thrust_trust_n": 8.0
+    }
+  },
+  "validation_result": {
+    "episodes": 20,
+    "mean_position_rmse_m": 1.5334784526318908,
+    "median_position_rmse_m": 0.023852078786085452,
+    "p90_position_rmse_m": 9.16957062525746,
+    "worst_position_rmse_m": 10.733434577086054,
+    "runs_over_1m": 3,
+    "failed_solves": 0,
+    "allocator_altered_steps": 0
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "experiment": "augmented_edmdc_candidate19_smooth_validation",
+  "selection_split": "candidate_selected_from_validation_only",
+  "selected": {
+    "edmdc": {
+      "candidate_id": 19,
+      "horizon_seconds": 0.5,
+      "control_horizon_seconds": 0.01,
+      "r_scale": 0.1,
+      "rd_scale": 300.0,
+      "first_move_rd_scale": 30.0,
+      "command_slew_max_raw": null,
+      "thrust_trust_n": 12.0,
+      "attitude_trust_rad": 0.45,
+      "attitude_error_max_rad": null,
+      "q_position_scale": 4.0,
+      "q_velocity_scale": 4.0,
+      "terminal_scale": 2.0
+    }
+  }
+}
