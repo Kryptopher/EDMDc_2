@@ -1,0 +1,49 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the paper below."
+title: "Drone Interception via EDMDc-Based Model Predictive Control (code and frozen results)"
+type: software
+license: MIT
+repository-code: "https://github.com/Kryptopher/EDMDc_2"
+authors:
+  - family-names: Maharjan
+    given-names: Sanjay
+    affiliation: "Department of Mechanical and Industrial Engineering, Louisiana State University"
+  - family-names: Johnson
+    given-names: Darren
+    affiliation: "Department of Mechanical and Industrial Engineering, Louisiana State University"
+  - family-names: Bangal
+    given-names: Animesh
+    affiliation: "Department of Mechanical and Industrial Engineering, Louisiana State University"
+  - family-names: Atteia
+    given-names: Yousuf
+    affiliation: "Department of Mechanical and Industrial Engineering, Louisiana State University"
+  - family-names: Hlayel
+    given-names: Tariq
+    affiliation: "Department of Mechanical and Industrial Engineering, Louisiana State University"
+  - family-names: Stein
+    given-names: Adrian
+    affiliation: "Department of Mechanical and Industrial Engineering, Louisiana State University"
+preferred-citation:
+  type: conference-paper
+  title: "Drone Interception via EDMDc-Based Model Predictive Control"
+  authors:
+    - family-names: Maharjan
+      given-names: Sanjay
+    - family-names: Johnson
+      given-names: Darren
+    - family-names: Bangal
+      given-names: Animesh
+    - family-names: Atteia
+      given-names: Yousuf
+    - family-names: Hlayel
+      given-names: Tariq
+    - family-names: Stein
+      given-names: Adrian
+  collection-title: "American Control Conference"
+  conference:
+    name: "American Control Conference"
+  # Update year, pages and DOI on acceptance.
+  year: 2027
+  # start: <first page>
+  # end: <last page>
+  # doi: <DOI>

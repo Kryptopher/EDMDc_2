@@ -1,0 +1,45 @@
+{
+  "output": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\acc_balanced_high_tilt_v1\\runs_mixed_n360_high_tilt.pkl",
+  "total_runs": 360,
+  "base_runs": 300,
+  "start_index": 300,
+  "count": 60,
+  "validation_indices": [
+    352,
+    353,
+    354,
+    355
+  ],
+  "test_indices": [
+    356,
+    357,
+    358,
+    359
+  ],
+  "profile_config": {
+    "version": "high_tilt_attitude_augmentation_v1",
+    "duration_seconds": 60.0,
+    "amplitude_bands_deg": [
+      7.5,
+      15.0,
+      22.5,
+      30.0
+    ],
+    "frequency_hz": [
+      0.12,
+      0.42
+    ],
+    "yaw_rate_radps": [
+      0.2,
+      0.8
+    ],
+    "position_containment": {
+      "position_gain": 0.08,
+      "velocity_gain": 0.45,
+      "acceleration_limit_mps2": 1.5,
+      "combined_tilt_limit_deg": 32.0
+    }
+  },
+  "base_indices_preserved": true,
+  "alignment": "(x_k, u_k, x_{k+1})"
+}

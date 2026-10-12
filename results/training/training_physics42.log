@@ -1,0 +1,405 @@
+Target families: helix, fig8, lissajous, waypoint, hover_excitation, yaw_prbs
+Validation indices: [38, 58, 128, 154, 209, 352, 353, 354, 355]
+Held-out test indices: [39, 59, 129, 155, 210, 356, 357, 358, 359]
+Loaded file: runs_mixed_n360_high_tilt.pkl
+Training input source: applied_wrench (U)
+Training raw input labels: ['thrust', 'tau_roll', 'tau_pitch', 'tau_yaw']
+Total runs: 360
+Target runs: 360
+Training runs: 342
+Available training runs: 342
+Training fraction: 1.0
+Observable set: physics42 (42 terms)
+t shape: (360, 6000)
+states shape (raw 12): (360, 6000, 12)
+U shape (raw): (360, 6000, 4)
+ref count: 360
+
+Downsampling: sim_dt=0.01, edmd_dt=0.01, step=1
+Downsampled shape: states=(360, 6000, 12), U=(360, 6000, 4)
+
+========== SNAPSHOT DEBUG ==========
+Xc shape: (12, 2051658)
+Xn shape: (12, 2051658)
+U_train shape: (4, 2051658)
+Sample weights shape: (2051658,)
+Early transient weight: 1.0
+Tilt weighting: {'mode': 'none'}
+Number of transitions per run: 5999
+Expected total transitions: 2051658
+====================================
+
+========== INPUT SCALER DEBUG ==========
+Raw input labels: ['thrust', 'tau_roll', 'tau_pitch', 'tau_yaw']
+Lifted input labels: ['thrust', 'tau_roll', 'tau_pitch', 'tau_yaw', 'thrust_x', 'thrust_y', 'thrust_z', 'tau_roll_p', 'tau_pitch_q', 'tau_yaw_r']
+Input lift type: thrust_direction_rate_coupling
+Lifted input shape: (2051658, 10)
+Input scaler mean: [ 3.31555442e+01 -7.84094045e-06  1.22163491e-05  4.19987598e-06
+ -4.45217796e-03  3.81670880e-03  3.27389205e+01 -2.30481921e-05
+ -4.62110668e-05 -1.28585291e-04]
+Input scaler scale: [1.54888072 0.01762353 0.01801116 0.03835476 3.7152229  3.84914564
+ 1.11057881 0.00990965 0.009221   0.01624594]
+Scaled U_train mean (approx): [ 3.95729794e-05  8.65023062e-07 -1.95492240e-06  3.82920010e-06
+  8.77620381e-07  1.49496644e-06 -2.67493698e-06  4.84438231e-07
+ -2.39007977e-07  2.93159438e-06]
+Scaled U_train std  (approx): [1.00006544 1.00007992 1.00008015 0.99999418 1.00007897 1.00007593
+ 1.00005793 1.00008325 1.00008327 0.99994795]
+========================================
+
+========== STATE SCALER DEBUG ==========
+State scaler mean: [ 1.23950591e+00  7.15857693e-02  1.45484416e+00 -1.49025177e-02
+  5.27336047e-03  1.75331021e-02 -5.92506046e-03  5.23746285e-03
+  1.04637531e+00  4.14825156e-04 -4.65124660e-03  2.16245633e-02]
+State scaler scale: [10.67177141  7.53959411  4.56817791  1.48209095  1.45622389  0.6882739
+  0.11166601  0.10630511  5.09594023  0.18853544  0.1803822   0.35212865]
+Scaled Xc mean (approx): [ 3.33256862e-05 -5.40704832e-06  1.46976077e-05  1.65107780e-06
+ -5.22954071e-06  7.98011148e-06 -1.34729655e-05  7.45523102e-06
+ -3.49268953e-05  1.21554475e-06 -1.83839366e-05  7.84391641e-06]
+Scaled Xc std  (approx): [1.00006545 1.00005557 1.00005568 1.00006597 1.00006196 1.00007461
+ 1.00007526 1.00007761 0.99987969 1.0000798  1.00007689 1.00004832]
+Scaled Xn mean (approx): [ 1.93612425e-05  1.58270462e-06  5.30877846e-05 -1.67612318e-06
+  6.03643382e-07  4.24637747e-06 -8.84489971e-06  8.21273781e-06
+  2.74055806e-05  3.66769518e-07 -4.29830104e-06  1.02368684e-05]
+Scaled Xn std  (approx): [1.00008222 1.00008334 1.00007489 1.00008334 1.00008334 1.00008329
+ 1.00008311 1.00008314 1.00007859 1.00008334 1.00008329 1.00008303]
+========================================
+
+Observable dimension: 42
+
+========== LIFTING DEBUG ==========
+Psi shape: (42, 2051658)
+Phi shape: (42, 2051658)
+Omega shape: (52, 2051658)
+Omega singular values (first 10): [12862.68996942  7816.27927401  5458.12523001  5095.82392992
+  3910.65301248  3598.88435663  2577.94831352  2500.21226103
+  2404.80183788  2371.68081939]
+Omega singular values (last 10): [6.20658451e+02 1.16241897e+02 4.48330254e+01 1.14304174e+01
+ 1.09230707e+01 2.03674674e+00 2.02295380e+00 4.46583485e-01
+ 1.36961131e-01 9.41067803e-02]
+Omega condition number: 136681.86205995918
+===================================
+
+============================================================
+REGULARIZATION SWEEP (22 candidates)
+Selecting lambda with rolling 200-step RMSE on validation trajectories
+Sweep rolling-window stride: 100 steps (1.00 s)
+============================================================
+  lam=0e+00  score=0.4111  roll_pos=0.1150  roll_vel=0.2098  yaw=0.0517  r=0.0059  worst_pos=0.4137  worst_vel=0.7773  plot_score=0.0208  helix-validation:pos=0.0193,vel=0.0349,yaw=0.0035,r=0.0005  figure-8-validation:pos=0.0233,vel=0.0406,yaw=0.0073,r=0.0007  lissajous-validation:pos=0.0848,vel=0.1463,yaw=0.0146,r=0.0022  waypoint-validation:pos=0.0607,vel=0.1091,yaw=0.0088,r=0.0013  hover-excitation-validation:pos=0.0228,vel=0.0442,yaw=0.0104,r=0.0026  352:pos=0.0443,vel=0.0791,yaw=0.0160,r=0.0012  353:pos=0.1311,vel=0.2364,yaw=0.0684,r=0.0053  354:pos=0.2349,vel=0.4202,yaw=0.0849,r=0.0072  355:pos=0.4137,vel=0.7773,yaw=0.2511,r=0.0322
+  lam=1e-03  score=0.4912  roll_pos=0.1185  roll_vel=0.2243  yaw=0.1124  r=0.0064  worst_pos=0.4449  worst_vel=0.8981  plot_score=0.0211  helix-validation:pos=0.0195,vel=0.0352,yaw=0.0074,r=0.0004  figure-8-validation:pos=0.0232,vel=0.0405,yaw=0.0153,r=0.0007  lissajous-validation:pos=0.0856,vel=0.1481,yaw=0.0302,r=0.0023  waypoint-validation:pos=0.0609,vel=0.1097,yaw=0.0190,r=0.0014  hover-excitation-validation:pos=0.0226,vel=0.0446,yaw=0.0265,r=0.0019  352:pos=0.0440,vel=0.0790,yaw=0.0187,r=0.0012  353:pos=0.1290,vel=0.2330,yaw=0.1023,r=0.0050  354:pos=0.2368,vel=0.4307,yaw=0.1192,r=0.0074  355:pos=0.4449,vel=0.8981,yaw=0.6735,r=0.0371
+  lam=1e-02  score=0.5635  roll_pos=0.1222  roll_vel=0.2377  yaw=0.1659  r=0.0070  worst_pos=0.4769  worst_vel=1.0018  plot_score=0.0214  helix-validation:pos=0.0195,vel=0.0351,yaw=0.0108,r=0.0004  figure-8-validation:pos=0.0231,vel=0.0402,yaw=0.0221,r=0.0008  lissajous-validation:pos=0.0863,vel=0.1500,yaw=0.0441,r=0.0024  waypoint-validation:pos=0.0608,vel=0.1096,yaw=0.0287,r=0.0014  hover-excitation-validation:pos=0.0231,vel=0.0466,yaw=0.0438,r=0.0020  352:pos=0.0440,vel=0.0791,yaw=0.0252,r=0.0013  353:pos=0.1268,vel=0.2303,yaw=0.1306,r=0.0053  354:pos=0.2398,vel=0.4461,yaw=0.1581,r=0.0081  355:pos=0.4769,vel=1.0018,yaw=1.0302,r=0.0417
+  lam=5e-02  score=0.5768  roll_pos=0.1227  roll_vel=0.2394  yaw=0.1769  r=0.0071  worst_pos=0.4862  worst_vel=1.0264  plot_score=0.0207  helix-validation:pos=0.0195,vel=0.0349,yaw=0.0114,r=0.0004  figure-8-validation:pos=0.0227,vel=0.0395,yaw=0.0235,r=0.0008  lissajous-validation:pos=0.0870,vel=0.1515,yaw=0.0467,r=0.0024  waypoint-validation:pos=0.0599,vel=0.1079,yaw=0.0305,r=0.0014  hover-excitation-validation:pos=0.0230,vel=0.0467,yaw=0.0478,r=0.0020  352:pos=0.0433,vel=0.0775,yaw=0.0262,r=0.0013  353:pos=0.1241,vel=0.2246,yaw=0.1356,r=0.0054  354:pos=0.2389,vel=0.4453,yaw=0.1656,r=0.0082  355:pos=0.4862,vel=1.0264,yaw=1.1051,r=0.0421
+  lam=1e-01  score=0.5785  roll_pos=0.1226  roll_vel=0.2392  yaw=0.1789  r=0.0071  worst_pos=0.4893  worst_vel=1.0336  plot_score=0.0201  helix-validation:pos=0.0194,vel=0.0348,yaw=0.0115,r=0.0004  figure-8-validation:pos=0.0225,vel=0.0390,yaw=0.0237,r=0.0008  lissajous-validation:pos=0.0875,vel=0.1526,yaw=0.0470,r=0.0024  waypoint-validation:pos=0.0592,vel=0.1065,yaw=0.0308,r=0.0014  hover-excitation-validation:pos=0.0231,vel=0.0469,yaw=0.0486,r=0.0020  352:pos=0.0428,vel=0.0762,yaw=0.0260,r=0.0012  353:pos=0.1220,vel=0.2204,yaw=0.1361,r=0.0054  354:pos=0.2378,vel=0.4425,yaw=0.1669,r=0.0082  355:pos=0.4893,vel=1.0336,yaw=1.1196,r=0.0422
+  lam=2e-01  score=0.5791  roll_pos=0.1224  roll_vel=0.2388  yaw=0.1802  r=0.0071  worst_pos=0.4920  worst_vel=1.0397  plot_score=0.0195  helix-validation:pos=0.0194,vel=0.0347,yaw=0.0116,r=0.0004  figure-8-validation:pos=0.0222,vel=0.0385,yaw=0.0238,r=0.0008  lissajous-validation:pos=0.0881,vel=0.1539,yaw=0.0471,r=0.0024  waypoint-validation:pos=0.0584,vel=0.1049,yaw=0.0310,r=0.0014  hover-excitation-validation:pos=0.0234,vel=0.0474,yaw=0.0492,r=0.0020  352:pos=0.0422,vel=0.0748,yaw=0.0258,r=0.0012  353:pos=0.1198,vel=0.2160,yaw=0.1360,r=0.0054  354:pos=0.2365,vel=0.4395,yaw=0.1677,r=0.0082  355:pos=0.4920,vel=1.0397,yaw=1.1292,r=0.0423
+  lam=3e-01  score=0.5793  roll_pos=0.1223  roll_vel=0.2386  yaw=0.1806  r=0.0071  worst_pos=0.4933  worst_vel=1.0424  plot_score=0.0192  helix-validation:pos=0.0194,vel=0.0346,yaw=0.0116,r=0.0004  figure-8-validation:pos=0.0220,vel=0.0382,yaw=0.0238,r=0.0008  lissajous-validation:pos=0.0884,vel=0.1546,yaw=0.0472,r=0.0024  waypoint-validation:pos=0.0579,vel=0.1041,yaw=0.0312,r=0.0014  hover-excitation-validation:pos=0.0236,vel=0.0478,yaw=0.0495,r=0.0020  352:pos=0.0418,vel=0.0741,yaw=0.0257,r=0.0012  353:pos=0.1186,vel=0.2139,yaw=0.1358,r=0.0053  354:pos=0.2359,vel=0.4379,yaw=0.1680,r=0.0082  355:pos=0.4933,vel=1.0424,yaw=1.1329,r=0.0423
+  lam=5e-01  score=0.5792  roll_pos=0.1222  roll_vel=0.2383  yaw=0.1810  r=0.0071  worst_pos=0.4946  worst_vel=1.0449  plot_score=0.0188  helix-validation:pos=0.0194,vel=0.0345,yaw=0.0116,r=0.0004  figure-8-validation:pos=0.0219,vel=0.0378,yaw=0.0238,r=0.0008  lissajous-validation:pos=0.0887,vel=0.1552,yaw=0.0472,r=0.0024  waypoint-validation:pos=0.0574,vel=0.1030,yaw=0.0313,r=0.0014  hover-excitation-validation:pos=0.0238,vel=0.0481,yaw=0.0497,r=0.0020  352:pos=0.0415,vel=0.0734,yaw=0.0256,r=0.0012  353:pos=0.1173,vel=0.2120,yaw=0.1356,r=0.0053  354:pos=0.2352,vel=0.4363,yaw=0.1682,r=0.0082  355:pos=0.4946,vel=1.0449,yaw=1.1357,r=0.0423
+  lam=8e-01  score=0.5789  roll_pos=0.1221  roll_vel=0.2381  yaw=0.1810  r=0.0071  worst_pos=0.4954  worst_vel=1.0459  plot_score=0.0186  helix-validation:pos=0.0193,vel=0.0344,yaw=0.0115,r=0.0004  figure-8-validation:pos=0.0217,vel=0.0375,yaw=0.0238,r=0.0007  lissajous-validation:pos=0.0889,vel=0.1555,yaw=0.0472,r=0.0024  waypoint-validation:pos=0.0569,vel=0.1022,yaw=0.0315,r=0.0013  hover-excitation-validation:pos=0.0240,vel=0.0482,yaw=0.0499,r=0.0020  352:pos=0.0413,vel=0.0730,yaw=0.0255,r=0.0011  353:pos=0.1166,vel=0.2109,yaw=0.1353,r=0.0053  354:pos=0.2348,vel=0.4353,yaw=0.1682,r=0.0082  355:pos=0.4954,vel=1.0459,yaw=1.1365,r=0.0423
+  lam=1e+00  score=0.5786  roll_pos=0.1221  roll_vel=0.2379  yaw=0.1810  r=0.0071  worst_pos=0.4959  worst_vel=1.0463  plot_score=0.0184  helix-validation:pos=0.0193,vel=0.0343,yaw=0.0114,r=0.0004  figure-8-validation:pos=0.0217,vel=0.0373,yaw=0.0238,r=0.0007  lissajous-validation:pos=0.0890,vel=0.1556,yaw=0.0471,r=0.0023  waypoint-validation:pos=0.0566,vel=0.1015,yaw=0.0316,r=0.0013  hover-excitation-validation:pos=0.0240,vel=0.0482,yaw=0.0499,r=0.0020  352:pos=0.0413,vel=0.0728,yaw=0.0254,r=0.0011  353:pos=0.1163,vel=0.2105,yaw=0.1352,r=0.0053  354:pos=0.2346,vel=0.4347,yaw=0.1680,r=0.0082  355:pos=0.4959,vel=1.0463,yaw=1.1364,r=0.0423
+  lam=2e+00  score=0.5779  roll_pos=0.1221  roll_vel=0.2376  yaw=0.1807  r=0.0071  worst_pos=0.4968  worst_vel=1.0460  plot_score=0.0181  helix-validation:pos=0.0193,vel=0.0342,yaw=0.0113,r=0.0004  figure-8-validation:pos=0.0216,vel=0.0370,yaw=0.0237,r=0.0007  lissajous-validation:pos=0.0890,vel=0.1556,yaw=0.0471,r=0.0023  waypoint-validation:pos=0.0561,vel=0.1005,yaw=0.0319,r=0.0013  hover-excitation-validation:pos=0.0240,vel=0.0481,yaw=0.0499,r=0.0020  352:pos=0.0412,vel=0.0726,yaw=0.0253,r=0.0011  353:pos=0.1160,vel=0.2101,yaw=0.1349,r=0.0053  354:pos=0.2345,vel=0.4341,yaw=0.1676,r=0.0082  355:pos=0.4968,vel=1.0460,yaw=1.1349,r=0.0423
+  lam=2e+00  score=0.5774  roll_pos=0.1221  roll_vel=0.2373  yaw=0.1804  r=0.0070  worst_pos=0.4976  worst_vel=1.0453  plot_score=0.0180  helix-validation:pos=0.0193,vel=0.0342,yaw=0.0112,r=0.0004  figure-8-validation:pos=0.0216,vel=0.0368,yaw=0.0236,r=0.0007  lissajous-validation:pos=0.0891,vel=0.1555,yaw=0.0470,r=0.0023  waypoint-validation:pos=0.0557,vel=0.0998,yaw=0.0322,r=0.0012  hover-excitation-validation:pos=0.0240,vel=0.0480,yaw=0.0499,r=0.0020  352:pos=0.0412,vel=0.0724,yaw=0.0252,r=0.0010  353:pos=0.1159,vel=0.2101,yaw=0.1345,r=0.0053  354:pos=0.2346,vel=0.4338,yaw=0.1670,r=0.0082  355:pos=0.4976,vel=1.0453,yaw=1.1328,r=0.0422
+  lam=2e+00  score=0.5769  roll_pos=0.1222  roll_vel=0.2371  yaw=0.1800  r=0.0070  worst_pos=0.4985  worst_vel=1.0444  plot_score=0.0178  helix-validation:pos=0.0193,vel=0.0341,yaw=0.0110,r=0.0004  figure-8-validation:pos=0.0217,vel=0.0367,yaw=0.0235,r=0.0007  lissajous-validation:pos=0.0891,vel=0.1554,yaw=0.0469,r=0.0023  waypoint-validation:pos=0.0555,vel=0.0992,yaw=0.0324,r=0.0012  hover-excitation-validation:pos=0.0239,vel=0.0479,yaw=0.0498,r=0.0020  352:pos=0.0412,vel=0.0724,yaw=0.0252,r=0.0010  353:pos=0.1160,vel=0.2103,yaw=0.1342,r=0.0052  354:pos=0.2346,vel=0.4337,yaw=0.1665,r=0.0082  355:pos=0.4985,vel=1.0444,yaw=1.1304,r=0.0422
+  lam=3e+00  score=0.5765  roll_pos=0.1223  roll_vel=0.2369  yaw=0.1796  r=0.0070  worst_pos=0.4996  worst_vel=1.0435  plot_score=0.0177  helix-validation:pos=0.0193,vel=0.0341,yaw=0.0109,r=0.0004  figure-8-validation:pos=0.0218,vel=0.0366,yaw=0.0234,r=0.0007  lissajous-validation:pos=0.0892,vel=0.1554,yaw=0.0468,r=0.0023  waypoint-validation:pos=0.0553,vel=0.0987,yaw=0.0327,r=0.0012  hover-excitation-validation:pos=0.0239,vel=0.0477,yaw=0.0497,r=0.0020  352:pos=0.0412,vel=0.0723,yaw=0.0251,r=0.0010  353:pos=0.1161,vel=0.2105,yaw=0.1339,r=0.0052  354:pos=0.2348,vel=0.4337,yaw=0.1660,r=0.0081  355:pos=0.4996,vel=1.0435,yaw=1.1278,r=0.0422
+  lam=4e+00  score=0.5758  roll_pos=0.1227  roll_vel=0.2367  yaw=0.1788  r=0.0070  worst_pos=0.5021  worst_vel=1.0415  plot_score=0.0175  helix-validation:pos=0.0193,vel=0.0341,yaw=0.0107,r=0.0004  figure-8-validation:pos=0.0220,vel=0.0365,yaw=0.0232,r=0.0007  lissajous-validation:pos=0.0893,vel=0.1553,yaw=0.0467,r=0.0023  waypoint-validation:pos=0.0550,vel=0.0980,yaw=0.0333,r=0.0011  hover-excitation-validation:pos=0.0239,vel=0.0475,yaw=0.0496,r=0.0020  352:pos=0.0413,vel=0.0722,yaw=0.0249,r=0.0010  353:pos=0.1164,vel=0.2110,yaw=0.1332,r=0.0052  354:pos=0.2350,vel=0.4337,yaw=0.1649,r=0.0081  355:pos=0.5021,vel=1.0415,yaw=1.1223,r=0.0422
+  lam=5e+00  score=0.5753  roll_pos=0.1232  roll_vel=0.2364  yaw=0.1779  r=0.0070  worst_pos=0.5052  worst_vel=1.0395  plot_score=0.0174  helix-validation:pos=0.0194,vel=0.0341,yaw=0.0105,r=0.0004  figure-8-validation:pos=0.0224,vel=0.0365,yaw=0.0230,r=0.0007  lissajous-validation:pos=0.0894,vel=0.1553,yaw=0.0466,r=0.0023  waypoint-validation:pos=0.0548,vel=0.0976,yaw=0.0339,r=0.0011  hover-excitation-validation:pos=0.0240,vel=0.0474,yaw=0.0493,r=0.0020  352:pos=0.0414,vel=0.0721,yaw=0.0247,r=0.0010  353:pos=0.1167,vel=0.2115,yaw=0.1325,r=0.0052  354:pos=0.2353,vel=0.4338,yaw=0.1639,r=0.0081  355:pos=0.5052,vel=1.0395,yaw=1.1166,r=0.0422
+  lam=8e+00  score=0.5746  roll_pos=0.1247  roll_vel=0.2360  yaw=0.1758  r=0.0070  worst_pos=0.5153  worst_vel=1.0350  plot_score=0.0172  helix-validation:pos=0.0195,vel=0.0342,yaw=0.0102,r=0.0005  figure-8-validation:pos=0.0236,vel=0.0366,yaw=0.0224,r=0.0007  lissajous-validation:pos=0.0899,vel=0.1555,yaw=0.0464,r=0.0023  waypoint-validation:pos=0.0547,vel=0.0969,yaw=0.0355,r=0.0011  hover-excitation-validation:pos=0.0242,vel=0.0472,yaw=0.0488,r=0.0020  352:pos=0.0417,vel=0.0720,yaw=0.0244,r=0.0010  353:pos=0.1176,vel=0.2125,yaw=0.1308,r=0.0052  354:pos=0.2359,vel=0.4339,yaw=0.1616,r=0.0080  355:pos=0.5153,vel=1.0350,yaw=1.1020,r=0.0422
+  lam=1e+01  score=0.5746  roll_pos=0.1266  roll_vel=0.2356  yaw=0.1737  r=0.0070  worst_pos=0.5282  worst_vel=1.0312  plot_score=0.0170  helix-validation:pos=0.0197,vel=0.0343,yaw=0.0100,r=0.0005  figure-8-validation:pos=0.0252,vel=0.0368,yaw=0.0219,r=0.0007  lissajous-validation:pos=0.0904,vel=0.1558,yaw=0.0464,r=0.0023  waypoint-validation:pos=0.0548,vel=0.0965,yaw=0.0374,r=0.0011  hover-excitation-validation:pos=0.0246,vel=0.0471,yaw=0.0481,r=0.0020  352:pos=0.0421,vel=0.0720,yaw=0.0240,r=0.0010  353:pos=0.1184,vel=0.2133,yaw=0.1291,r=0.0052  354:pos=0.2365,vel=0.4337,yaw=0.1594,r=0.0080  355:pos=0.5282,vel=1.0312,yaw=1.0873,r=0.0422
+  lam=2e+01  score=0.5793  roll_pos=0.1370  roll_vel=0.2348  yaw=0.1662  r=0.0070  worst_pos=0.5996  worst_vel=1.0217  plot_score=0.0169  helix-validation:pos=0.0205,vel=0.0348,yaw=0.0108,r=0.0006  figure-8-validation:pos=0.0327,vel=0.0377,yaw=0.0201,r=0.0007  lissajous-validation:pos=0.0931,vel=0.1573,yaw=0.0468,r=0.0024  waypoint-validation:pos=0.0559,vel=0.0956,yaw=0.0465,r=0.0011  hover-excitation-validation:pos=0.0270,vel=0.0470,yaw=0.0455,r=0.0020  352:pos=0.0440,vel=0.0720,yaw=0.0226,r=0.0010  353:pos=0.1219,vel=0.2150,yaw=0.1223,r=0.0052  354:pos=0.2385,vel=0.4319,yaw=0.1514,r=0.0079  355:pos=0.5996,vel=1.0217,yaw=1.0297,r=0.0423
+  lam=3e+01  score=0.5890  roll_pos=0.1501  roll_vel=0.2346  yaw=0.1597  r=0.0071  worst_pos=0.6903  worst_vel=1.0181  plot_score=0.0172  helix-validation:pos=0.0216,vel=0.0353,yaw=0.0141,r=0.0006  figure-8-validation:pos=0.0410,vel=0.0386,yaw=0.0193,r=0.0007  lissajous-validation:pos=0.0963,vel=0.1591,yaw=0.0479,r=0.0025  waypoint-validation:pos=0.0579,vel=0.0949,yaw=0.0578,r=0.0011  hover-excitation-validation:pos=0.0303,vel=0.0472,yaw=0.0429,r=0.0020  352:pos=0.0461,vel=0.0720,yaw=0.0214,r=0.0010  353:pos=0.1262,vel=0.2164,yaw=0.1158,r=0.0052  354:pos=0.2413,vel=0.4299,yaw=0.1439,r=0.0079  355:pos=0.6903,vel=1.0181,yaw=0.9742,r=0.0424
+  lam=5e+01  score=0.6169  roll_pos=0.1803  roll_vel=0.2357  yaw=0.1487  r=0.0072  worst_pos=0.8980  worst_vel=1.0208  plot_score=0.0181  helix-validation:pos=0.0240,vel=0.0363,yaw=0.0233,r=0.0008  figure-8-validation:pos=0.0586,vel=0.0405,yaw=0.0192,r=0.0008  lissajous-validation:pos=0.1035,vel=0.1628,yaw=0.0511,r=0.0028  waypoint-validation:pos=0.0637,vel=0.0939,yaw=0.0833,r=0.0012  hover-excitation-validation:pos=0.0380,vel=0.0482,yaw=0.0380,r=0.0021  352:pos=0.0508,vel=0.0722,yaw=0.0194,r=0.0011  353:pos=0.1366,vel=0.2196,yaw=0.1036,r=0.0053  354:pos=0.2492,vel=0.4267,yaw=0.1305,r=0.0079  355:pos=0.8980,vel=1.0208,yaw=0.8696,r=0.0427
+  lam=1e+02  score=0.7058  roll_pos=0.2632  roll_vel=0.2410  yaw=0.1282  r=0.0076  worst_pos=1.4595  worst_vel=1.0408  plot_score=0.0218  helix-validation:pos=0.0307,vel=0.0390,yaw=0.0500,r=0.0013  figure-8-validation:pos=0.1045,vel=0.0454,yaw=0.0249,r=0.0009  lissajous-validation:pos=0.1239,vel=0.1726,yaw=0.0619,r=0.0036  waypoint-validation:pos=0.0842,vel=0.0932,yaw=0.1510,r=0.0016  hover-excitation-validation:pos=0.0592,vel=0.0522,yaw=0.0279,r=0.0021  352:pos=0.0634,vel=0.0731,yaw=0.0172,r=0.0016  353:pos=0.1666,vel=0.2287,yaw=0.0769,r=0.0057  354:pos=0.2771,vel=0.4237,yaw=0.1034,r=0.0081  355:pos=1.4595,vel=1.0408,yaw=0.6404,r=0.0436
+
+Best lambda: 0e+00 (score=0.4111, rolling pos=0.1150, rolling vel=0.2098, yaw=0.0517, r=0.0059, plot score=0.0208)
+
+========== FINAL MODEL (lambda=0e+00) ==========
+A shape: (42, 42)
+B shape: (42, 10)
+Max abs eigenvalue of A: 1.0059434507235414
+Top 10 abs eigenvalues: [1.00035425 1.00035425 1.00036201 1.00042853 1.00042853 1.00074382
+ 1.00100283 1.00100283 1.00309325 1.00594345]
+Any NaN in A? False
+Any Inf in A? False
+Any NaN in B? False
+Any Inf in B? False
+=================================
+
+========== B ROW NORMS ==========
+       x: 0.000005
+       y: 0.000008
+       z: 0.000004
+      vx: 0.007517
+      vy: 0.007918
+      vz: 0.004832
+     phi: 0.002914
+   theta: 0.001431
+     psi: 0.000102
+       p: 0.022449
+       q: 0.025196
+       r: 0.022892
+  --- lifted rows ---
+       sin_phi: 0.000413
+       cos_phi: 0.000082
+     sin_theta: 0.000236
+     cos_theta: 0.000069
+       sin_psi: 0.002075
+       cos_psi: 0.001276
+         phi*p: 0.033939
+       theta*q: 0.024652
+         psi*r: 0.005618
+        vx*phi: 0.010457
+      vy*theta: 0.013517
+        vx*psi: 0.007210
+        vy*psi: 0.007196
+      vz*theta: 0.062235
+          v_sq: 0.004843
+      omega_sq: 0.203055
+          vz^2: 0.013723
+         phi^2: 0.013278
+       theta^2: 0.013218
+         psi^2: 0.000070
+           p*q: 0.109698
+           q*r: 0.014974
+           p*r: 0.032627
+       body_vx: 0.004449
+       body_vy: 0.006358
+       body_vz: 0.007743
+  thrust_dir_x: 0.003815
+  thrust_dir_y: 0.003581
+  thrust_dir_z: 0.000014
+          bias: 0.000000
+==================================
+
+========== SHORT-HORIZON EVALUATION ==========
+Evaluation horizon: 200 steps (2.00 s)
+Rolling-window stride: 10 steps (0.10 s)
+==============================================
+
+--- helix (idx=39) ---
+One-step total RMSE:              0.0000
+Single 200-step rollout RMSE:       0.0148
+Rolling 200-step position RMSE:     0.0158
+Rolling 200-step velocity RMSE:     0.0289
+Rolling 200-step full-state RMSE:   0.0167
+Rolling weak states: y=0.0168m  vy=0.0310m/s  yaw=0.0027rad  r=0.0006rad/s
+Per-state short-horizon RMSE (single rollout from initial state):
+  x: 0.0171
+  y: 0.0192
+  z: 0.0003
+  vx: 0.0328
+  vy: 0.0282
+  vz: 0.0006
+  phi: 0.0050
+  theta: 0.0043
+  psi: 0.0060
+  p: 0.0037
+  q: 0.0020
+  r: 0.0014
+
+--- figure-8 (idx=59) ---
+One-step total RMSE:              0.0000
+Single 200-step rollout RMSE:       0.0099
+Rolling 200-step position RMSE:     0.0165
+Rolling 200-step velocity RMSE:     0.0297
+Rolling 200-step full-state RMSE:   0.0173
+Rolling weak states: y=0.0144m  vy=0.0276m/s  yaw=0.0050rad  r=0.0004rad/s
+Per-state short-horizon RMSE (single rollout from initial state):
+  x: 0.0138
+  y: 0.0088
+  z: 0.0001
+  vx: 0.0217
+  vy: 0.0200
+  vz: 0.0004
+  phi: 0.0039
+  theta: 0.0023
+  psi: 0.0025
+  p: 0.0004
+  q: 0.0004
+  r: 0.0007
+
+--- lissajous (idx=129) ---
+One-step total RMSE:              0.0000
+Single 200-step rollout RMSE:       0.0096
+Rolling 200-step position RMSE:     0.0990
+Rolling 200-step velocity RMSE:     0.1749
+Rolling 200-step full-state RMSE:   0.1018
+Rolling weak states: y=0.1537m  vy=0.2675m/s  yaw=0.0127rad  r=0.0017rad/s
+Per-state short-horizon RMSE (single rollout from initial state):
+  x: 0.0165
+  y: 0.0030
+  z: 0.0008
+  vx: 0.0278
+  vy: 0.0045
+  vz: 0.0018
+  phi: 0.0004
+  theta: 0.0034
+  psi: 0.0035
+  p: 0.0019
+  q: 0.0013
+  r: 0.0011
+
+--- waypoint (idx=155) ---
+One-step total RMSE:              0.0000
+Single 200-step rollout RMSE:       0.0139
+Rolling 200-step position RMSE:     0.0318
+Rolling 200-step velocity RMSE:     0.0561
+Rolling 200-step full-state RMSE:   0.0327
+Rolling weak states: y=0.0407m  vy=0.0698m/s  yaw=0.0059rad  r=0.0010rad/s
+Per-state short-horizon RMSE (single rollout from initial state):
+  x: 0.0187
+  y: 0.0121
+  z: 0.0014
+  vx: 0.0327
+  vy: 0.0252
+  vz: 0.0035
+  phi: 0.0020
+  theta: 0.0040
+  psi: 0.0088
+  p: 0.0024
+  q: 0.0012
+  r: 0.0014
+
+--- hover-excitation (idx=210) ---
+One-step total RMSE:              0.0000
+Single 200-step rollout RMSE:       0.0142
+Rolling 200-step position RMSE:     0.0226
+Rolling 200-step velocity RMSE:     0.0439
+Rolling 200-step full-state RMSE:   0.0255
+Rolling weak states: y=0.0222m  vy=0.0444m/s  yaw=0.0098rad  r=0.0014rad/s
+Per-state short-horizon RMSE (single rollout from initial state):
+  x: 0.0134
+  y: 0.0146
+  z: 0.0012
+  vx: 0.0225
+  vy: 0.0375
+  vz: 0.0036
+  phi: 0.0084
+  theta: 0.0032
+  psi: 0.0028
+  p: 0.0015
+  q: 0.0015
+  r: 0.0002
+
+--- idx 356 (idx=356) ---
+One-step total RMSE:              0.0000
+Single 200-step rollout RMSE:       0.0138
+Rolling 200-step position RMSE:     0.1119
+Rolling 200-step velocity RMSE:     0.2017
+Rolling 200-step full-state RMSE:   0.1166
+Rolling weak states: y=0.1167m  vy=0.2076m/s  yaw=0.0080rad  r=0.0013rad/s
+Per-state short-horizon RMSE (single rollout from initial state):
+  x: 0.0098
+  y: 0.0152
+  z: 0.0007
+  vx: 0.0126
+  vy: 0.0410
+  vz: 0.0019
+  phi: 0.0087
+  theta: 0.0046
+  psi: 0.0029
+  p: 0.0025
+  q: 0.0033
+  r: 0.0005
+
+--- idx 357 (idx=357) ---
+One-step total RMSE:              0.0000
+Single 200-step rollout RMSE:       0.0128
+Rolling 200-step position RMSE:     0.1506
+Rolling 200-step velocity RMSE:     0.2559
+Rolling 200-step full-state RMSE:   0.1514
+Rolling weak states: y=0.1743m  vy=0.3005m/s  yaw=0.0562rad  r=0.0073rad/s
+Per-state short-horizon RMSE (single rollout from initial state):
+  x: 0.0109
+  y: 0.0164
+  z: 0.0007
+  vx: 0.0134
+  vy: 0.0363
+  vz: 0.0010
+  phi: 0.0054
+  theta: 0.0017
+  psi: 0.0050
+  p: 0.0033
+  q: 0.0018
+  r: 0.0003
+
+--- idx 358 (idx=358) ---
+One-step total RMSE:              0.0000
+Single 200-step rollout RMSE:       0.0118
+Rolling 200-step position RMSE:     0.3092
+Rolling 200-step velocity RMSE:     0.5555
+Rolling 200-step full-state RMSE:   0.3237
+Rolling weak states: y=0.3605m  vy=0.6468m/s  yaw=0.0666rad  r=0.0102rad/s
+Per-state short-horizon RMSE (single rollout from initial state):
+  x: 0.0154
+  y: 0.0149
+  z: 0.0010
+  vx: 0.0211
+  vy: 0.0271
+  vz: 0.0020
+  phi: 0.0040
+  theta: 0.0026
+  psi: 0.0037
+  p: 0.0003
+  q: 0.0018
+  r: 0.0008
+
+--- idx 359 (idx=359) ---
+One-step total RMSE:              0.0002
+Single 200-step rollout RMSE:       0.0174
+Rolling 200-step position RMSE:     0.3392
+Rolling 200-step velocity RMSE:     0.6119
+Rolling 200-step full-state RMSE:   0.3551
+Rolling weak states: y=0.3847m  vy=0.6764m/s  yaw=0.0899rad  r=0.0096rad/s
+Per-state short-horizon RMSE (single rollout from initial state):
+  x: 0.0086
+  y: 0.0246
+  z: 0.0035
+  vx: 0.0191
+  vy: 0.0473
+  vz: 0.0097
+  phi: 0.0106
+  theta: 0.0067
+  psi: 0.0073
+  p: 0.0064
+  q: 0.0028
+  r: 0.0007
+
+========== SHORT-HORIZON SUMMARY ==========
+helix              idx=39   one-step=0.0000  single-rollout=0.0148  rolling-pos=0.0158  rolling-vel=0.0289  rolling-full=0.0167
+figure-8           idx=59   one-step=0.0000  single-rollout=0.0099  rolling-pos=0.0165  rolling-vel=0.0297  rolling-full=0.0173
+lissajous          idx=129  one-step=0.0000  single-rollout=0.0096  rolling-pos=0.0990  rolling-vel=0.1749  rolling-full=0.1018
+waypoint           idx=155  one-step=0.0000  single-rollout=0.0139  rolling-pos=0.0318  rolling-vel=0.0561  rolling-full=0.0327
+hover-excitation   idx=210  one-step=0.0000  single-rollout=0.0142  rolling-pos=0.0226  rolling-vel=0.0439  rolling-full=0.0255
+idx 356            idx=356  one-step=0.0000  single-rollout=0.0138  rolling-pos=0.1119  rolling-vel=0.2017  rolling-full=0.1166
+idx 357            idx=357  one-step=0.0000  single-rollout=0.0128  rolling-pos=0.1506  rolling-vel=0.2559  rolling-full=0.1514
+idx 358            idx=358  one-step=0.0000  single-rollout=0.0118  rolling-pos=0.3092  rolling-vel=0.5555  rolling-full=0.3237
+idx 359            idx=359  one-step=0.0002  single-rollout=0.0174  rolling-pos=0.3392  rolling-vel=0.6119  rolling-full=0.3551
+===========================================
+
+========== SINGLE-ROLLOUT PLOT CHECK ==========
+These are the subplot RMSE values from the first 2-second free rollout.
+helix              x=0.0171  y=0.0192  vx=0.0328  vy=0.0282  psi=0.0060  r=0.0014
+figure-8           x=0.0138  y=0.0088  vx=0.0217  vy=0.0200  psi=0.0025  r=0.0007
+lissajous          x=0.0165  y=0.0030  vx=0.0278  vy=0.0045  psi=0.0035  r=0.0011
+waypoint           x=0.0187  y=0.0121  vx=0.0327  vy=0.0252  psi=0.0088  r=0.0014
+hover-excitation   x=0.0134  y=0.0146  vx=0.0225  vy=0.0375  psi=0.0028  r=0.0002
+idx 356            x=0.0098  y=0.0152  vx=0.0126  vy=0.0410  psi=0.0029  r=0.0005
+idx 357            x=0.0109  y=0.0164  vx=0.0134  vy=0.0363  psi=0.0050  r=0.0003
+idx 358            x=0.0154  y=0.0149  vx=0.0211  vy=0.0271  psi=0.0037  r=0.0008
+idx 359            x=0.0086  y=0.0246  vx=0.0191  vy=0.0473  psi=0.0073  r=0.0007
+==============================================
+
+========== SHORT-HORIZON GATE ==========
+Limits: pos<0.20m, velocity<0.25m/s, y<0.20m, vy<0.20m/s, yaw<0.25rad, r<0.25rad/s
+  PASS  helix              pos=0.0158  vel=0.0289  y=0.0168  vy=0.0310  yaw=0.0027  r=0.0006
+  PASS  figure-8           pos=0.0165  vel=0.0297  y=0.0144  vy=0.0276  yaw=0.0050  r=0.0004
+REVIEW  lissajous          pos=0.0990  vel=0.1749  y=0.1537  vy=0.2675  yaw=0.0127  r=0.0017
+  PASS  waypoint           pos=0.0318  vel=0.0561  y=0.0407  vy=0.0698  yaw=0.0059  r=0.0010
+  PASS  hover-excitation   pos=0.0226  vel=0.0439  y=0.0222  vy=0.0444  yaw=0.0098  r=0.0014
+REVIEW  idx 356            pos=0.1119  vel=0.2017  y=0.1167  vy=0.2076  yaw=0.0080  r=0.0013
+REVIEW  idx 357            pos=0.1506  vel=0.2559  y=0.1743  vy=0.3005  yaw=0.0562  r=0.0073
+REVIEW  idx 358            pos=0.3092  vel=0.5555  y=0.3605  vy=0.6468  yaw=0.0666  r=0.0102
+REVIEW  idx 359            pos=0.3392  vel=0.6119  y=0.3847  vy=0.6764  yaw=0.0899  r=0.0096
+Decision: DO NOT TUNE YET
+========================================
+
+Saved model to wrench_physics42_dt001.pkl
+A: (42, 42), B: (42, 10), n_obs: 42, lambda: 0e+00
+Saved open-loop rollout plots to <research repository>\artifacts\wrench_revisit_2026-09-21\training_v2\training_plots\physics42

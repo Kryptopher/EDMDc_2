@@ -1,0 +1,1903 @@
+{
+  "created_utc": "2026-10-02T05:22:20.043557+00:00",
+  "classification": "Post-hoc frozen target-information ablation on previously opened crossed-study scenarios; descriptive evidence, not a fresh confirmatory scenario set.",
+  "NO_RETUNING": true,
+  "ORACLE_RESULTS_REUSED": true,
+  "oracle_reproduction_only": 2,
+  "configurations": {
+    "W1": {
+      "dt": 0.01,
+      "horizon_steps": 50,
+      "block_steps": 10,
+      "q": [
+        0.5384988183729873,
+        0.5384988183729873,
+        0.5384988183729873,
+        0.1572338121828079,
+        0.1572338121828079,
+        0.1572338121828079,
+        0.5837548570017026,
+        0.5837548570017026,
+        0.5837548570017026,
+        0.07104363518292121,
+        0.07104363518292121,
+        0.07104363518292121
+      ],
+      "r": [
+        0.0023595366429165245,
+        0.09438146571666099,
+        0.09438146571666099,
+        0.047190732858330496
+      ],
+      "rd": [
+        0.06306533319097538,
+        2.522613327639015,
+        2.522613327639015,
+        1.2613066638195074
+      ],
+      "terminal_scale": 3.6655558943474302,
+      "trust": [
+        13.395700685423366,
+        1.0406461883364884,
+        1.0406461883364884,
+        0.23807460338075892
+      ],
+      "max_iterations": 4000,
+      "eps_abs": 1e-06,
+      "eps_rel": 1e-06
+    },
+    "W2a": {
+      "dt": 0.01,
+      "horizon_steps": 100,
+      "block_steps": 5,
+      "q": [
+        0.5038325127223001,
+        0.5038325127223001,
+        0.5038325127223001,
+        0.041096384448054246,
+        0.041096384448054246,
+        0.041096384448054246,
+        0.8389653770521994,
+        0.8389653770521994,
+        0.8389653770521994,
+        0.004460241876262501,
+        0.004460241876262501,
+        0.004460241876262501
+      ],
+      "r": [
+        0.004520001340481839,
+        0.18080005361927354,
+        0.18080005361927354,
+        0.09040002680963677
+      ],
+      "rd": [
+        0.005599312399951494,
+        0.22397249599805977,
+        0.22397249599805977,
+        0.11198624799902988
+      ],
+      "terminal_scale": 13.507594007018826,
+      "trust": [
+        19.66586194048803,
+        0.22552799252908406,
+        0.22552799252908406,
+        0.07929650855922216
+      ],
+      "max_iterations": 4000,
+      "eps_abs": 1e-06,
+      "eps_rel": 1e-06
+    }
+  },
+  "configuration_sha256": {
+    "W1": "496fd985615c350ecafad4aa9b45399b1e55a7bb149cd4f8810eaa6faab2c5e2",
+    "W2a": "9d910fac515b6c2b5c21d0a8ffdaff6341e3a5db6f7db964b45708f7ac37685b"
+  },
+  "controller_identities": {
+    "Linear-A": [
+      "yaw_linear",
+      "W1"
+    ],
+    "EDMDc-B": [
+      "edmdc",
+      "W2a"
+    ],
+    "EDMDc-A": [
+      "edmdc",
+      "W1"
+    ],
+    "Linear-B": [
+      "yaw_linear",
+      "W2a"
+    ]
+  },
+  "selection_path": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\overnight_campaign_20260929\\continuation_20260930\\interception\\selection.json",
+  "selection_sha256": "2a922609747f9e38d83280c6ca4b611f4a5d1f32898de52b8ac6bf8ca41de8f9",
+  "edmdc_model": {
+    "path": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\wrench_revisit_2026-09-21\\training_v2\\models\\wrench_physics42_dt001.pkl",
+    "sha256": "090b8dd3106dcf3646dcf991fe23c030d3fe27435443a5f8fae19c1c377b2db4",
+    "state_observables": 42,
+    "state_dependent_input_features": 10,
+    "physical_inputs": 4,
+    "recursion": "initial lift then latent propagation; unchanged"
+  },
+  "scenarios": [
+    {
+      "case_id": "straight_3103000000_known_future",
+      "family": "straight",
+      "seed": 3103000000,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.398663271233857,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "4d7045cfd6b5dcbb3ee740d03dfceb43f07c57c11560e757866ca8bdd883b069",
+      "target_posvel_20s_sha256": "1e75eb427f0746032db7c7e406dc9d23cb9089b3ce0d0507e12bee8643492ae8",
+      "measurement_history_sha256": "60c1d61bed05a5b8f95b8e1e7c095b988fa298b768e94af19a7bae3fa27a4515",
+      "target_generator_parameters_simulator_only": {
+        "p0": [
+          13.965225550600726,
+          5.457242781701904,
+          7.296150016785589
+        ],
+        "velocity_vector": [
+          -0.5566909507105348,
+          0.5113070878388715,
+          0.010551709804700118
+        ]
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W2a_nominal_straight_3103000000_known_future",
+        "C_W2a_bundle_W1_nominal_straight_3103000000_known_future",
+        "C_W1_bundle_W1_nominal_straight_3103000000_known_future",
+        "C_W2a_bundle_W2a_nominal_straight_3103000000_known_future"
+      ]
+    },
+    {
+      "case_id": "straight_3103000001_known_future",
+      "family": "straight",
+      "seed": 3103000001,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -2.567111597202264,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "1c9c935aaa5741f16151719f6eb5199101a6db4240ed9eb254c0612a215feb4a",
+      "target_posvel_20s_sha256": "e92662317b0aec122d6c265c4194affcd68ea02f3fa27295627f11f0a931ddde",
+      "measurement_history_sha256": "ec802859092f95424d1ce39f5c2b64faea3e2af374c60d8297816230bceb8e1d",
+      "target_generator_parameters_simulator_only": {
+        "p0": [
+          12.0313357209888,
+          -1.4824338999955629,
+          6.828418242419566
+        ],
+        "velocity_vector": [
+          -0.8078326568382512,
+          -0.5229172374205607,
+          0.0975843634024533
+        ]
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W2a_nominal_straight_3103000001_known_future",
+        "C_W1_bundle_W1_nominal_straight_3103000001_known_future",
+        "C_W2a_bundle_W1_nominal_straight_3103000001_known_future",
+        "C_W2a_bundle_W2a_nominal_straight_3103000001_known_future"
+      ]
+    },
+    {
+      "case_id": "straight_3103000002_known_future",
+      "family": "straight",
+      "seed": 3103000002,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.641715019183315,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "7ec116cdf2c51beafdf257c4c8d5950bb2a71f65da9126655b50e09b65301b36",
+      "target_posvel_20s_sha256": "2dfd8813e3b4bb863d787e8bc29e0f70301a3d70d01471aadca2b6a8bb9ed71a",
+      "measurement_history_sha256": "65b514c9156ba1f623cb5ac03e3718e7294c2edca0461b943fa283d7aeccab4c",
+      "target_generator_parameters_simulator_only": {
+        "p0": [
+          10.622904130701974,
+          4.308799887132571,
+          4.882936934437916
+        ],
+        "velocity_vector": [
+          -0.7094655085532371,
+          0.38747005777041177,
+          0.16228026259222886
+        ]
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W1_nominal_straight_3103000002_known_future",
+        "C_W1_bundle_W2a_nominal_straight_3103000002_known_future",
+        "C_W2a_bundle_W1_nominal_straight_3103000002_known_future",
+        "C_W2a_bundle_W2a_nominal_straight_3103000002_known_future"
+      ]
+    },
+    {
+      "case_id": "straight_3103000003_known_future",
+      "family": "straight",
+      "seed": 3103000003,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.935707547743987,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "5e2e17d1d0d0c6a868d3c3de196ac715455c5325fd3a3e1152082c5a4cb12f98",
+      "target_posvel_20s_sha256": "06beb178d55a747609f1db208b83f75d2c6ac068a11d7e320ce92b43b8f24d85",
+      "measurement_history_sha256": "090dcbfea8948160dd8230fcae197f14312cd8f90c4d045eb4678d3fcf3cff80",
+      "target_generator_parameters_simulator_only": {
+        "p0": [
+          10.331389017890313,
+          4.838115497007099,
+          4.36742498041723
+        ],
+        "velocity_vector": [
+          -1.0444622446355973,
+          0.21813004613221398,
+          0.12881248453319713
+        ]
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W2a_nominal_straight_3103000003_known_future",
+        "C_W1_bundle_W1_nominal_straight_3103000003_known_future",
+        "C_W2a_bundle_W1_nominal_straight_3103000003_known_future",
+        "C_W2a_bundle_W2a_nominal_straight_3103000003_known_future"
+      ]
+    },
+    {
+      "case_id": "straight_3103000004_known_future",
+      "family": "straight",
+      "seed": 3103000004,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.8752473513355956,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "88fd824004314d976984e356985f05c2bb0f878676bb2966957b189fd7e3cd32",
+      "target_posvel_20s_sha256": "7a8b21c649daf2266cdc73b3e5ce5cdf25212a7143cc8a4b9b6620c3eb4e85fe",
+      "measurement_history_sha256": "54031abb3f56c616712d5f5f9c72d61bb02e61b95d7e13ae6d0bc32a2483e266",
+      "target_generator_parameters_simulator_only": {
+        "p0": [
+          9.194409466529272,
+          0.5092096766952796,
+          5.830702759298912
+        ],
+        "velocity_vector": [
+          -0.9296102199652394,
+          0.25362319934238076,
+          -0.057468378752406346
+        ]
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W2a_nominal_straight_3103000004_known_future",
+        "C_W1_bundle_W1_nominal_straight_3103000004_known_future",
+        "C_W2a_bundle_W1_nominal_straight_3103000004_known_future",
+        "C_W2a_bundle_W2a_nominal_straight_3103000004_known_future"
+      ]
+    },
+    {
+      "case_id": "straight_3103000005_known_future",
+      "family": "straight",
+      "seed": 3103000005,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.8749306368759204,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "5c34d94c1c8d82efebfed3a4f4f73caf43e98c24eb84f67afd925c1882736ddc",
+      "target_posvel_20s_sha256": "b1f2a983cd9270ca0614c875a0eb44e63534de81830a6b91afbf31300c82dc55",
+      "measurement_history_sha256": "2e3c229f0663ed798f9a9cd16d91d9c1a9adfa096895ab150eb8fef78457b076",
+      "target_generator_parameters_simulator_only": {
+        "p0": [
+          13.399665644595391,
+          3.8049011014791922,
+          6.491022146756553
+        ],
+        "velocity_vector": [
+          -1.1101046594708222,
+          0.3032448287513225,
+          0.05706089820107593
+        ]
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W1_nominal_straight_3103000005_known_future",
+        "C_W1_bundle_W2a_nominal_straight_3103000005_known_future",
+        "C_W2a_bundle_W1_nominal_straight_3103000005_known_future",
+        "C_W2a_bundle_W2a_nominal_straight_3103000005_known_future"
+      ]
+    },
+    {
+      "case_id": "straight_3103000006_known_future",
+      "family": "straight",
+      "seed": 3103000006,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        3.120400192653433,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "61edf006b54d6117c4b8ee7096005e862f7971655bacc37331ea3f623b53589a",
+      "target_posvel_20s_sha256": "501cb523b417343a797366c8b37fac3c8e0e3cdd64889bd54fb00261676603ba",
+      "measurement_history_sha256": "94fd929cbfdf6ec86d752f28c30d5771840d222c3e098e03b3c868fc00eb47bc",
+      "target_generator_parameters_simulator_only": {
+        "p0": [
+          10.917026663481845,
+          5.397708372449721,
+          4.362984261809759
+        ],
+        "velocity_vector": [
+          -0.9474249471755876,
+          0.020081272576229714,
+          0.15460790666220228
+        ]
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W1_nominal_straight_3103000006_known_future",
+        "C_W1_bundle_W2a_nominal_straight_3103000006_known_future",
+        "C_W2a_bundle_W1_nominal_straight_3103000006_known_future",
+        "C_W2a_bundle_W2a_nominal_straight_3103000006_known_future"
+      ]
+    },
+    {
+      "case_id": "straight_3103000007_known_future",
+      "family": "straight",
+      "seed": 3103000007,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -2.6130056425394943,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "d81a5b47bdf664da1774746c50ea5527ae3866bb25fe32325d98c7e229e8a64e",
+      "target_posvel_20s_sha256": "c8cf89906cc788e0e78d8d392b1d8a37e6efe2388e674f9318218788e78f9041",
+      "measurement_history_sha256": "b3a7b175c43677d43ca1c0b5b94b81082db2a06ccb2a81b87c204f30a29d80f5",
+      "target_generator_parameters_simulator_only": {
+        "p0": [
+          12.52469370609871,
+          -3.8709042340231434,
+          4.426411110732496
+        ],
+        "velocity_vector": [
+          -0.9418034648377391,
+          -0.5500325447064107,
+          -0.040900309871649686
+        ]
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W1_nominal_straight_3103000007_known_future",
+        "C_W1_bundle_W2a_nominal_straight_3103000007_known_future",
+        "C_W2a_bundle_W1_nominal_straight_3103000007_known_future",
+        "C_W2a_bundle_W2a_nominal_straight_3103000007_known_future"
+      ]
+    },
+    {
+      "case_id": "straight_3103000008_known_future",
+      "family": "straight",
+      "seed": 3103000008,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.184342917741919,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "ed0577c6c2730aeb3fcd52a1228f4aa463bf22bd6c91042d3f03d624852ae6a1",
+      "target_posvel_20s_sha256": "ce6c2f23be076c3707e1d3fdd0c87c088ea570502491bf64bf64fe4952aeefb1",
+      "measurement_history_sha256": "a0e881d102380ec4166d598307a1ecc29948ab62abbd2da5672b21eafbb9ea83",
+      "target_generator_parameters_simulator_only": {
+        "p0": [
+          10.893360000582305,
+          -4.08069556902227,
+          5.492337437990212
+        ],
+        "velocity_vector": [
+          -0.5145063152424543,
+          0.7306137961179002,
+          0.026985351241441607
+        ]
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W1_nominal_straight_3103000008_known_future",
+        "C_W1_bundle_W2a_nominal_straight_3103000008_known_future",
+        "C_W2a_bundle_W1_nominal_straight_3103000008_known_future",
+        "C_W2a_bundle_W2a_nominal_straight_3103000008_known_future"
+      ]
+    },
+    {
+      "case_id": "straight_3103000009_known_future",
+      "family": "straight",
+      "seed": 3103000009,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.6345376487972048,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "6d75f79b37ad16b8808134645669c9a9fc099d4b1b13245d324b90bd17f92396",
+      "target_posvel_20s_sha256": "659521aee04ac927715fd4534f9917ce2470dd6252e789ab75b94d996d49368e",
+      "measurement_history_sha256": "54b4c1105636304ef6fe1048a78538120db0570f92c1c76e470c0973c95762b5",
+      "target_generator_parameters_simulator_only": {
+        "p0": [
+          11.354045125892444,
+          4.46093588007623,
+          7.137278396455491
+        ],
+        "velocity_vector": [
+          -1.174935873569954,
+          0.6526752699024763,
+          0.16420723447750732
+        ]
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W1_nominal_straight_3103000009_known_future",
+        "C_W1_bundle_W2a_nominal_straight_3103000009_known_future",
+        "C_W2a_bundle_W1_nominal_straight_3103000009_known_future",
+        "C_W2a_bundle_W2a_nominal_straight_3103000009_known_future"
+      ]
+    },
+    {
+      "case_id": "accelerating_3103001000_known_future",
+      "family": "accelerating",
+      "seed": 3103001000,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -2.9071790267282926,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "0db5804eb0c2834ff3c1ac0faa6e909cce4da30534301725f4a59faf72f3101c",
+      "target_posvel_20s_sha256": "f76a82f338fcdf20e06d5766d933a202ac3a212365c0a5ae8f953472c081c217",
+      "measurement_history_sha256": "3b17a3ad3d507750983cc24c12f1f097a933ffc244bb88de20d17f71e61ffd38",
+      "target_generator_parameters_simulator_only": {
+        "p0": [
+          12.75328124803809,
+          -3.983855333940853,
+          4.857608552777087
+        ],
+        "v0": [
+          -0.9045540708144145,
+          -0.21601095343659146,
+          0.0
+        ],
+        "acceleration_vector": [
+          0.007819454534895104,
+          0.0650348568872372,
+          -0.022129562190606508
+        ]
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W2a_nominal_accelerating_3103001000_known_future",
+        "C_W1_bundle_W1_nominal_accelerating_3103001000_known_future",
+        "C_W2a_bundle_W1_nominal_accelerating_3103001000_known_future",
+        "C_W2a_bundle_W2a_nominal_accelerating_3103001000_known_future"
+      ]
+    },
+    {
+      "case_id": "accelerating_3103001001_known_future",
+      "family": "accelerating",
+      "seed": 3103001001,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -2.7583447191824493,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "dd8a09c7f4e6685eaedc8caa9c91eb055cba8dae93d3d37f23954c194f05cad7",
+      "target_posvel_20s_sha256": "19211e0d664419cc0b4eb93cc89c96b8382464d57d5e67d6b8f441a77f356f32",
+      "measurement_history_sha256": "5c6e7e0893199ee2e5d5dddec3c29031e0ebdde685ff148991a64067a1eb9998",
+      "target_generator_parameters_simulator_only": {
+        "p0": [
+          11.982622859814793,
+          -1.857294258366144,
+          6.038770041830051
+        ],
+        "v0": [
+          -0.6947173033972218,
+          -0.28009869684155975,
+          0.0
+        ],
+        "acceleration_vector": [
+          -0.0010438360044063288,
+          0.019035460453018183,
+          0.029458222388591998
+        ]
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W1_nominal_accelerating_3103001001_known_future",
+        "C_W1_bundle_W2a_nominal_accelerating_3103001001_known_future",
+        "C_W2a_bundle_W1_nominal_accelerating_3103001001_known_future",
+        "C_W2a_bundle_W2a_nominal_accelerating_3103001001_known_future"
+      ]
+    },
+    {
+      "case_id": "accelerating_3103001002_known_future",
+      "family": "accelerating",
+      "seed": 3103001002,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.9987617450880317,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "399a2c28fa0c9df4da248516c8b6b13151861de9c5912d11720507391098f55b",
+      "target_posvel_20s_sha256": "61dee4db774a1129bd6b90446fd0c279e9ab7e62de052a630d956bf6e6be7ccd",
+      "measurement_history_sha256": "414530b9452545cf33494e9bafed5ab45cd9e4ebb640b882364ddf99a1e219a0",
+      "target_generator_parameters_simulator_only": {
+        "p0": [
+          10.532470688014591,
+          -0.35096549042628666,
+          6.404261185661346
+        ],
+        "v0": [
+          -0.5957618999047682,
+          0.08567662750264587,
+          0.0
+        ],
+        "acceleration_vector": [
+          -0.0689120905825602,
+          0.001728318673897139,
+          -0.022515632793207004
+        ]
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W2a_nominal_accelerating_3103001002_known_future",
+        "C_W1_bundle_W1_nominal_accelerating_3103001002_known_future",
+        "C_W2a_bundle_W1_nominal_accelerating_3103001002_known_future",
+        "C_W2a_bundle_W2a_nominal_accelerating_3103001002_known_future"
+      ]
+    },
+    {
+      "case_id": "accelerating_3103001003_known_future",
+      "family": "accelerating",
+      "seed": 3103001003,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -3.1080593571809896,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "10810ad98065f23394278d67518d0ad11ec03ff9457906c69e286db920bffd98",
+      "target_posvel_20s_sha256": "c236319f6b9cf3f70f3f97001821d344a6931e61c108e5c6a4eeaa7789765172",
+      "measurement_history_sha256": "937366df3c884700257a1d5f08da88eb80cf17bd55c780fd8f4de69912cff634",
+      "target_generator_parameters_simulator_only": {
+        "p0": [
+          9.25014478769609,
+          1.313282606874881,
+          6.299068122839939
+        ],
+        "v0": [
+          -0.953825638167624,
+          -0.03199691206305477,
+          0.0
+        ],
+        "acceleration_vector": [
+          0.00537296475843925,
+          0.11573674689654129,
+          -0.014282627676894127
+        ]
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W1_nominal_accelerating_3103001003_known_future",
+        "C_W1_bundle_W2a_nominal_accelerating_3103001003_known_future",
+        "C_W2a_bundle_W1_nominal_accelerating_3103001003_known_future",
+        "C_W2a_bundle_W2a_nominal_accelerating_3103001003_known_future"
+      ]
+    },
+    {
+      "case_id": "accelerating_3103001004_known_future",
+      "family": "accelerating",
+      "seed": 3103001004,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        3.052861112971222,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "2abc374ca263b720db3dc0b063ecbba6c5b35f56c205a603cde9442aabdb3746",
+      "target_posvel_20s_sha256": "58e15ff7317472ea919a07f840d047e61f95074e265befc87f5a1dd9e0f6b3f2",
+      "measurement_history_sha256": "50a4b60984a0f22738606b187156052ad8f48217467b39946926dbb5f84b505e",
+      "target_generator_parameters_simulator_only": {
+        "p0": [
+          12.13259643214952,
+          -3.293997150623156,
+          4.392208112890124
+        ],
+        "v0": [
+          -0.7635068688201296,
+          0.06792550001883291,
+          0.0
+        ],
+        "acceleration_vector": [
+          0.017684001086415185,
+          0.09253311214886059,
+          -0.029255382736740762
+        ]
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W1_nominal_accelerating_3103001004_known_future",
+        "C_W1_bundle_W2a_nominal_accelerating_3103001004_known_future",
+        "C_W2a_bundle_W1_nominal_accelerating_3103001004_known_future",
+        "C_W2a_bundle_W2a_nominal_accelerating_3103001004_known_future"
+      ]
+    },
+    {
+      "case_id": "accelerating_3103001005_known_future",
+      "family": "accelerating",
+      "seed": 3103001005,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.6084447699992466,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "7aec9484e469e55709cc6438e4c21306f17d14bc10347815dffe2d6d66ed514e",
+      "target_posvel_20s_sha256": "0d396581cfff08283c262dc5055186b5f24da0bf5d49ac61f9ab31a9bac06926",
+      "measurement_history_sha256": "62dea3ed3ccdf618452f5e4f47083098c102d54cdefcf89cd3dd51fe905144c1",
+      "target_generator_parameters_simulator_only": {
+        "p0": [
+          12.617839318848134,
+          -2.7307690191662246,
+          6.4101706789566215
+        ],
+        "v0": [
+          -0.5314260627042358,
+          0.31362289150139144,
+          0.0
+        ],
+        "acceleration_vector": [
+          -0.024774886740685093,
+          -0.0137929754713845,
+          0.0011680381579260955
+        ]
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W1_nominal_accelerating_3103001005_known_future",
+        "C_W1_bundle_W2a_nominal_accelerating_3103001005_known_future",
+        "C_W2a_bundle_W1_nominal_accelerating_3103001005_known_future",
+        "C_W2a_bundle_W2a_nominal_accelerating_3103001005_known_future"
+      ]
+    },
+    {
+      "case_id": "accelerating_3103001006_known_future",
+      "family": "accelerating",
+      "seed": 3103001006,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        3.1215085095663606,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "576925887c0f5b99f5cd1376baf1c97c52d042804e268d8a6698a9b8de48c8f8",
+      "target_posvel_20s_sha256": "4530a8993f784db5593faf1adf62f60ad9c4d762fda69f38f0fb027435a72c21",
+      "measurement_history_sha256": "c500b5625f4fedf5e9e8e85f34887eeb1c3f53d2e6453e10eb8dde92708816cc",
+      "target_generator_parameters_simulator_only": {
+        "p0": [
+          10.35333746280444,
+          -0.8191673135990873,
+          5.738295832499888
+        ],
+        "v0": [
+          -0.909812936838045,
+          0.018275271373297985,
+          0.0
+        ],
+        "acceleration_vector": [
+          -0.061927070195023484,
+          -0.10853192459201064,
+          0.018332102075487265
+        ]
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W1_nominal_accelerating_3103001006_known_future",
+        "C_W1_bundle_W2a_nominal_accelerating_3103001006_known_future",
+        "C_W2a_bundle_W1_nominal_accelerating_3103001006_known_future",
+        "C_W2a_bundle_W2a_nominal_accelerating_3103001006_known_future"
+      ]
+    },
+    {
+      "case_id": "accelerating_3103001007_known_future",
+      "family": "accelerating",
+      "seed": 3103001007,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        3.0580710762287686,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "0547fb253d54dd340726ae20b15073058f01fcfd36bcdaebcc05bf3ee30c60f0",
+      "target_posvel_20s_sha256": "66b67e39bf264d6799ffc27bd2347510d3671e12114183a2ef655bd39f8539b6",
+      "measurement_history_sha256": "bf53ae5d472bccbf57b45319297fc890212eac3a2a8ec6004aefb68b865ba53e",
+      "target_generator_parameters_simulator_only": {
+        "p0": [
+          9.614107789880489,
+          2.915150217836789,
+          4.408779845129376
+        ],
+        "v0": [
+          -0.9273323121250122,
+          0.07763285994960845,
+          0.0
+        ],
+        "acceleration_vector": [
+          0.02092978204402242,
+          0.004193268949005166,
+          0.0014906929446321104
+        ]
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W1_nominal_accelerating_3103001007_known_future",
+        "C_W1_bundle_W2a_nominal_accelerating_3103001007_known_future",
+        "C_W2a_bundle_W1_nominal_accelerating_3103001007_known_future",
+        "C_W2a_bundle_W2a_nominal_accelerating_3103001007_known_future"
+      ]
+    },
+    {
+      "case_id": "accelerating_3103001008_known_future",
+      "family": "accelerating",
+      "seed": 3103001008,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        3.0165080558615758,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "22ca32045b0d0c74ddebdb1a9b39c07ef2fbfffe091dd141ebb75c8c3b5606fd",
+      "target_posvel_20s_sha256": "5ea99b6f64e4be26ec723e2dfbf6f8d41ede983ab9021326eeec8f0af2df7e39",
+      "measurement_history_sha256": "93634f98c5e764ad1cf52075f13c346bb3eff69e551071f854fa62603dde74d9",
+      "target_generator_parameters_simulator_only": {
+        "p0": [
+          12.984466508591579,
+          -1.7563641612782197,
+          5.482894461995642
+        ],
+        "v0": [
+          -0.7091414883861873,
+          0.08916821020378285,
+          0.0
+        ],
+        "acceleration_vector": [
+          0.029492799083802965,
+          0.08257983915701836,
+          -0.0018590114362361798
+        ]
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W2a_nominal_accelerating_3103001008_known_future",
+        "C_W1_bundle_W1_nominal_accelerating_3103001008_known_future",
+        "C_W2a_bundle_W1_nominal_accelerating_3103001008_known_future",
+        "C_W2a_bundle_W2a_nominal_accelerating_3103001008_known_future"
+      ]
+    },
+    {
+      "case_id": "accelerating_3103001009_known_future",
+      "family": "accelerating",
+      "seed": 3103001009,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.698064527060607,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "7dc7e77511cfe15fdf00e870ca1b06d8c12fa8c2620f036d3a1ce124150bc1cc",
+      "target_posvel_20s_sha256": "a30d810a338650d7781b9932aae1c8919c6504d540f8935b89f4de1b57304e64",
+      "measurement_history_sha256": "57729faa768c2392d0fde24bbf6cb47e66ea17f84915688af74fd0935aeced61",
+      "target_generator_parameters_simulator_only": {
+        "p0": [
+          12.98044654464105,
+          -2.65663684021279,
+          5.996481012871403
+        ],
+        "v0": [
+          -0.6647075377773852,
+          0.3158010864881319,
+          0.0
+        ],
+        "acceleration_vector": [
+          -0.0698014881095228,
+          0.055441974492002444,
+          0.021989723841589086
+        ]
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W1_nominal_accelerating_3103001009_known_future",
+        "C_W1_bundle_W2a_nominal_accelerating_3103001009_known_future",
+        "C_W2a_bundle_W1_nominal_accelerating_3103001009_known_future",
+        "C_W2a_bundle_W2a_nominal_accelerating_3103001009_known_future"
+      ]
+    },
+    {
+      "case_id": "helix_3103002000_known_future",
+      "family": "helix",
+      "seed": 3103002000,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.5328639110781072,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "f1d6d94d9f1bd51448e1f4184d55139008b949f613ee821f86c16e9682417722",
+      "target_posvel_20s_sha256": "fa3c4db7d0d546c68b9a1f2972629512ecdddd1a4916b0bc206c75152f8951aa",
+      "measurement_history_sha256": "f2c8d0b46a106c36f7a37280236e79aa5eef6b7a4bdffb731bea6221a24a5385",
+      "target_generator_parameters_simulator_only": {
+        "center": [
+          7.819845111662312,
+          0.9327915475297104
+        ],
+        "radius": 3.5926067404228545,
+        "z0": 5.509826562077482,
+        "climb_rate": 0.042617096128793094,
+        "omega": 0.6519846734791852,
+        "phase": -1.0379324157167895
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W2a_nominal_helix_3103002000_known_future",
+        "C_W1_bundle_W1_nominal_helix_3103002000_known_future",
+        "C_W2a_bundle_W1_nominal_helix_3103002000_known_future",
+        "C_W2a_bundle_W2a_nominal_helix_3103002000_known_future"
+      ]
+    },
+    {
+      "case_id": "helix_3103002001_known_future",
+      "family": "helix",
+      "seed": 3103002001,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.1468669277962371,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "87832ea5f9968c10e5f8006ada14283636f6371ddc912ff200497ffda4efaad5",
+      "target_posvel_20s_sha256": "d2487e9c73d64327d268b75f4e6127a44b66d0ac49b3d9d3b64ffcf429ad6358",
+      "measurement_history_sha256": "6dafd55113e230bc3b249578cf4931b873c046dc1add294a9479c1bea2ec3641",
+      "target_generator_parameters_simulator_only": {
+        "center": [
+          6.566958903333129,
+          -1.0702178135188722
+        ],
+        "radius": 4.764997828861244,
+        "z0": 4.9695942011408665,
+        "climb_rate": -0.0020052705588955236,
+        "omega": 0.5116906623910056,
+        "phase": -0.42392939899865967
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W2a_nominal_helix_3103002001_known_future",
+        "C_W1_bundle_W1_nominal_helix_3103002001_known_future",
+        "C_W2a_bundle_W1_nominal_helix_3103002001_known_future",
+        "C_W2a_bundle_W2a_nominal_helix_3103002001_known_future"
+      ]
+    },
+    {
+      "case_id": "helix_3103002002_known_future",
+      "family": "helix",
+      "seed": 3103002002,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.9117024124284412,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "ea62254f590299d866c0354a0eea50a557065f6bf9df685233dba1115433fa6d",
+      "target_posvel_20s_sha256": "6e0655a81c0392b17d2881776bd5c20adecaa60023eae2027792f4028e9415fd",
+      "measurement_history_sha256": "180365d0c3d0fbce7302de6cdad98e1c9d15c1ea2d72e22f9b49b13dbf2701d2",
+      "target_generator_parameters_simulator_only": {
+        "center": [
+          8.201075673130434,
+          0.4244266963496939
+        ],
+        "radius": 3.784421592019045,
+        "z0": 5.688154529347783,
+        "climb_rate": 0.02889359219514441,
+        "omega": 0.5021888154428038,
+        "phase": 0.34090608563354463
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W2a_nominal_helix_3103002002_known_future",
+        "C_W1_bundle_W1_nominal_helix_3103002002_known_future",
+        "C_W2a_bundle_W1_nominal_helix_3103002002_known_future",
+        "C_W2a_bundle_W2a_nominal_helix_3103002002_known_future"
+      ]
+    },
+    {
+      "case_id": "helix_3103002003_known_future",
+      "family": "helix",
+      "seed": 3103002003,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -2.205261781840312,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "04c8f97b2deb9e74be7b7876e6e4d69e484ceac63bc36f0d0d04f09938e29a4d",
+      "target_posvel_20s_sha256": "4598204404ba845dd9ba403eae24ceb24ea9f7f218a1088d524239bb10e03b05",
+      "measurement_history_sha256": "d4ece28998a949abb439248bf64b3a656aa3246e400a46b71d355a78b9309984",
+      "target_generator_parameters_simulator_only": {
+        "center": [
+          8.941770539412662,
+          -0.5227161862018835
+        ],
+        "radius": 4.219851239827838,
+        "z0": 4.862443811352459,
+        "climb_rate": 0.10104305073278187,
+        "omega": 0.6262788205847226,
+        "phase": 2.507127198544378
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W1_nominal_helix_3103002003_known_future",
+        "C_W2a_bundle_W1_nominal_helix_3103002003_known_future",
+        "C_W1_bundle_W2a_nominal_helix_3103002003_known_future",
+        "C_W2a_bundle_W2a_nominal_helix_3103002003_known_future"
+      ]
+    },
+    {
+      "case_id": "helix_3103002004_known_future",
+      "family": "helix",
+      "seed": 3103002004,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -2.1404541867716205,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "8d4d08438e4a2a8cea926f2b1b2c9101494f74e62c17b3fe392e0c20c7aedd7b",
+      "target_posvel_20s_sha256": "5c4a5f76e70e18d3613771508ad598acb1cb45e68e51640f412f8d6a334293fc",
+      "measurement_history_sha256": "02d9d6c61cdcae67a0162cc50eef03c4b42b85cc39cbcf9ef827ff2ed615edc0",
+      "target_generator_parameters_simulator_only": {
+        "center": [
+          8.595311777494931,
+          0.2443990016660793
+        ],
+        "radius": 4.800087701096992,
+        "z0": 3.56828221691656,
+        "climb_rate": 0.033583889582124826,
+        "omega": 0.5174977950772319,
+        "phase": 2.571934793613069
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W1_nominal_helix_3103002004_known_future",
+        "C_W2a_bundle_W1_nominal_helix_3103002004_known_future",
+        "C_W1_bundle_W2a_nominal_helix_3103002004_known_future",
+        "C_W2a_bundle_W2a_nominal_helix_3103002004_known_future"
+      ]
+    },
+    {
+      "case_id": "helix_3103002005_known_future",
+      "family": "helix",
+      "seed": 3103002005,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -3.0374498263580945,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "5dd37e741e383ea0b80c72216711f8e25e523e7c5927f92292c379ab66545b60",
+      "target_posvel_20s_sha256": "644b6c379cbf1114eb0ba3bed1b823331d1c42eb4b7dece68321d76bea3cd355",
+      "measurement_history_sha256": "8c0ecf97ae81b34a74e57e13bd6bdb687c1ec10818aa90d957cb2dc6c145bd97",
+      "target_generator_parameters_simulator_only": {
+        "center": [
+          8.75439233246986,
+          0.338873384136392
+        ],
+        "radius": 5.397741738752073,
+        "z0": 4.00354952096448,
+        "climb_rate": -0.026331166460438395,
+        "omega": 0.34431160915447806,
+        "phase": 1.6749391540265952
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W1_nominal_helix_3103002005_known_future",
+        "C_W1_bundle_W2a_nominal_helix_3103002005_known_future",
+        "C_W2a_bundle_W1_nominal_helix_3103002005_known_future",
+        "C_W2a_bundle_W2a_nominal_helix_3103002005_known_future"
+      ]
+    },
+    {
+      "case_id": "helix_3103002006_known_future",
+      "family": "helix",
+      "seed": 3103002006,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.288880425700575,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "c39de37f7dc52958cc010314ee2d13b36572791b533704374458243ddcede1b9",
+      "target_posvel_20s_sha256": "f0ee5666e245fea1f9f24405d353929f0315962d37877aad1e8f730d5086e904",
+      "measurement_history_sha256": "fb09e462ee59ec69e3fae0ec851e10cd8c724f557fd3d96b8cb9dd70295c5bd9",
+      "target_generator_parameters_simulator_only": {
+        "center": [
+          8.720858971138478,
+          -0.17502569783686894
+        ],
+        "radius": 4.049072420325766,
+        "z0": 5.243789534745067,
+        "climb_rate": -0.029715508743943946,
+        "omega": 0.386367648973498,
+        "phase": -0.2819159010943215
+      },
+      "oracle_task_ids": [
+        "C_W2a_bundle_W1_nominal_helix_3103002006_known_future",
+        "C_W1_bundle_W2a_nominal_helix_3103002006_known_future",
+        "C_W1_bundle_W1_nominal_helix_3103002006_known_future",
+        "C_W2a_bundle_W2a_nominal_helix_3103002006_known_future"
+      ]
+    },
+    {
+      "case_id": "helix_3103002007_known_future",
+      "family": "helix",
+      "seed": 3103002007,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.3099966819105329,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "79d3436ef82c730cb0ab0eb3107a17561092921b9de8e6877d6e9162b9a23481",
+      "target_posvel_20s_sha256": "8e4c765c80aba8f6893b84a4695a753efde34d528fa8c0e00dcadb554a9a0665",
+      "measurement_history_sha256": "dc21e02c8c0c4691c686c90e9028c81154eac787b514d34833f66aaccc31b4b2",
+      "target_generator_parameters_simulator_only": {
+        "center": [
+          7.8548652790655105,
+          -0.6185708814570107
+        ],
+        "radius": 4.438534535941546,
+        "z0": 4.5973546614035765,
+        "climb_rate": -0.04042353391413608,
+        "omega": 0.4486580184303798,
+        "phase": -0.2607996448843637
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W2a_nominal_helix_3103002007_known_future",
+        "C_W1_bundle_W1_nominal_helix_3103002007_known_future",
+        "C_W2a_bundle_W1_nominal_helix_3103002007_known_future",
+        "C_W2a_bundle_W2a_nominal_helix_3103002007_known_future"
+      ]
+    },
+    {
+      "case_id": "helix_3103002008_known_future",
+      "family": "helix",
+      "seed": 3103002008,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -1.1068674784048298,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "75fc0f6cbfba20878f29c954f47658bfe831fabea3a89466fba2f0534a4bb075",
+      "target_posvel_20s_sha256": "31aa00744f30aa721a52888480a490acb6f422b2b51f73e4b8a6c4910da3aa85",
+      "measurement_history_sha256": "cc032abbbcc0125ced5281b75d01c158db6ef584910afa2bc37a5f70d26e15c0",
+      "target_generator_parameters_simulator_only": {
+        "center": [
+          8.761200107791314,
+          0.628750805792091
+        ],
+        "radius": 4.3254239181782355,
+        "z0": 4.0104886832970195,
+        "climb_rate": 0.054986395386999384,
+        "omega": 0.6389122885249063,
+        "phase": -2.6776638051997264
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W2a_nominal_helix_3103002008_known_future",
+        "C_W1_bundle_W1_nominal_helix_3103002008_known_future",
+        "C_W2a_bundle_W1_nominal_helix_3103002008_known_future",
+        "C_W2a_bundle_W2a_nominal_helix_3103002008_known_future"
+      ]
+    },
+    {
+      "case_id": "helix_3103002009_known_future",
+      "family": "helix",
+      "seed": 3103002009,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.41042645072314604,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "674e3301e2ae44393de8a08441b35da4e23a84223e884a523c1a1aefc6aed262",
+      "target_posvel_20s_sha256": "18a11a1334e96c8a4dbf607d3f35db874d69bb3dd939b012bdd29e0079372dd7",
+      "measurement_history_sha256": "7e2201cda580946bbac8fd3224b5b86694994ca7292a5cc0773de7b81458d394",
+      "target_generator_parameters_simulator_only": {
+        "center": [
+          6.952080409041942,
+          -0.15503745206100294
+        ],
+        "radius": 5.298330391163258,
+        "z0": 5.47376777434735,
+        "climb_rate": 0.03007006401072139,
+        "omega": 0.38702981212886534,
+        "phase": -1.9812227775180427
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W1_nominal_helix_3103002009_known_future",
+        "C_W1_bundle_W2a_nominal_helix_3103002009_known_future",
+        "C_W2a_bundle_W1_nominal_helix_3103002009_known_future",
+        "C_W2a_bundle_W2a_nominal_helix_3103002009_known_future"
+      ]
+    },
+    {
+      "case_id": "weaving_3103003000_known_future",
+      "family": "weaving",
+      "seed": 3103003000,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.847341350057453,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "15a19127b5f9797e5ea94a56a5142f29b8edb0e5efdae5bdecdeaabe8c3c369d",
+      "target_posvel_20s_sha256": "97991fd1dfe7acce2483e34d0e1158e913725ec6be98bb8fc25f840f2b9cc755",
+      "measurement_history_sha256": "05a25a4d8cff9c47d4df78172968a1200ceb24f9b660245e2423a5777e7c6cac",
+      "target_generator_parameters_simulator_only": {
+        "p0": [
+          12.922666431128638,
+          -0.7770160833209692,
+          5.596240315734795
+        ],
+        "vx": -0.5558235576149723,
+        "amp_y": 3.809822801457609,
+        "omega_y": 0.6205451658539808,
+        "amp_z": 1.9033207938253212,
+        "omega_z": 0.764410999007829,
+        "phase_y": -0.594620188833574,
+        "phase_z": -2.2400843151864005
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W1_nominal_weaving_3103003000_known_future",
+        "C_W1_bundle_W2a_nominal_weaving_3103003000_known_future",
+        "C_W2a_bundle_W1_nominal_weaving_3103003000_known_future",
+        "C_W2a_bundle_W2a_nominal_weaving_3103003000_known_future"
+      ]
+    },
+    {
+      "case_id": "weaving_3103003001_known_future",
+      "family": "weaving",
+      "seed": 3103003001,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.639175978437257,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "30b6d47e1534d8dd6f1909b8c23c331141de124188d2961027c026cd365a66a5",
+      "target_posvel_20s_sha256": "1b53e73b7a237646a393b3fe64dc37fa8797acfa1f8802714bc256d49b8d4e97",
+      "measurement_history_sha256": "ea0e162d17d7c2b534e23a6bcf9dfd2d9b5e76e97347d510e10a0264955b3db6",
+      "target_generator_parameters_simulator_only": {
+        "p0": [
+          12.685895660455436,
+          -0.19370817889475278,
+          4.910963888494943
+        ],
+        "vx": -0.8490799730918355,
+        "amp_y": 3.5817652132292137,
+        "omega_y": 0.31754181901806344,
+        "amp_z": 1.7607375685518598,
+        "omega_z": 0.6830599324660929,
+        "phase_y": 1.1481449494895601,
+        "phase_z": -1.5048564603377126
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W1_nominal_weaving_3103003001_known_future",
+        "C_W1_bundle_W2a_nominal_weaving_3103003001_known_future",
+        "C_W2a_bundle_W1_nominal_weaving_3103003001_known_future",
+        "C_W2a_bundle_W2a_nominal_weaving_3103003001_known_future"
+      ]
+    },
+    {
+      "case_id": "weaving_3103003002_known_future",
+      "family": "weaving",
+      "seed": 3103003002,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -2.878499087309344,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "bc2f31f8327c876cfea1c921f30c6c687aa4d7f2816a88774104fc47370b0188",
+      "target_posvel_20s_sha256": "639d1cfd030777211879bcaea2a5a7cd0f2080aba165fce05f9b0eb1afa3220e",
+      "measurement_history_sha256": "c8c6125f90efadc45117af07960a23fcf0d1a799a806c3e0f03b880bc47a2419",
+      "target_generator_parameters_simulator_only": {
+        "p0": [
+          9.350501872633643,
+          -0.5648166551217289,
+          5.390734433301647
+        ],
+        "vx": -0.5213280323424155,
+        "amp_y": 2.3567448744701296,
+        "omega_y": 0.5159670398674976,
+        "amp_z": 1.0374621400218786,
+        "omega_z": 0.4551898308305315,
+        "phase_y": 1.6865252895303966,
+        "phase_z": -1.9835368253925227
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W1_nominal_weaving_3103003002_known_future",
+        "C_W1_bundle_W2a_nominal_weaving_3103003002_known_future",
+        "C_W2a_bundle_W1_nominal_weaving_3103003002_known_future",
+        "C_W2a_bundle_W2a_nominal_weaving_3103003002_known_future"
+      ]
+    },
+    {
+      "case_id": "weaving_3103003003_known_future",
+      "family": "weaving",
+      "seed": 3103003003,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.241510564371924,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "4680a55dce3c6c2de7429d2a8d0d8c1c7ddc1401627d2749788752b6c523847b",
+      "target_posvel_20s_sha256": "d4a54af86ad0da022177c93fc2a71e27b43ea00deeb06566173344d8579c80fd",
+      "measurement_history_sha256": "6c5ebdb17a86efcc11cd3aa4b794fefa9616bacd377208255905395a3f1ddb6b",
+      "target_generator_parameters_simulator_only": {
+        "p0": [
+          10.883605467669353,
+          -0.4127002314874717,
+          5.746822083453303
+        ],
+        "vx": -1.0209306599120207,
+        "amp_y": 3.939533301243282,
+        "omega_y": 0.3617483952451736,
+        "amp_z": 1.1816372008859073,
+        "omega_z": 0.8788250317961677,
+        "phase_y": 0.4443104511945606,
+        "phase_z": 2.9883129013502847
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W1_nominal_weaving_3103003003_known_future",
+        "C_W1_bundle_W2a_nominal_weaving_3103003003_known_future",
+        "C_W2a_bundle_W1_nominal_weaving_3103003003_known_future",
+        "C_W2a_bundle_W2a_nominal_weaving_3103003003_known_future"
+      ]
+    },
+    {
+      "case_id": "weaving_3103003004_known_future",
+      "family": "weaving",
+      "seed": 3103003004,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -2.0312486476666844,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "f3fb4ecf273949bc862f82c38d0babbd4894305c0f3240fd25981a237691f799",
+      "target_posvel_20s_sha256": "10a13a15f51821d04d94979ac0a97513a8d8aa8f537c825151a605aad1ef0793",
+      "measurement_history_sha256": "3d8c06cd80d270ca7dea1fbb9e3e1370bb35d3653c2978ae8e816d824aea3c86",
+      "target_generator_parameters_simulator_only": {
+        "p0": [
+          10.501741745101437,
+          0.31711250190674534,
+          4.333190794992113
+        ],
+        "vx": -0.9061333402597994,
+        "amp_y": 3.672979051838008,
+        "omega_y": 0.6204829504151543,
+        "amp_z": 1.4240708888195632,
+        "omega_z": 0.874723020924156,
+        "phase_y": -2.500743515824082,
+        "phase_z": 1.2650814901255618
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W1_nominal_weaving_3103003004_known_future",
+        "C_W1_bundle_W2a_nominal_weaving_3103003004_known_future",
+        "C_W2a_bundle_W1_nominal_weaving_3103003004_known_future",
+        "C_W2a_bundle_W2a_nominal_weaving_3103003004_known_future"
+      ]
+    },
+    {
+      "case_id": "weaving_3103003005_known_future",
+      "family": "weaving",
+      "seed": 3103003005,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.272587167814629,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "45483ee5399f807a26801344f5aa7e3053abd06a15c404be5068ed0f7fe660ca",
+      "target_posvel_20s_sha256": "87578b8bc1112bf40740e3d4f5620b34e3297926ca0d93a65b257edd0ba9dc0d",
+      "measurement_history_sha256": "9b10ccbcb18fca3b460a030c51e6615aade829055825fec137ccdadb52591034",
+      "target_generator_parameters_simulator_only": {
+        "p0": [
+          11.78140598157385,
+          -0.5298090394348542,
+          6.092190145224201
+        ],
+        "vx": -0.7203316686652974,
+        "amp_y": 3.111086945898645,
+        "omega_y": 0.48189366925998617,
+        "amp_z": 1.7415523511226003,
+        "omega_z": 0.4831196478899628,
+        "phase_y": -0.9662742162315197,
+        "phase_z": -2.356132875301459
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W1_nominal_weaving_3103003005_known_future",
+        "C_W1_bundle_W2a_nominal_weaving_3103003005_known_future",
+        "C_W2a_bundle_W1_nominal_weaving_3103003005_known_future",
+        "C_W2a_bundle_W2a_nominal_weaving_3103003005_known_future"
+      ]
+    },
+    {
+      "case_id": "weaving_3103003006_known_future",
+      "family": "weaving",
+      "seed": 3103003006,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.299845724006161,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "f758b84f32b9df4b8cbc24be12a2d8798297351f8836275834322f12d5960b99",
+      "target_posvel_20s_sha256": "a1c35a9e286846d61671c3e7ab72e7cec304cd3c04f353275c597220fd3f0fca",
+      "measurement_history_sha256": "622d84c4bb00108efb02fa113148e89870a3cec43d1ef3ec7615174c36857c1b",
+      "target_generator_parameters_simulator_only": {
+        "p0": [
+          10.179588589691324,
+          -0.9130328957673972,
+          6.583335677834582
+        ],
+        "vx": -0.5398448406742868,
+        "amp_y": 2.405999256180276,
+        "omega_y": 0.563336723395436,
+        "amp_z": 1.1966540826228975,
+        "omega_z": 0.6929081002245996,
+        "phase_y": -1.1085987213416413,
+        "phase_z": 2.120397924917249
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W2a_nominal_weaving_3103003006_known_future",
+        "C_W1_bundle_W1_nominal_weaving_3103003006_known_future",
+        "C_W2a_bundle_W1_nominal_weaving_3103003006_known_future",
+        "C_W2a_bundle_W2a_nominal_weaving_3103003006_known_future"
+      ]
+    },
+    {
+      "case_id": "weaving_3103003007_known_future",
+      "family": "weaving",
+      "seed": 3103003007,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -2.431962666635467,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "db0a66f80a5c4f000b7954be9e09855deaf949d7e483b9c5468db31d9f4a311f",
+      "target_posvel_20s_sha256": "62696c630af9304a8a82db309954d4caa5d241003e2fb2aefeb8be46bc774f00",
+      "measurement_history_sha256": "d822c22ca53b3017e3edbbaf2d0bc735b2eb0fbd3c71c7dde391b7010db433da",
+      "target_generator_parameters_simulator_only": {
+        "p0": [
+          12.980485651478359,
+          -0.07071133891583448,
+          6.904781875675623
+        ],
+        "vx": -0.7068305595365503,
+        "amp_y": 4.2061215089007895,
+        "omega_y": 0.6144745282669734,
+        "amp_z": 1.87507934383996,
+        "omega_z": 0.8586263468409211,
+        "phase_y": 1.8079019267583316,
+        "phase_z": -2.849006955376455
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W1_nominal_weaving_3103003007_known_future",
+        "C_W1_bundle_W2a_nominal_weaving_3103003007_known_future",
+        "C_W2a_bundle_W1_nominal_weaving_3103003007_known_future",
+        "C_W2a_bundle_W2a_nominal_weaving_3103003007_known_future"
+      ]
+    },
+    {
+      "case_id": "weaving_3103003008_known_future",
+      "family": "weaving",
+      "seed": 3103003008,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -2.740203258533962,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "6a17f54b102bd9b9aa23b47b3b5db6846677092421272140a9e00fa616ae8a04",
+      "target_posvel_20s_sha256": "571bf39580d18fe84c0734bd93cfb35705b2a8dbb773be2b784b8fea16ea02b7",
+      "measurement_history_sha256": "fb2e785984e18de9ec14fc073a43314c624fb0069edebd5c88e34838183269e9",
+      "target_generator_parameters_simulator_only": {
+        "p0": [
+          9.931988831918952,
+          -0.758040537756608,
+          4.759880447973096
+        ],
+        "vx": -0.5191400028204188,
+        "amp_y": 2.792453595736207,
+        "omega_y": 0.6702973321841746,
+        "amp_z": 1.1007860370018991,
+        "omega_z": 0.5629303568092712,
+        "phase_y": -1.688786884802267,
+        "phase_z": 2.7407859755774826
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W1_nominal_weaving_3103003008_known_future",
+        "C_W1_bundle_W2a_nominal_weaving_3103003008_known_future",
+        "C_W2a_bundle_W1_nominal_weaving_3103003008_known_future",
+        "C_W2a_bundle_W2a_nominal_weaving_3103003008_known_future"
+      ]
+    },
+    {
+      "case_id": "weaving_3103003009_known_future",
+      "family": "weaving",
+      "seed": 3103003009,
+      "initial_state": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -2.1518200287515974,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference_sha256": "b7122b9ee122464394a816e449640fef335f2bf9ad27ef601f5c6c1f79be2872",
+      "target_posvel_20s_sha256": "e5e8c1b2aa9bf278616248ca404097f501a46e158f676ac1bcbe251a5b24bdeb",
+      "measurement_history_sha256": "c556ff969fd0d460431abdee0411b4ab7698eaffd7ce890330433a81b6cb23b3",
+      "target_generator_parameters_simulator_only": {
+        "p0": [
+          12.820493028340545,
+          -0.44376444889838873,
+          6.597561991471777
+        ],
+        "vx": -0.7702190712086031,
+        "amp_y": 3.3662576974470575,
+        "omega_y": 0.3485267075628661,
+        "amp_z": 1.6674445227274375,
+        "omega_z": 0.5030491516551264,
+        "phase_y": 3.121058763102474,
+        "phase_z": 0.5165135901942439
+      },
+      "oracle_task_ids": [
+        "C_W1_bundle_W1_nominal_weaving_3103003009_known_future",
+        "C_W1_bundle_W2a_nominal_weaving_3103003009_known_future",
+        "C_W2a_bundle_W1_nominal_weaving_3103003009_known_future",
+        "C_W2a_bundle_W2a_nominal_weaving_3103003009_known_future"
+      ]
+    }
+  ],
+  "scenarios_archive_sha256": "f5889c9324dcc559db0933b5a9614040ee2431fade1008dd4bcd9fdedf1b4cfc",
+  "source_sha256": {
+    "Simulation.py": "d89f139ad885a1467f5df075f5542319caed8c45f5a10409e2f6fb528ad2d72c",
+    "quadcopter.py": "120469050255c5f0e45b0c0486bb13b9325d04619129098a7f9e03178862858f",
+    "PID_Mixer.py": "67648a4c96f0fec930ba381b30c4cd1da29f30f33a61993aead97e26b0de1a80",
+    "wrench_revisit_mpc.py": "880e8136042d57c3d19c0575ae51d6c2c41aa7ed606dc34a38ee19a41392aebb",
+    "wrench_interception_v1/targets.py": "5773d88745b8565fe1b5c647d34fc34752a52e3c7b1acaf4ee2d150871977350",
+    "wrench_interception_v1/core.py": "46005124f520a4c31f183c46c7db512bd370c085445389fc2ee1f64a82159ba5",
+    "paper_gap_audit_20261001/runtime.py": "ea33ea9b0ab893a34868f3bd8c3bba50315155fdeef58c4903fdab9fb2b7329c"
+  },
+  "script_sha256": {
+    "scripts/runtime.py": "6ba496b5e24f259257429922354a3876896ef2b3d3af1af497c9aa946eb3980b",
+    "scripts/prepare.py": "724fb86332fb89c6bdfdf894f92f25e20ab2d5f3248877757b0b1fc0641a47a0",
+    "scripts/run.py": "349d02413d82c2d9981b271733b735c1e7aa0570c9a50e0957ff31c77a1ff722"
+  },
+  "oracle_episodes_path": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\paper_gap_audit_20261001\\C_EPISODES.json",
+  "oracle_episodes_sha256": "233c625d4df82d0cfd1dc3f1e517e6231f88609e62cdc4e158edab23119626cb",
+  "original_tasks_sha256": "f1584e8e8c322659739cb134fdd5c0c21c0b6eaab80c80c10bd296284983b5d4",
+  "tasks_sha256": "476bca8f56aef03907a00e5dcf7a28b59ace6591c03c3285e060a7a5c6ef0334",
+  "planned_counts": {
+    "oracle_reproduction": 2,
+    "smoke": 8,
+    "primary": 240,
+    "position_only": 80,
+    "secondary": 240
+  },
+  "planned_total": 570,
+  "stage_order": [
+    "oracle_reproduction and smoke gate",
+    "primary 240",
+    "freeze and report primary",
+    "secondary 240 if inexpensive",
+    "position_only 80 exploratory"
+  ],
+  "dt": 0.01,
+  "duration_seconds": 20,
+  "capture": {
+    "distance_le_m": 0.75,
+    "relative_speed_le_mps": 3,
+    "consecutive_samples": 21,
+    "qualification": "end of first qualifying dwell",
+    "noncapture_score_seconds": 20,
+    "uses": "true target position and velocity"
+  },
+  "aborts": {
+    "abs_roll_pitch_gt_degrees": 80,
+    "position_error_gt_m": 50,
+    "nonfinite_state": true,
+    "position_error_reference": "true target, not forecast",
+    "capture_before_later_abort": "retain capture plus report abort separately"
+  },
+  "plant": {
+    "mass": 3.33819,
+    "inertia": [
+      [
+        0.04164,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.03963,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.04758
+      ]
+    ],
+    "g": 9.80665,
+    "kT": 3.44e-05,
+    "kD": 4.8e-07,
+    "arm_length": 0.28881,
+    "linear_drag": 0.18826928071875,
+    "angular_drag": 6.569729303413257e-05,
+    "prop_efficiency": [
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "max_motor_speed": 1715.309588860027,
+    "integration": "unchanged nominal nonlinear 12-state RK4 plant_step and allocator"
+  },
+  "information_modes": {
+    "oracle": "Saved exact scripted future physical reference; reuse all160 saved results.",
+    "cv": "Only p(k),v(k). p_hat(k+i|k)=p(k)+i*dt*v(k), v_hat=v(k).",
+    "delayed_cv_100ms": "Only p(k-10),v(k-10). p_hat=p(k-10)+(10+i)*dt*v(k-10).",
+    "delayed_cv_250ms": "Only p(k-25),v(k-25). p_hat=p(k-25)+(25+i)*dt*v(k-25).",
+    "heading": "atan2 of available measurement velocity; hold preceding available heading if horizontal speed<=1e-8; unwrap relative to preceding causal heading. Never use future true heading.",
+    "physical_reference": "Forecast acceleration zero; unchanged physical_reference maps forecast velocity and zero acceleration to drag-compensating attitude; forecast body rates derived only from forecast sequence. No controller weights changed.",
+    "position_hold": "Separate exploratory stationary-target/pure-pursuit reference: measured current position held; desired velocity zero (not an estimate of actual target velocity); desired roll/pitch/body rates zero; yaw fixed to initial interceptor yaw. All weights retained. No position-only cost exists; suppressing velocity weights would change selected objective, so is not done.",
+    "delayed_hold": "Not planned; optional variant omitted."
+  },
+  "startup_delay": "Simulator preloads target position/velocity measurements at -0.25s through -0.01s. At k=0 the delayed policy receives precisely sample -d, without any newer sample. History is simulator-owned and not exposed to policy. Initial interceptor state remains unchanged; initial yaw is the original scenario state, not a new future measurement.",
+  "leakage_guards": "Pure policy signature contains only immutable Measurement, current sample, horizon, delay, mode, preceding causal heading and fixed nominal quad parameters. Sensor asserts exact sample=k-delay and logs every access. Policy never receives scenario seed, generator, ground-truth arrays or parameters. Forecasts are saved every50 updates. Capture/abort evaluator accepts true reference independently.",
+  "smoke_gate": {
+    "oracle": "Full20s two selected-controller replays on first straight seed; reference and initial state exact, accepted flags identical, max state/applied wrench difference<=1e-8. No numerical adjustment if gate fails.",
+    "causality": "Unit checks verify all three causal equations, delay ages including startup, forbidden-newer-history poisoning invariance, and position-only packet velocity absent. Eight smoke episodes on first helix seed; control-envelope aborts are retained but do not permit tuning; execution/nonfinite/leakage errors stop evaluation.",
+    "scoring": "Dwell rescored against true reference; predicted reference never supplied to evaluator."
+  },
+  "analysis_plan": {
+    "aggregates": "Capture, full completion, aborts, solver failures, allocator events; mean/median successful qualification and sphere entry, entry speed, minimum separation, per-episode maximum absolute roll/pitch; repeat by family.",
+    "paired": "EDMDc-B minus Linear-A for each mode; successful-time comparisons only joint captures. Separately score every scenario, noncapture=20. Within each controller use later information condition minus earlier: oracle->CV->100ms->250ms.",
+    "bootstrap": "20000 paired iid scenario resamples, percentile95 CI, seed2026100201; conditional comparisons resample joint-capture pairs only. Descriptive post-hoc intervals.",
+    "wins": "Negative difference is second-arm/EDMDc improvement; abs(diff)<=1e-12 tie.",
+    "representative": "CurrentCV both captured: choose absolute paired-time difference nearest median; ties by seed. If none, no successful representative is fabricated.",
+    "figures": "After results frozen, capture by condition; conditional and penalized time in separate panels; family outcomes; deterministic CurrentCV trace with true separation/speed.",
+    "secondary": "Only after primary report and result freeze exist. No tuning/selection on primary results. Position-only reported separately and excluded from main CV comparisons."
+  },
+  "workers": 4,
+  "BLAS_threads_per_worker": 1,
+  "automatic_retries": 0,
+  "environment": {
+    "python": "3.10.11 | packaged by Anaconda, Inc. | (main, May 16 2023, 00:55:32) [MSC v.1916 64 bit (AMD64)]",
+    "platform": "Windows-10-10.0.26100-SP0"
+  }
+}

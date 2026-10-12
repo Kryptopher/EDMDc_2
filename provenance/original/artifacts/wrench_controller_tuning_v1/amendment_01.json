@@ -1,0 +1,486 @@
+{
+  "amendment": "wrench_tuning_protocol_amendment_01",
+  "created_at_utc": "2026-09-22T05:13:24.781785+00:00",
+  "parent_protocol": {
+    "path": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\wrench_controller_tuning_v1\\wrench_tuning_protocol.json",
+    "sha256": "796d60e4b06b72290191fd048922a70e63fe9f278d9a70f8a652f718fbe4a821",
+    "short_sha256": "796d60e4"
+  },
+  "selection_freeze": {
+    "path": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\wrench_controller_tuning_v1\\selected_configs\\selection_freeze.json",
+    "sha256": "44cb2046f84f07c3d2f4d804441d21ff9e352bf196d95afd020647bc1931f88e",
+    "configs": {
+      "W1": {
+        "path": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\wrench_controller_tuning_v1\\selected_configs\\W1.json",
+        "sha256": "5c25337a3f20c9f7f405619b332d02dd8102697ea2199322041787651055b70a"
+      },
+      "W2a": {
+        "path": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\wrench_controller_tuning_v1\\selected_configs\\W2a.json",
+        "sha256": "77c50ab467b456770ddb968e15dd434fc9e9e72f3a47a9778d383a0e4ca46bae"
+      },
+      "W2b": {
+        "path": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\wrench_controller_tuning_v1\\selected_configs\\W2b.json",
+        "sha256": "0c5005bc7e5a98fed543dbf5669f62e2cfd5178ca2ebb36bff17a2c52791a33c"
+      },
+      "W3": {
+        "path": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\wrench_controller_tuning_v1\\selected_configs\\W3.json",
+        "sha256": "24ab59887ce5415c18e205cc0c791a61b398def0166fb4c92e7111a8ff906dc0"
+      }
+    },
+    "W2_model_forward": "W2a"
+  },
+  "reason": "Use the available 32-logical-CPU Ryzen host for blind tracking without treating CPU-contended timing as a reported result.",
+  "unchanged": "Every parent-protocol item other than blind execution concurrency and the separate timing methodology remains unchanged. Validation remains the completed four-worker validation.",
+  "determinism_gate": {
+    "cases": [
+      {
+        "case_id": "det_helix_93000000_fixed",
+        "family": "helix",
+        "seed": 93000000,
+        "scale": 1.75,
+        "yaw_mode": "fixed",
+        "replicate": 0
+      },
+      {
+        "case_id": "det_helix_93000001_path",
+        "family": "helix",
+        "seed": 93000001,
+        "scale": 1.75,
+        "yaw_mode": "path",
+        "replicate": 1
+      },
+      {
+        "case_id": "det_figure8_93001000_fixed",
+        "family": "figure8",
+        "seed": 93001000,
+        "scale": 1.75,
+        "yaw_mode": "fixed",
+        "replicate": 0
+      },
+      {
+        "case_id": "det_figure8_93001001_path",
+        "family": "figure8",
+        "seed": 93001001,
+        "scale": 1.75,
+        "yaw_mode": "path",
+        "replicate": 1
+      },
+      {
+        "case_id": "det_lissajous_93002000_fixed",
+        "family": "lissajous",
+        "seed": 93002000,
+        "scale": 1.75,
+        "yaw_mode": "fixed",
+        "replicate": 0
+      },
+      {
+        "case_id": "det_lissajous_93002001_path",
+        "family": "lissajous",
+        "seed": 93002001,
+        "scale": 1.75,
+        "yaw_mode": "path",
+        "replicate": 1
+      },
+      {
+        "case_id": "det_waypoint_93003000_fixed",
+        "family": "waypoint",
+        "seed": 93003000,
+        "scale": 1.75,
+        "yaw_mode": "fixed",
+        "replicate": 0
+      },
+      {
+        "case_id": "det_waypoint_93003001_path",
+        "family": "waypoint",
+        "seed": 93003001,
+        "scale": 1.75,
+        "yaw_mode": "path",
+        "replicate": 1
+      }
+    ],
+    "scenarios": 8,
+    "episodes_per_worker_condition": 32,
+    "duration_seconds": 30,
+    "workers_compared": [
+      4,
+      16
+    ],
+    "check_seed_range": [
+      93000000,
+      93003001
+    ],
+    "outside_test_seed_range": true,
+    "comparison": "For every arm/scenario pair, states must have identical shape, dtype, and bytes, and E_p=position_rmse_m must have identical IEEE-754 bytes.",
+    "pass_action": "run blind tracking at 16 workers",
+    "fail_action": "fall back to 4 workers and report the mismatch"
+  },
+  "blind_tracking_pass": {
+    "requested_workers": 16,
+    "effective_workers_rule": "16 only if determinism gate passes; else 4",
+    "scenarios": 200,
+    "episodes": 800,
+    "tracking_metrics_are_deterministic_per_episode": true,
+    "parallel_solve_timing": "logged as CPU-contended diagnostic only; excluded from the reported timing result"
+  },
+  "isolated_timing_pass": {
+    "workers": 1,
+    "concurrent_campaign_jobs": 0,
+    "throughput_probe": "one second immediately before and after",
+    "scenarios": 40,
+    "episodes": 160,
+    "cases": [
+      {
+        "case_id": "helix_92000000_scale1.75_fixed",
+        "family": "helix",
+        "seed": 92000000,
+        "scale": 1.75,
+        "yaw_mode": "fixed",
+        "replicate": 0
+      },
+      {
+        "case_id": "helix_92000006_scale1.75_fixed",
+        "family": "helix",
+        "seed": 92000006,
+        "scale": 1.75,
+        "yaw_mode": "fixed",
+        "replicate": 6
+      },
+      {
+        "case_id": "helix_92000012_scale1.75_fixed",
+        "family": "helix",
+        "seed": 92000012,
+        "scale": 1.75,
+        "yaw_mode": "fixed",
+        "replicate": 12
+      },
+      {
+        "case_id": "helix_92000018_scale1.75_fixed",
+        "family": "helix",
+        "seed": 92000018,
+        "scale": 1.75,
+        "yaw_mode": "fixed",
+        "replicate": 18
+      },
+      {
+        "case_id": "helix_92000024_scale1.75_fixed",
+        "family": "helix",
+        "seed": 92000024,
+        "scale": 1.75,
+        "yaw_mode": "fixed",
+        "replicate": 24
+      },
+      {
+        "case_id": "helix_92000025_scale1.75_path",
+        "family": "helix",
+        "seed": 92000025,
+        "scale": 1.75,
+        "yaw_mode": "path",
+        "replicate": 25
+      },
+      {
+        "case_id": "helix_92000031_scale1.75_path",
+        "family": "helix",
+        "seed": 92000031,
+        "scale": 1.75,
+        "yaw_mode": "path",
+        "replicate": 31
+      },
+      {
+        "case_id": "helix_92000037_scale1.75_path",
+        "family": "helix",
+        "seed": 92000037,
+        "scale": 1.75,
+        "yaw_mode": "path",
+        "replicate": 37
+      },
+      {
+        "case_id": "helix_92000043_scale1.75_path",
+        "family": "helix",
+        "seed": 92000043,
+        "scale": 1.75,
+        "yaw_mode": "path",
+        "replicate": 43
+      },
+      {
+        "case_id": "helix_92000049_scale1.75_path",
+        "family": "helix",
+        "seed": 92000049,
+        "scale": 1.75,
+        "yaw_mode": "path",
+        "replicate": 49
+      },
+      {
+        "case_id": "figure8_92001000_scale1.75_fixed",
+        "family": "figure8",
+        "seed": 92001000,
+        "scale": 1.75,
+        "yaw_mode": "fixed",
+        "replicate": 0
+      },
+      {
+        "case_id": "figure8_92001006_scale1.75_fixed",
+        "family": "figure8",
+        "seed": 92001006,
+        "scale": 1.75,
+        "yaw_mode": "fixed",
+        "replicate": 6
+      },
+      {
+        "case_id": "figure8_92001012_scale1.75_fixed",
+        "family": "figure8",
+        "seed": 92001012,
+        "scale": 1.75,
+        "yaw_mode": "fixed",
+        "replicate": 12
+      },
+      {
+        "case_id": "figure8_92001018_scale1.75_fixed",
+        "family": "figure8",
+        "seed": 92001018,
+        "scale": 1.75,
+        "yaw_mode": "fixed",
+        "replicate": 18
+      },
+      {
+        "case_id": "figure8_92001024_scale1.75_fixed",
+        "family": "figure8",
+        "seed": 92001024,
+        "scale": 1.75,
+        "yaw_mode": "fixed",
+        "replicate": 24
+      },
+      {
+        "case_id": "figure8_92001025_scale1.75_path",
+        "family": "figure8",
+        "seed": 92001025,
+        "scale": 1.75,
+        "yaw_mode": "path",
+        "replicate": 25
+      },
+      {
+        "case_id": "figure8_92001031_scale1.75_path",
+        "family": "figure8",
+        "seed": 92001031,
+        "scale": 1.75,
+        "yaw_mode": "path",
+        "replicate": 31
+      },
+      {
+        "case_id": "figure8_92001037_scale1.75_path",
+        "family": "figure8",
+        "seed": 92001037,
+        "scale": 1.75,
+        "yaw_mode": "path",
+        "replicate": 37
+      },
+      {
+        "case_id": "figure8_92001043_scale1.75_path",
+        "family": "figure8",
+        "seed": 92001043,
+        "scale": 1.75,
+        "yaw_mode": "path",
+        "replicate": 43
+      },
+      {
+        "case_id": "figure8_92001049_scale1.75_path",
+        "family": "figure8",
+        "seed": 92001049,
+        "scale": 1.75,
+        "yaw_mode": "path",
+        "replicate": 49
+      },
+      {
+        "case_id": "lissajous_92002000_scale1.75_fixed",
+        "family": "lissajous",
+        "seed": 92002000,
+        "scale": 1.75,
+        "yaw_mode": "fixed",
+        "replicate": 0
+      },
+      {
+        "case_id": "lissajous_92002006_scale1.75_fixed",
+        "family": "lissajous",
+        "seed": 92002006,
+        "scale": 1.75,
+        "yaw_mode": "fixed",
+        "replicate": 6
+      },
+      {
+        "case_id": "lissajous_92002012_scale1.75_fixed",
+        "family": "lissajous",
+        "seed": 92002012,
+        "scale": 1.75,
+        "yaw_mode": "fixed",
+        "replicate": 12
+      },
+      {
+        "case_id": "lissajous_92002018_scale1.75_fixed",
+        "family": "lissajous",
+        "seed": 92002018,
+        "scale": 1.75,
+        "yaw_mode": "fixed",
+        "replicate": 18
+      },
+      {
+        "case_id": "lissajous_92002024_scale1.75_fixed",
+        "family": "lissajous",
+        "seed": 92002024,
+        "scale": 1.75,
+        "yaw_mode": "fixed",
+        "replicate": 24
+      },
+      {
+        "case_id": "lissajous_92002025_scale1.75_path",
+        "family": "lissajous",
+        "seed": 92002025,
+        "scale": 1.75,
+        "yaw_mode": "path",
+        "replicate": 25
+      },
+      {
+        "case_id": "lissajous_92002031_scale1.75_path",
+        "family": "lissajous",
+        "seed": 92002031,
+        "scale": 1.75,
+        "yaw_mode": "path",
+        "replicate": 31
+      },
+      {
+        "case_id": "lissajous_92002037_scale1.75_path",
+        "family": "lissajous",
+        "seed": 92002037,
+        "scale": 1.75,
+        "yaw_mode": "path",
+        "replicate": 37
+      },
+      {
+        "case_id": "lissajous_92002043_scale1.75_path",
+        "family": "lissajous",
+        "seed": 92002043,
+        "scale": 1.75,
+        "yaw_mode": "path",
+        "replicate": 43
+      },
+      {
+        "case_id": "lissajous_92002049_scale1.75_path",
+        "family": "lissajous",
+        "seed": 92002049,
+        "scale": 1.75,
+        "yaw_mode": "path",
+        "replicate": 49
+      },
+      {
+        "case_id": "waypoint_92003000_scale1.75_fixed",
+        "family": "waypoint",
+        "seed": 92003000,
+        "scale": 1.75,
+        "yaw_mode": "fixed",
+        "replicate": 0
+      },
+      {
+        "case_id": "waypoint_92003006_scale1.75_fixed",
+        "family": "waypoint",
+        "seed": 92003006,
+        "scale": 1.75,
+        "yaw_mode": "fixed",
+        "replicate": 6
+      },
+      {
+        "case_id": "waypoint_92003012_scale1.75_fixed",
+        "family": "waypoint",
+        "seed": 92003012,
+        "scale": 1.75,
+        "yaw_mode": "fixed",
+        "replicate": 12
+      },
+      {
+        "case_id": "waypoint_92003018_scale1.75_fixed",
+        "family": "waypoint",
+        "seed": 92003018,
+        "scale": 1.75,
+        "yaw_mode": "fixed",
+        "replicate": 18
+      },
+      {
+        "case_id": "waypoint_92003024_scale1.75_fixed",
+        "family": "waypoint",
+        "seed": 92003024,
+        "scale": 1.75,
+        "yaw_mode": "fixed",
+        "replicate": 24
+      },
+      {
+        "case_id": "waypoint_92003025_scale1.75_path",
+        "family": "waypoint",
+        "seed": 92003025,
+        "scale": 1.75,
+        "yaw_mode": "path",
+        "replicate": 25
+      },
+      {
+        "case_id": "waypoint_92003031_scale1.75_path",
+        "family": "waypoint",
+        "seed": 92003031,
+        "scale": 1.75,
+        "yaw_mode": "path",
+        "replicate": 31
+      },
+      {
+        "case_id": "waypoint_92003037_scale1.75_path",
+        "family": "waypoint",
+        "seed": 92003037,
+        "scale": 1.75,
+        "yaw_mode": "path",
+        "replicate": 37
+      },
+      {
+        "case_id": "waypoint_92003043_scale1.75_path",
+        "family": "waypoint",
+        "seed": 92003043,
+        "scale": 1.75,
+        "yaw_mode": "path",
+        "replicate": 43
+      },
+      {
+        "case_id": "waypoint_92003049_scale1.75_path",
+        "family": "waypoint",
+        "seed": 92003049,
+        "scale": 1.75,
+        "yaw_mode": "path",
+        "replicate": 49
+      }
+    ],
+    "selection": {
+      "per_family": 10,
+      "fixed_heading_per_family": 5,
+      "path_heading_per_family": 5,
+      "fixed_replicates": [
+        0,
+        6,
+        12,
+        18,
+        24
+      ],
+      "path_replicates": [
+        25,
+        31,
+        37,
+        43,
+        49
+      ]
+    },
+    "reported_statistics_ms": [
+      "mean",
+      "p95",
+      "max",
+      "count_over_10ms"
+    ],
+    "timing_source_rule": "reported timing comes from this pass only"
+  },
+  "runner": {
+    "path": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\run_wrench_blind_amended.py",
+    "sha256": "4841651462aaece8893964ea40d5bc321f51a02a04fc14584fffcbbc2cae42c6"
+  },
+  "hardware_actions": false,
+  "manuscript_edits": false
+}

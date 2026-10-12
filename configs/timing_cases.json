@@ -1,0 +1,286 @@
+{
+  "note": "40 stratified 30-s tracking cases used for every controller-update timing pass (Fig. 3).",
+  "duration_seconds": 30,
+  "cases": [
+    {
+      "case_id": "figure8_92001000_scale1.75_fixed",
+      "family": "figure8",
+      "seed": 92001000,
+      "scale": 1.75,
+      "yaw_mode": "fixed"
+    },
+    {
+      "case_id": "figure8_92001006_scale1.75_fixed",
+      "family": "figure8",
+      "seed": 92001006,
+      "scale": 1.75,
+      "yaw_mode": "fixed"
+    },
+    {
+      "case_id": "figure8_92001012_scale1.75_fixed",
+      "family": "figure8",
+      "seed": 92001012,
+      "scale": 1.75,
+      "yaw_mode": "fixed"
+    },
+    {
+      "case_id": "figure8_92001018_scale1.75_fixed",
+      "family": "figure8",
+      "seed": 92001018,
+      "scale": 1.75,
+      "yaw_mode": "fixed"
+    },
+    {
+      "case_id": "figure8_92001024_scale1.75_fixed",
+      "family": "figure8",
+      "seed": 92001024,
+      "scale": 1.75,
+      "yaw_mode": "fixed"
+    },
+    {
+      "case_id": "figure8_92001025_scale1.75_path",
+      "family": "figure8",
+      "seed": 92001025,
+      "scale": 1.75,
+      "yaw_mode": "path"
+    },
+    {
+      "case_id": "figure8_92001031_scale1.75_path",
+      "family": "figure8",
+      "seed": 92001031,
+      "scale": 1.75,
+      "yaw_mode": "path"
+    },
+    {
+      "case_id": "figure8_92001037_scale1.75_path",
+      "family": "figure8",
+      "seed": 92001037,
+      "scale": 1.75,
+      "yaw_mode": "path"
+    },
+    {
+      "case_id": "figure8_92001043_scale1.75_path",
+      "family": "figure8",
+      "seed": 92001043,
+      "scale": 1.75,
+      "yaw_mode": "path"
+    },
+    {
+      "case_id": "figure8_92001049_scale1.75_path",
+      "family": "figure8",
+      "seed": 92001049,
+      "scale": 1.75,
+      "yaw_mode": "path"
+    },
+    {
+      "case_id": "helix_92000000_scale1.75_fixed",
+      "family": "helix",
+      "seed": 92000000,
+      "scale": 1.75,
+      "yaw_mode": "fixed"
+    },
+    {
+      "case_id": "helix_92000006_scale1.75_fixed",
+      "family": "helix",
+      "seed": 92000006,
+      "scale": 1.75,
+      "yaw_mode": "fixed"
+    },
+    {
+      "case_id": "helix_92000012_scale1.75_fixed",
+      "family": "helix",
+      "seed": 92000012,
+      "scale": 1.75,
+      "yaw_mode": "fixed"
+    },
+    {
+      "case_id": "helix_92000018_scale1.75_fixed",
+      "family": "helix",
+      "seed": 92000018,
+      "scale": 1.75,
+      "yaw_mode": "fixed"
+    },
+    {
+      "case_id": "helix_92000024_scale1.75_fixed",
+      "family": "helix",
+      "seed": 92000024,
+      "scale": 1.75,
+      "yaw_mode": "fixed"
+    },
+    {
+      "case_id": "helix_92000025_scale1.75_path",
+      "family": "helix",
+      "seed": 92000025,
+      "scale": 1.75,
+      "yaw_mode": "path"
+    },
+    {
+      "case_id": "helix_92000031_scale1.75_path",
+      "family": "helix",
+      "seed": 92000031,
+      "scale": 1.75,
+      "yaw_mode": "path"
+    },
+    {
+      "case_id": "helix_92000037_scale1.75_path",
+      "family": "helix",
+      "seed": 92000037,
+      "scale": 1.75,
+      "yaw_mode": "path"
+    },
+    {
+      "case_id": "helix_92000043_scale1.75_path",
+      "family": "helix",
+      "seed": 92000043,
+      "scale": 1.75,
+      "yaw_mode": "path"
+    },
+    {
+      "case_id": "helix_92000049_scale1.75_path",
+      "family": "helix",
+      "seed": 92000049,
+      "scale": 1.75,
+      "yaw_mode": "path"
+    },
+    {
+      "case_id": "lissajous_92002000_scale1.75_fixed",
+      "family": "lissajous",
+      "seed": 92002000,
+      "scale": 1.75,
+      "yaw_mode": "fixed"
+    },
+    {
+      "case_id": "lissajous_92002006_scale1.75_fixed",
+      "family": "lissajous",
+      "seed": 92002006,
+      "scale": 1.75,
+      "yaw_mode": "fixed"
+    },
+    {
+      "case_id": "lissajous_92002012_scale1.75_fixed",
+      "family": "lissajous",
+      "seed": 92002012,
+      "scale": 1.75,
+      "yaw_mode": "fixed"
+    },
+    {
+      "case_id": "lissajous_92002018_scale1.75_fixed",
+      "family": "lissajous",
+      "seed": 92002018,
+      "scale": 1.75,
+      "yaw_mode": "fixed"
+    },
+    {
+      "case_id": "lissajous_92002024_scale1.75_fixed",
+      "family": "lissajous",
+      "seed": 92002024,
+      "scale": 1.75,
+      "yaw_mode": "fixed"
+    },
+    {
+      "case_id": "lissajous_92002025_scale1.75_path",
+      "family": "lissajous",
+      "seed": 92002025,
+      "scale": 1.75,
+      "yaw_mode": "path"
+    },
+    {
+      "case_id": "lissajous_92002031_scale1.75_path",
+      "family": "lissajous",
+      "seed": 92002031,
+      "scale": 1.75,
+      "yaw_mode": "path"
+    },
+    {
+      "case_id": "lissajous_92002037_scale1.75_path",
+      "family": "lissajous",
+      "seed": 92002037,
+      "scale": 1.75,
+      "yaw_mode": "path"
+    },
+    {
+      "case_id": "lissajous_92002043_scale1.75_path",
+      "family": "lissajous",
+      "seed": 92002043,
+      "scale": 1.75,
+      "yaw_mode": "path"
+    },
+    {
+      "case_id": "lissajous_92002049_scale1.75_path",
+      "family": "lissajous",
+      "seed": 92002049,
+      "scale": 1.75,
+      "yaw_mode": "path"
+    },
+    {
+      "case_id": "waypoint_92003000_scale1.75_fixed",
+      "family": "waypoint",
+      "seed": 92003000,
+      "scale": 1.75,
+      "yaw_mode": "fixed"
+    },
+    {
+      "case_id": "waypoint_92003006_scale1.75_fixed",
+      "family": "waypoint",
+      "seed": 92003006,
+      "scale": 1.75,
+      "yaw_mode": "fixed"
+    },
+    {
+      "case_id": "waypoint_92003012_scale1.75_fixed",
+      "family": "waypoint",
+      "seed": 92003012,
+      "scale": 1.75,
+      "yaw_mode": "fixed"
+    },
+    {
+      "case_id": "waypoint_92003018_scale1.75_fixed",
+      "family": "waypoint",
+      "seed": 92003018,
+      "scale": 1.75,
+      "yaw_mode": "fixed"
+    },
+    {
+      "case_id": "waypoint_92003024_scale1.75_fixed",
+      "family": "waypoint",
+      "seed": 92003024,
+      "scale": 1.75,
+      "yaw_mode": "fixed"
+    },
+    {
+      "case_id": "waypoint_92003025_scale1.75_path",
+      "family": "waypoint",
+      "seed": 92003025,
+      "scale": 1.75,
+      "yaw_mode": "path"
+    },
+    {
+      "case_id": "waypoint_92003031_scale1.75_path",
+      "family": "waypoint",
+      "seed": 92003031,
+      "scale": 1.75,
+      "yaw_mode": "path"
+    },
+    {
+      "case_id": "waypoint_92003037_scale1.75_path",
+      "family": "waypoint",
+      "seed": 92003037,
+      "scale": 1.75,
+      "yaw_mode": "path"
+    },
+    {
+      "case_id": "waypoint_92003043_scale1.75_path",
+      "family": "waypoint",
+      "seed": 92003043,
+      "scale": 1.75,
+      "yaw_mode": "path"
+    },
+    {
+      "case_id": "waypoint_92003049_scale1.75_path",
+      "family": "waypoint",
+      "seed": 92003049,
+      "scale": 1.75,
+      "yaw_mode": "path"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "validation_indices": [
+    38,
+    58,
+    128,
+    154,
+    209,
+    352,
+    353,
+    354,
+    355
+  ],
+  "test_indices": [
+    39,
+    59,
+    129,
+    155,
+    210,
+    356,
+    357,
+    358,
+    359
+  ],
+  "training_runs": 342,
+  "environment": {
+    "EDMDC_INPUT_SOURCE": "applied_wrench",
+    "EDMDC_DT": "0.01",
+    "EDMDC_OBSERVABLE_SET": "physics42",
+    "EDMDC_TRAIN_FRACTION": "1.0",
+    "EDMDC_SHORT_HORIZON_SECONDS": "2.0",
+    "EDMDC_TILT_WEIGHTING": "none",
+    "EDMDC_ENFORCE_KINEMATIC_ROWS": "0",
+    "EDMDC_EARLY_TRANSIENT_WEIGHT": "1.0",
+    "EDMDC_BATCH_ROLLOUT": "1"
+  },
+  "expected_model_sha256": "090b8dd3106dcf3646dcf991fe23c030d3fe27435443a5f8fae19c1c377b2db4",
+  "dataset_sha256": "17f9045739ec05f500004d28bb242ea63f2fe0f53ca5cf1058c747531c505089",
+  "dataset_npz_sha256": "0ee76c173f0dfba149fdd0ff3f4cfcd3d1b7ab785164edad822ddac9da64c109",
+  "expected_model_content_sha256": "f4e736d380d64679b991c4ae7b0d9a379d43fe8502c9a8b8c051dc1e90351cf4",
+  "expected_model_file_sha256_by_dataset": {
+    "pkl": "090b8dd3106dcf3646dcf991fe23c030d3fe27435443a5f8fae19c1c377b2db4",
+    "npz": "788220505e8c1ebedb533e4c12abb4bb4d1ea127d251b07ffcfaf05dcf0a00b6"
+  },
+  "model_hash_note": "The model file stores the training data file name (source_file), so its SHA-256 depends on whether the .pkl or the .npz dataset was used. The acceptance criterion is the content digest (experiments/model_digest.py): SHA-256 over all numerical fields, identical for both."
+}

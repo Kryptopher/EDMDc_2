@@ -1,0 +1,343 @@
+{
+  "created_utc": "2026-10-01T18:39:26.801299+00:00",
+  "scope": "Post-hoc paper-gap audit; new prospective fixed evaluations, no tuning/model adoption/hardware; historical results unchanged.",
+  "decisions": {
+    "A": "RUN: F independently tunes predictors and changes reference/error formulation; it is not a common-configuration 2x2 intervention.",
+    "B": "RUN: Stage R and P change controller assumptions; no completed same-model matched physical mass/inertia block was found.",
+    "C": "RUN: cross frozen bundles to test predictor-specific interpretation; existing independently tuned application alone only supports descriptive claims.",
+    "dictionary": "SKIP: nominal held-out random42 comparison already exists; narrow causal closed-loop dictionary claims.",
+    "timing": "SKIP: reuse original nominal42 full-update isolated evidence, QP-only was not saved; new cost-reference/controller variants have no timing claim."
+  },
+  "model": {
+    "path": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\wrench_revisit_2026-09-21\\training_v2\\models\\wrench_physics42_dt001.pkl",
+    "sha256": "090b8dd3106dcf3646dcf991fe23c030d3fe27435443a5f8fae19c1c377b2db4",
+    "observables": 42,
+    "input_features": 10,
+    "lambda": 0
+  },
+  "config_sources": {
+    "W1": {
+      "path": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\wrench_controller_tuning_v1\\selected_configs\\W1.json",
+      "sha256": "5c25337a3f20c9f7f405619b332d02dd8102697ea2199322041787651055b70a",
+      "config": {
+        "dt": 0.01,
+        "horizon_steps": 75,
+        "block_steps": 5,
+        "q": [
+          263.7467144896289,
+          263.7467144896289,
+          322.3570954873243,
+          9.61672622073504,
+          9.61672622073504,
+          12.0209077759188,
+          4.071469181887508,
+          4.071469181887508,
+          6.785781969812515,
+          0.044585468904965744,
+          0.044585468904965744,
+          0.0713367502479452
+        ],
+        "r": [
+          0.0007414498838301877,
+          0.029657995353207508,
+          0.029657995353207508,
+          0.014828997676603754
+        ],
+        "rd": [
+          0.004495905372190145,
+          0.17983621488760582,
+          0.17983621488760582,
+          0.08991810744380291
+        ],
+        "terminal_scale": 15.310210972187244,
+        "trust": [
+          6.703977300026395,
+          0.309415546004414,
+          0.309415546004414,
+          0.24561406618096665
+        ],
+        "max_iterations": 4000,
+        "eps_abs": 1e-06,
+        "eps_rel": 1e-06
+      }
+    },
+    "W2a": {
+      "path": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\wrench_controller_tuning_v1\\selected_configs\\W2a.json",
+      "sha256": "77c50ab467b456770ddb968e15dd434fc9e9e72f3a47a9778d383a0e4ca46bae",
+      "config": {
+        "dt": 0.01,
+        "horizon_steps": 75,
+        "block_steps": 5,
+        "q": [
+          263.7467144896289,
+          263.7467144896289,
+          322.3570954873243,
+          9.61672622073504,
+          9.61672622073504,
+          12.0209077759188,
+          4.071469181887508,
+          4.071469181887508,
+          6.785781969812515,
+          0.044585468904965744,
+          0.044585468904965744,
+          0.0713367502479452
+        ],
+        "r": [
+          0.0007414498838301877,
+          0.029657995353207508,
+          0.029657995353207508,
+          0.014828997676603754
+        ],
+        "rd": [
+          0.004495905372190145,
+          0.17983621488760582,
+          0.17983621488760582,
+          0.08991810744380291
+        ],
+        "terminal_scale": 15.310210972187244,
+        "trust": [
+          6.703977300026395,
+          0.309415546004414,
+          0.309415546004414,
+          0.24561406618096665
+        ],
+        "max_iterations": 4000,
+        "eps_abs": 1e-06,
+        "eps_rel": 1e-06
+      }
+    },
+    "W3": {
+      "path": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\wrench_controller_tuning_v1\\selected_configs\\W3.json",
+      "sha256": "24ab59887ce5415c18e205cc0c791a61b398def0166fb4c92e7111a8ff906dc0",
+      "config": {
+        "dt": 0.01,
+        "horizon_steps": 75,
+        "block_steps": 5,
+        "q": [
+          351.2485088601219,
+          351.2485088601219,
+          429.3037330512601,
+          2.0564220017502577,
+          2.0564220017502577,
+          2.570527502187822,
+          34.76424464306607,
+          34.76424464306607,
+          57.94040773844345,
+          0.5668752900108684,
+          0.5668752900108684,
+          0.9070004640173895
+        ],
+        "r": [
+          0.0006604499566863803,
+          0.026417998267455212,
+          0.026417998267455212,
+          0.013208999133727606
+        ],
+        "rd": [
+          0.0028321195645354155,
+          0.11328478258141661,
+          0.11328478258141661,
+          0.056642391290708305
+        ],
+        "terminal_scale": 5.439128745289102,
+        "trust": [
+          19.62630755246601,
+          0.4009518159450258,
+          0.4009518159450258,
+          0.1969996670277786
+        ],
+        "max_iterations": 4000,
+        "eps_abs": 1e-06,
+        "eps_rel": 1e-06
+      }
+    },
+    "W1f": {
+      "path": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\wrench_feedforward_amendment_F\\selected_configs\\W1f.json",
+      "sha256": "04d42351c8839ff5b3bae3deb2cdc96e81597542a7743adf2c784e3ab7791290",
+      "config": {
+        "dt": 0.01,
+        "horizon_steps": 50,
+        "block_steps": 2,
+        "q": [
+          132.14137409922748,
+          132.14137409922748,
+          161.5061238990558,
+          27.305020711153244,
+          27.305020711153244,
+          34.13127588894155,
+          2.211718874381882,
+          2.211718874381882,
+          3.6861981239698034,
+          0.1013634955807517,
+          0.1013634955807517,
+          0.16218159292920273
+        ],
+        "r": [
+          0.0026104455288092033,
+          0.10441782115236814,
+          0.10441782115236814,
+          0.05220891057618407
+        ],
+        "rd": [
+          0.002255811058971487,
+          0.09023244235885947,
+          0.09023244235885947,
+          0.04511622117942973
+        ],
+        "terminal_scale": 6.5105516844116265,
+        "trust": [
+          5.950032342989686,
+          0.9503998338761968,
+          0.9503998338761968,
+          0.09008522876650596
+        ],
+        "max_iterations": 4000,
+        "eps_abs": 1e-06,
+        "eps_rel": 1e-06
+      }
+    },
+    "interception": {
+      "path": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\overnight_campaign_20260929\\continuation_20260930\\interception\\selection.json",
+      "sha256": "2a922609747f9e38d83280c6ca4b611f4a5d1f32898de52b8ac6bf8ca41de8f9",
+      "bundles": {
+        "W1": {
+          "dt": 0.01,
+          "horizon_steps": 50,
+          "block_steps": 10,
+          "q": [
+            0.5384988183729873,
+            0.5384988183729873,
+            0.5384988183729873,
+            0.1572338121828079,
+            0.1572338121828079,
+            0.1572338121828079,
+            0.5837548570017026,
+            0.5837548570017026,
+            0.5837548570017026,
+            0.07104363518292121,
+            0.07104363518292121,
+            0.07104363518292121
+          ],
+          "r": [
+            0.0023595366429165245,
+            0.09438146571666099,
+            0.09438146571666099,
+            0.047190732858330496
+          ],
+          "rd": [
+            0.06306533319097538,
+            2.522613327639015,
+            2.522613327639015,
+            1.2613066638195074
+          ],
+          "terminal_scale": 3.6655558943474302,
+          "trust": [
+            13.395700685423366,
+            1.0406461883364884,
+            1.0406461883364884,
+            0.23807460338075892
+          ],
+          "max_iterations": 4000,
+          "eps_abs": 1e-06,
+          "eps_rel": 1e-06
+        },
+        "W2a": {
+          "dt": 0.01,
+          "horizon_steps": 100,
+          "block_steps": 5,
+          "q": [
+            0.5038325127223001,
+            0.5038325127223001,
+            0.5038325127223001,
+            0.041096384448054246,
+            0.041096384448054246,
+            0.041096384448054246,
+            0.8389653770521994,
+            0.8389653770521994,
+            0.8389653770521994,
+            0.004460241876262501,
+            0.004460241876262501,
+            0.004460241876262501
+          ],
+          "r": [
+            0.004520001340481839,
+            0.18080005361927354,
+            0.18080005361927354,
+            0.09040002680963677
+          ],
+          "rd": [
+            0.005599312399951494,
+            0.22397249599805977,
+            0.22397249599805977,
+            0.11198624799902988
+          ],
+          "terminal_scale": 13.507594007018826,
+          "trust": [
+            19.66586194048803,
+            0.22552799252908406,
+            0.22552799252908406,
+            0.07929650855922216
+          ],
+          "max_iterations": 4000,
+          "eps_abs": 1e-06,
+          "eps_rel": 1e-06
+        }
+      }
+    }
+  },
+  "code_sha256": {
+    "wrench_revisit_mpc.py": "880e8136042d57c3d19c0575ae51d6c2c41aa7ed606dc34a38ee19a41392aebb",
+    "feedforward_wrench_mpc.py": "9f9dfce493703a628f87a05a6b69691dea9a4f6bb887e39555e375e6b30fb1d2",
+    "analytic_feedforward_reference.py": "7d08dbbc391ba7537f70531cc9723c759b54f33e961bbe766aa697dbfbe80263",
+    "Simulation.py": "d89f139ad885a1467f5df075f5542319caed8c45f5a10409e2f6fb528ad2d72c",
+    "quadcopter.py": "120469050255c5f0e45b0c0486bb13b9325d04619129098a7f9e03178862858f",
+    "PID_Mixer.py": "67648a4c96f0fec930ba381b30c4cd1da29f30f33a61993aead97e26b0de1a80",
+    "edmdc_mpc.py": "a9884524e39dded05c2738b55e0c28fe21578d5f4c63bf03a13978654568a4f6",
+    "EDMDc_training.py": "c579f25c09d583b62a697ec903bb21249734865f8e52fad1119e87c78aa9cba4",
+    "wrench_interception_v1/targets.py": "5773d88745b8565fe1b5c647d34fc34752a52e3c7b1acaf4ee2d150871977350",
+    "wrench_interception_v1/core.py": "46005124f520a4c31f183c46c7db512bd370c085445389fc2ee1f64a82159ba5",
+    "paper_gap_audit_20261001/runtime.py": "5356dc6272376d27fbdfd6b8d23776f8482353ffad1d47a5f158ce42cf75e311",
+    "paper_gap_audit_20261001/cost_reference_mpc.py": "c4cd3836be05ccbbf6e9100cded3a1268ed03b8954ac25dd3ef960aedde23562"
+  },
+  "git_head": "364757a312e5f3b904f82c8f041ce423d5c235ac",
+  "tasks_file": "TASKS.json",
+  "tasks_sha256": "f1584e8e8c322659739cb134fdd5c0c21c0b6eaab80c80c10bd296284983b5d4",
+  "evidence_sha256": "581ea201dfb91beea58ad687e498be7125b0cefba135bf8f6cd1fd3e22e61b50",
+  "counts": {
+    "A_evaluation": 320,
+    "B_evaluation": 640,
+    "C_evaluation": 160,
+    "smoke": 48,
+    "equivalence_replay": 4,
+    "planned_total": 1172,
+    "hard_limit": 1200,
+    "automatic_retries": 0
+  },
+  "seeds": "Exact per-task seeds in TASKS.json. Disjoint from all integer seed/base_seed/lhs_seed values in archived aggregate manifests/protocols/results inventoried in EXISTING_EVIDENCE.json. No held-out identification traces reopened.",
+  "A_intervention": "Only replace the hover wrench in the absolute-command R cost by analytical u_ref[k:k+N]. No additive command, nominal-rollout replacement, reference-defect cancellation, initial guess change, feedforward clipping or weights change. All four cells use identical analytical state references and N75/b5 c23.",
+  "tracking_reference": "Existing analytic_tracking_reference at duration31.01s, speed1.75, common analytical 12-state desired trajectory; unwrap desired yaw once. Initial true position/velocity/yaw equal desired, roll/pitch/body rates zero. Same arrays across cells/physical conditions. References differ from the old numerically differentiated baseline; do not attach old numbers to new trajectories.",
+  "B": "Nominal controller model/hover/limits fixed; change only physical quad.m or quad.I. Motor speed, kT/kD and allocation unchanged. W1/W2a/W3 frozen primary N75; W1f frozen F c17 N50/b2. Within-arm degradation paired; between-arm W1f comparison is as-selected, not common config.",
+  "C": "Original scripted target distributions, exact state and known future trajectory; rest initial state and target-reference yaw. Frozen W1 N50/b10 and W2a N100/b5 entire bundles crossed. Distance<=0.75 and relative speed<=3 for21 samples; end-of-dwell qualification; noncapture20s. Original semantics retain a capture before a later abort, with both explicitly reported.",
+  "metrics": {
+    "tracking": "sqrt(mean(error_coordinates_and_time^2)), positions m, Euler attitude radians (all three wrapped), yaw radians wrapped. Mean/median/P95/max over completed episode metrics. Record all failures separately. Prefix RMSE never counted as successful full-episode RMSE.",
+    "C": "capture count, scored qualification time including20s noncapture, first sphere entry conditional on entry, speed at entry, minimum separation, completion/envelope aborts, solver failures.",
+    "constraints": "Requested wrench bounds and applied rotor margin violation tolerance1e-5; allocator requested-applied max component>1e-7; optimizer acceptance retains original1e-4.",
+    "pairing": "Scenario case_id within group, same reference hashes required. Continuous tracking paired stats only mutually completed flights, report excluded failures; no equivalence inference from nonsignificance.",
+    "summary": "mean, median, numpy default linear P95, max; family/heading subgroups descriptive.",
+    "bootstrap": "20000 paired scenario bootstrap replicates, 95% percentile CI, numpy default_rng seed2026100101 independently reset per contrast. Exact two-sided binomial sign-test excludes exact ties. No multiplicity-adjusted superiority claim.",
+    "contrasts": [
+      "A W2a-W1 within each input reference",
+      "A analytic-hover within each predictor",
+      "A paired difference-in-differences",
+      "B each perturbed-nominal within each arm",
+      "B W2a-W1,W2a-W3,W2a-W1f each condition",
+      "C W2a-W1 each bundle for penalized time and capture",
+      "C bundleW2a-bundleW1 each predictor"
+    ]
+  },
+  "failure_handling": "Preserve all exceptions, nonfinite states, >80deg roll/pitch and >50m tracking error aborts. No replacement scenarios, retries or retuning. If smoke indicates execution/implementation invalidity, halt affected group; failed control robustness alone remains an outcome. For C captures and completion both reported.",
+  "smoke_gate": "48 designated smoke episodes plus4 original-vs-isolated-hover replays. Require no execution exceptions/nonfinite state in smoke, exact equality of states/applied commands/solver accepted flags for the two replay pairs; confirm physical-only parameter changes and paired reference identity. Envelope aborts retained and do not permit retuning. No evaluation opens until gate and evaluation freeze saved.",
+  "workers": 8,
+  "BLAS_threads_per_worker": 1,
+  "timing": "No timing benchmark during parallel work; wall durations are workload diagnostics only."
+}

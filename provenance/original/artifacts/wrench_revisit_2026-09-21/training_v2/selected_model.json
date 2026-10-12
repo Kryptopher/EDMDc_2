@@ -1,0 +1,11 @@
+{
+  "dictionary": "physics42",
+  "model": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\wrench_revisit_2026-09-21\\training_v2\\models\\wrench_physics42_dt001.pkl",
+  "sha256": "090b8dd3106dcf3646dcf991fe23c030d3fe27435443a5f8fae19c1c377b2db4",
+  "lambda": 0.0,
+  "lambda_selection_score": 0.4111245660621494,
+  "lambda_selection_rolling_pos": 0.11500238847629014,
+  "lambda_selection_rolling_vel": 0.20978905115995006,
+  "lambda_selection_yaw": 0.05166380275616858,
+  "lambda_selection_r": 0.00591872655066806
+}

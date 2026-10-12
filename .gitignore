@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+*.tmp
+results_local/
+data/*.pkl
+!data/models/*.pkl

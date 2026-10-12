@@ -1,0 +1,599 @@
+{
+  "created_utc": "2026-09-30T05:02:44.443429+00:00",
+  "classification": "confirmatory new known-future protocol; development and tuning exploratory",
+  "hardware_actions": false,
+  "sources": {
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\wrench_interception_v1\\campaign.py": "c78f6571991280c087ea3040ac4749e56bf1d29c67a2a3200053ccac4a368aab",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\wrench_interception_v1\\core.py": "46005124f520a4c31f183c46c7db512bd370c085445389fc2ee1f64a82159ba5",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\wrench_interception_v1\\targets.py": "5773d88745b8565fe1b5c647d34fc34752a52e3c7b1acaf4ee2d150871977350",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\wrench_interception_v1\\candidates.json": "417916c12aef60fce2c758bdcbaecd9eadd7ced4fa5af8c0f9535d148f32a3cc",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\wrench_interception_v1\\seed_audit.json": "5c98b33cfddb085e55223e580f148d21db9d972e1b8888d10427b7a3a07522e1",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\Simulation.py": "d89f139ad885a1467f5df075f5542319caed8c45f5a10409e2f6fb528ad2d72c",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\quadcopter.py": "120469050255c5f0e45b0c0486bb13b9325d04619129098a7f9e03178862858f",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\PID_Mixer.py": "67648a4c96f0fec930ba381b30c4cd1da29f30f33a61993aead97e26b0de1a80",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\wrench_revisit_mpc.py": "880e8136042d57c3d19c0575ae51d6c2c41aa7ed606dc34a38ee19a41392aebb",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\edmdc_mpc.py": "a9884524e39dded05c2738b55e0c28fe21578d5f4c63bf03a13978654568a4f6",
+    "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\publication_scenarios.py": "fb4479ee0cfae44def50d26ab460f179a29c728feed317b66d34bcd3cdbd7427"
+  },
+  "model": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\wrench_revisit_2026-09-21\\training_v2\\models\\wrench_physics42_dt001.pkl",
+  "model_sha256": "090b8dd3106dcf3646dcf991fe23c030d3fe27435443a5f8fae19c1c377b2db4",
+  "arms": [
+    "PID",
+    "W1",
+    "W2a",
+    "W3"
+  ],
+  "workers": 4,
+  "dt": 0.01,
+  "scope": "Nominal simulation plant and exact current interceptor state. Scripted analytic target p/v/yaw preview; target estimation/forecasting errors excluded. PID sees only current p/v/yaw, no preview or target acceleration. No EKF/IMM/guidance.",
+  "targets": "Unmodified straight, accelerating, helix and weaving definitions copied from Intercept_comparison.py; source in targets.py. Initial interceptor state rest at [0,0,0], yaw equal current target yaw. Target parameters sampled once per seed; paired unchanged for every arm.",
+  "formulation": "Direct WrenchMPC minimizes physical-reference tracking with position normalized by .75 m and velocity by 3 m/s, common terminal multiplier. Analytic target acceleration determines feasible reference attitude/body rates; actuator allocation/rotor saturation identical to tracking. No fallback guidance. Existing MPC previous-applied-command fallback retained and counted.",
+  "pid": "Position/velocity PID into thrust vector, Euler attitude PID into body torque; 45 degree tilt and nominal wrench limits; all six integrators held on rotor saturation. No QP; solver-failure counts are not comparable.",
+  "tuning": {
+    "candidates_per_arm": 25,
+    "design": "25 Latin-hypercube candidates; identical predictive search space across W1/W2a/W3; 12-dimensional PID gain multipliers, equal episode budget/procedure",
+    "lhs_seed": 2026092903,
+    "screening_cases": 12,
+    "screening_seconds": 10,
+    "finalists": 4,
+    "validation_cases": 48,
+    "validation_seconds": 20,
+    "selection_rule": [
+      "number incomplete (exceptions count incomplete)",
+      "sum solver failures + rotor-saturated steps (PID solver term zero, no QP)",
+      "mean coordinate position RMSE over complete runs, infinity if none",
+      "candidate index"
+    ],
+    "finalists_rule": "best four; no forced incumbent",
+    "disclosure": "48 validation trajectories each have the interception episode length 20 s (tracking used 30 s); all four arms identical here. Cost re-scaled before any run; every candidate retained."
+  },
+  "capture": {
+    "separation_m": 0.75,
+    "relative_speed_mps": 3,
+    "dwell_seconds": 0.2,
+    "samples": 21,
+    "qualification_time": "end of dwell",
+    "episode_seconds": 20,
+    "noncapture_score_seconds": 20,
+    "first_entry": "first separation <= .75 irrespective of relative speed; also log first joint p/v region entry"
+  },
+  "scenarios": {
+    "screening": [
+      {
+        "case_id": "screening_straight_00",
+        "family": "straight",
+        "seed": 2909290000
+      },
+      {
+        "case_id": "screening_straight_01",
+        "family": "straight",
+        "seed": 2909290001
+      },
+      {
+        "case_id": "screening_straight_02",
+        "family": "straight",
+        "seed": 2909290002
+      },
+      {
+        "case_id": "screening_accelerating_00",
+        "family": "accelerating",
+        "seed": 2909291000
+      },
+      {
+        "case_id": "screening_accelerating_01",
+        "family": "accelerating",
+        "seed": 2909291001
+      },
+      {
+        "case_id": "screening_accelerating_02",
+        "family": "accelerating",
+        "seed": 2909291002
+      },
+      {
+        "case_id": "screening_helix_00",
+        "family": "helix",
+        "seed": 2909292000
+      },
+      {
+        "case_id": "screening_helix_01",
+        "family": "helix",
+        "seed": 2909292001
+      },
+      {
+        "case_id": "screening_helix_02",
+        "family": "helix",
+        "seed": 2909292002
+      },
+      {
+        "case_id": "screening_weaving_00",
+        "family": "weaving",
+        "seed": 2909293000
+      },
+      {
+        "case_id": "screening_weaving_01",
+        "family": "weaving",
+        "seed": 2909293001
+      },
+      {
+        "case_id": "screening_weaving_02",
+        "family": "weaving",
+        "seed": 2909293002
+      }
+    ],
+    "validation": [
+      {
+        "case_id": "validation_straight_00",
+        "family": "straight",
+        "seed": 2909300000
+      },
+      {
+        "case_id": "validation_straight_01",
+        "family": "straight",
+        "seed": 2909300001
+      },
+      {
+        "case_id": "validation_straight_02",
+        "family": "straight",
+        "seed": 2909300002
+      },
+      {
+        "case_id": "validation_straight_03",
+        "family": "straight",
+        "seed": 2909300003
+      },
+      {
+        "case_id": "validation_straight_04",
+        "family": "straight",
+        "seed": 2909300004
+      },
+      {
+        "case_id": "validation_straight_05",
+        "family": "straight",
+        "seed": 2909300005
+      },
+      {
+        "case_id": "validation_straight_06",
+        "family": "straight",
+        "seed": 2909300006
+      },
+      {
+        "case_id": "validation_straight_07",
+        "family": "straight",
+        "seed": 2909300007
+      },
+      {
+        "case_id": "validation_straight_08",
+        "family": "straight",
+        "seed": 2909300008
+      },
+      {
+        "case_id": "validation_straight_09",
+        "family": "straight",
+        "seed": 2909300009
+      },
+      {
+        "case_id": "validation_straight_10",
+        "family": "straight",
+        "seed": 2909300010
+      },
+      {
+        "case_id": "validation_straight_11",
+        "family": "straight",
+        "seed": 2909300011
+      },
+      {
+        "case_id": "validation_accelerating_00",
+        "family": "accelerating",
+        "seed": 2909301000
+      },
+      {
+        "case_id": "validation_accelerating_01",
+        "family": "accelerating",
+        "seed": 2909301001
+      },
+      {
+        "case_id": "validation_accelerating_02",
+        "family": "accelerating",
+        "seed": 2909301002
+      },
+      {
+        "case_id": "validation_accelerating_03",
+        "family": "accelerating",
+        "seed": 2909301003
+      },
+      {
+        "case_id": "validation_accelerating_04",
+        "family": "accelerating",
+        "seed": 2909301004
+      },
+      {
+        "case_id": "validation_accelerating_05",
+        "family": "accelerating",
+        "seed": 2909301005
+      },
+      {
+        "case_id": "validation_accelerating_06",
+        "family": "accelerating",
+        "seed": 2909301006
+      },
+      {
+        "case_id": "validation_accelerating_07",
+        "family": "accelerating",
+        "seed": 2909301007
+      },
+      {
+        "case_id": "validation_accelerating_08",
+        "family": "accelerating",
+        "seed": 2909301008
+      },
+      {
+        "case_id": "validation_accelerating_09",
+        "family": "accelerating",
+        "seed": 2909301009
+      },
+      {
+        "case_id": "validation_accelerating_10",
+        "family": "accelerating",
+        "seed": 2909301010
+      },
+      {
+        "case_id": "validation_accelerating_11",
+        "family": "accelerating",
+        "seed": 2909301011
+      },
+      {
+        "case_id": "validation_helix_00",
+        "family": "helix",
+        "seed": 2909302000
+      },
+      {
+        "case_id": "validation_helix_01",
+        "family": "helix",
+        "seed": 2909302001
+      },
+      {
+        "case_id": "validation_helix_02",
+        "family": "helix",
+        "seed": 2909302002
+      },
+      {
+        "case_id": "validation_helix_03",
+        "family": "helix",
+        "seed": 2909302003
+      },
+      {
+        "case_id": "validation_helix_04",
+        "family": "helix",
+        "seed": 2909302004
+      },
+      {
+        "case_id": "validation_helix_05",
+        "family": "helix",
+        "seed": 2909302005
+      },
+      {
+        "case_id": "validation_helix_06",
+        "family": "helix",
+        "seed": 2909302006
+      },
+      {
+        "case_id": "validation_helix_07",
+        "family": "helix",
+        "seed": 2909302007
+      },
+      {
+        "case_id": "validation_helix_08",
+        "family": "helix",
+        "seed": 2909302008
+      },
+      {
+        "case_id": "validation_helix_09",
+        "family": "helix",
+        "seed": 2909302009
+      },
+      {
+        "case_id": "validation_helix_10",
+        "family": "helix",
+        "seed": 2909302010
+      },
+      {
+        "case_id": "validation_helix_11",
+        "family": "helix",
+        "seed": 2909302011
+      },
+      {
+        "case_id": "validation_weaving_00",
+        "family": "weaving",
+        "seed": 2909303000
+      },
+      {
+        "case_id": "validation_weaving_01",
+        "family": "weaving",
+        "seed": 2909303001
+      },
+      {
+        "case_id": "validation_weaving_02",
+        "family": "weaving",
+        "seed": 2909303002
+      },
+      {
+        "case_id": "validation_weaving_03",
+        "family": "weaving",
+        "seed": 2909303003
+      },
+      {
+        "case_id": "validation_weaving_04",
+        "family": "weaving",
+        "seed": 2909303004
+      },
+      {
+        "case_id": "validation_weaving_05",
+        "family": "weaving",
+        "seed": 2909303005
+      },
+      {
+        "case_id": "validation_weaving_06",
+        "family": "weaving",
+        "seed": 2909303006
+      },
+      {
+        "case_id": "validation_weaving_07",
+        "family": "weaving",
+        "seed": 2909303007
+      },
+      {
+        "case_id": "validation_weaving_08",
+        "family": "weaving",
+        "seed": 2909303008
+      },
+      {
+        "case_id": "validation_weaving_09",
+        "family": "weaving",
+        "seed": 2909303009
+      },
+      {
+        "case_id": "validation_weaving_10",
+        "family": "weaving",
+        "seed": 2909303010
+      },
+      {
+        "case_id": "validation_weaving_11",
+        "family": "weaving",
+        "seed": 2909303011
+      }
+    ],
+    "evaluation": [
+      {
+        "case_id": "evaluation_straight_00",
+        "family": "straight",
+        "seed": 2909330000
+      },
+      {
+        "case_id": "evaluation_straight_01",
+        "family": "straight",
+        "seed": 2909330001
+      },
+      {
+        "case_id": "evaluation_straight_02",
+        "family": "straight",
+        "seed": 2909330002
+      },
+      {
+        "case_id": "evaluation_straight_03",
+        "family": "straight",
+        "seed": 2909330003
+      },
+      {
+        "case_id": "evaluation_straight_04",
+        "family": "straight",
+        "seed": 2909330004
+      },
+      {
+        "case_id": "evaluation_straight_05",
+        "family": "straight",
+        "seed": 2909330005
+      },
+      {
+        "case_id": "evaluation_straight_06",
+        "family": "straight",
+        "seed": 2909330006
+      },
+      {
+        "case_id": "evaluation_straight_07",
+        "family": "straight",
+        "seed": 2909330007
+      },
+      {
+        "case_id": "evaluation_straight_08",
+        "family": "straight",
+        "seed": 2909330008
+      },
+      {
+        "case_id": "evaluation_straight_09",
+        "family": "straight",
+        "seed": 2909330009
+      },
+      {
+        "case_id": "evaluation_accelerating_00",
+        "family": "accelerating",
+        "seed": 2909331000
+      },
+      {
+        "case_id": "evaluation_accelerating_01",
+        "family": "accelerating",
+        "seed": 2909331001
+      },
+      {
+        "case_id": "evaluation_accelerating_02",
+        "family": "accelerating",
+        "seed": 2909331002
+      },
+      {
+        "case_id": "evaluation_accelerating_03",
+        "family": "accelerating",
+        "seed": 2909331003
+      },
+      {
+        "case_id": "evaluation_accelerating_04",
+        "family": "accelerating",
+        "seed": 2909331004
+      },
+      {
+        "case_id": "evaluation_accelerating_05",
+        "family": "accelerating",
+        "seed": 2909331005
+      },
+      {
+        "case_id": "evaluation_accelerating_06",
+        "family": "accelerating",
+        "seed": 2909331006
+      },
+      {
+        "case_id": "evaluation_accelerating_07",
+        "family": "accelerating",
+        "seed": 2909331007
+      },
+      {
+        "case_id": "evaluation_accelerating_08",
+        "family": "accelerating",
+        "seed": 2909331008
+      },
+      {
+        "case_id": "evaluation_accelerating_09",
+        "family": "accelerating",
+        "seed": 2909331009
+      },
+      {
+        "case_id": "evaluation_helix_00",
+        "family": "helix",
+        "seed": 2909332000
+      },
+      {
+        "case_id": "evaluation_helix_01",
+        "family": "helix",
+        "seed": 2909332001
+      },
+      {
+        "case_id": "evaluation_helix_02",
+        "family": "helix",
+        "seed": 2909332002
+      },
+      {
+        "case_id": "evaluation_helix_03",
+        "family": "helix",
+        "seed": 2909332003
+      },
+      {
+        "case_id": "evaluation_helix_04",
+        "family": "helix",
+        "seed": 2909332004
+      },
+      {
+        "case_id": "evaluation_helix_05",
+        "family": "helix",
+        "seed": 2909332005
+      },
+      {
+        "case_id": "evaluation_helix_06",
+        "family": "helix",
+        "seed": 2909332006
+      },
+      {
+        "case_id": "evaluation_helix_07",
+        "family": "helix",
+        "seed": 2909332007
+      },
+      {
+        "case_id": "evaluation_helix_08",
+        "family": "helix",
+        "seed": 2909332008
+      },
+      {
+        "case_id": "evaluation_helix_09",
+        "family": "helix",
+        "seed": 2909332009
+      },
+      {
+        "case_id": "evaluation_weaving_00",
+        "family": "weaving",
+        "seed": 2909333000
+      },
+      {
+        "case_id": "evaluation_weaving_01",
+        "family": "weaving",
+        "seed": 2909333001
+      },
+      {
+        "case_id": "evaluation_weaving_02",
+        "family": "weaving",
+        "seed": 2909333002
+      },
+      {
+        "case_id": "evaluation_weaving_03",
+        "family": "weaving",
+        "seed": 2909333003
+      },
+      {
+        "case_id": "evaluation_weaving_04",
+        "family": "weaving",
+        "seed": 2909333004
+      },
+      {
+        "case_id": "evaluation_weaving_05",
+        "family": "weaving",
+        "seed": 2909333005
+      },
+      {
+        "case_id": "evaluation_weaving_06",
+        "family": "weaving",
+        "seed": 2909333006
+      },
+      {
+        "case_id": "evaluation_weaving_07",
+        "family": "weaving",
+        "seed": 2909333007
+      },
+      {
+        "case_id": "evaluation_weaving_08",
+        "family": "weaving",
+        "seed": 2909333008
+      },
+      {
+        "case_id": "evaluation_weaving_09",
+        "family": "weaving",
+        "seed": 2909333009
+      }
+    ]
+  },
+  "selection_freeze": "hash before evaluation; no evaluation feedback to tuning",
+  "statistics": {
+    "primary": "W2a minus W1 failure-aware qualified time (noncaptures=20) over all 40 pairs",
+    "resamples": 20000,
+    "bootstrap_seed_base": 2026092904,
+    "bootstrap_offsets": {
+      "PID": 0,
+      "W2a": 1,
+      "W3": 2
+    },
+    "sign_test": "exact two-sided excluding abs(diff)<=1e-12 ties",
+    "alpha": 0.05,
+    "outcome_rule": "EDMDc faster/slower only if sign-test p<.05 and 95% paired mean-difference bootstrap CI strictly below/above zero; otherwise no measurable difference, not equivalence. Completion/capture counts always reported. No confirmatory inference from incomplete evaluation block.",
+    "mechanism_rule": "Do not infer causality from ordering: report observed saturation, solver/attitude diagnostics; mechanism unresolved unless supported."
+  },
+  "outcomes": [
+    "With known future target motion, EDMDc-MPC qualified [X] s sooner than the hover-linear baseline ([p]); the ordering matches the tracking result.",
+    "Qualified interception time did not differ measurably across prediction models ([counts], [p]), even though position tracking differed by [factor].",
+    "Despite tracking more accurately, EDMDc-MPC qualified [X] s later ([p]); the mechanism is [saturation / attitude error / other], not tracking accuracy."
+  ],
+  "gates": [
+    "source/model hashes and disjoint seeds",
+    "21-sample dwell boundary checks; noncapture score 20",
+    "hover allocation and no-preview PID interface; forced rotor saturation freezes all integrators"
+  ],
+  "schedule": {
+    "tuning_deadline_utc": "2026-09-30T11:00:00+00:00",
+    "evaluation_deadline_utc": "2026-09-30T12:30:00+00:00",
+    "if_tuning_late": "No evaluation; report protocol and all exploratory work retained",
+    "priority": "Block 2 must finish/report or halt before any Block 3 run"
+  }
+}

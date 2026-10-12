@@ -1,0 +1,310 @@
+{
+  "note": "Screening (12 x 10 s) and validation (48 x 20 s) interception scenarios used for controller selection.",
+  "screening": [
+    {
+      "case_id": "screening_straight_00",
+      "family": "straight",
+      "seed": 2909290000
+    },
+    {
+      "case_id": "screening_straight_01",
+      "family": "straight",
+      "seed": 2909290001
+    },
+    {
+      "case_id": "screening_straight_02",
+      "family": "straight",
+      "seed": 2909290002
+    },
+    {
+      "case_id": "screening_accelerating_00",
+      "family": "accelerating",
+      "seed": 2909291000
+    },
+    {
+      "case_id": "screening_accelerating_01",
+      "family": "accelerating",
+      "seed": 2909291001
+    },
+    {
+      "case_id": "screening_accelerating_02",
+      "family": "accelerating",
+      "seed": 2909291002
+    },
+    {
+      "case_id": "screening_helix_00",
+      "family": "helix",
+      "seed": 2909292000
+    },
+    {
+      "case_id": "screening_helix_01",
+      "family": "helix",
+      "seed": 2909292001
+    },
+    {
+      "case_id": "screening_helix_02",
+      "family": "helix",
+      "seed": 2909292002
+    },
+    {
+      "case_id": "screening_weaving_00",
+      "family": "weaving",
+      "seed": 2909293000
+    },
+    {
+      "case_id": "screening_weaving_01",
+      "family": "weaving",
+      "seed": 2909293001
+    },
+    {
+      "case_id": "screening_weaving_02",
+      "family": "weaving",
+      "seed": 2909293002
+    }
+  ],
+  "validation": [
+    {
+      "case_id": "validation_straight_00",
+      "family": "straight",
+      "seed": 2909300000
+    },
+    {
+      "case_id": "validation_straight_01",
+      "family": "straight",
+      "seed": 2909300001
+    },
+    {
+      "case_id": "validation_straight_02",
+      "family": "straight",
+      "seed": 2909300002
+    },
+    {
+      "case_id": "validation_straight_03",
+      "family": "straight",
+      "seed": 2909300003
+    },
+    {
+      "case_id": "validation_straight_04",
+      "family": "straight",
+      "seed": 2909300004
+    },
+    {
+      "case_id": "validation_straight_05",
+      "family": "straight",
+      "seed": 2909300005
+    },
+    {
+      "case_id": "validation_straight_06",
+      "family": "straight",
+      "seed": 2909300006
+    },
+    {
+      "case_id": "validation_straight_07",
+      "family": "straight",
+      "seed": 2909300007
+    },
+    {
+      "case_id": "validation_straight_08",
+      "family": "straight",
+      "seed": 2909300008
+    },
+    {
+      "case_id": "validation_straight_09",
+      "family": "straight",
+      "seed": 2909300009
+    },
+    {
+      "case_id": "validation_straight_10",
+      "family": "straight",
+      "seed": 2909300010
+    },
+    {
+      "case_id": "validation_straight_11",
+      "family": "straight",
+      "seed": 2909300011
+    },
+    {
+      "case_id": "validation_accelerating_00",
+      "family": "accelerating",
+      "seed": 2909301000
+    },
+    {
+      "case_id": "validation_accelerating_01",
+      "family": "accelerating",
+      "seed": 2909301001
+    },
+    {
+      "case_id": "validation_accelerating_02",
+      "family": "accelerating",
+      "seed": 2909301002
+    },
+    {
+      "case_id": "validation_accelerating_03",
+      "family": "accelerating",
+      "seed": 2909301003
+    },
+    {
+      "case_id": "validation_accelerating_04",
+      "family": "accelerating",
+      "seed": 2909301004
+    },
+    {
+      "case_id": "validation_accelerating_05",
+      "family": "accelerating",
+      "seed": 2909301005
+    },
+    {
+      "case_id": "validation_accelerating_06",
+      "family": "accelerating",
+      "seed": 2909301006
+    },
+    {
+      "case_id": "validation_accelerating_07",
+      "family": "accelerating",
+      "seed": 2909301007
+    },
+    {
+      "case_id": "validation_accelerating_08",
+      "family": "accelerating",
+      "seed": 2909301008
+    },
+    {
+      "case_id": "validation_accelerating_09",
+      "family": "accelerating",
+      "seed": 2909301009
+    },
+    {
+      "case_id": "validation_accelerating_10",
+      "family": "accelerating",
+      "seed": 2909301010
+    },
+    {
+      "case_id": "validation_accelerating_11",
+      "family": "accelerating",
+      "seed": 2909301011
+    },
+    {
+      "case_id": "validation_helix_00",
+      "family": "helix",
+      "seed": 2909302000
+    },
+    {
+      "case_id": "validation_helix_01",
+      "family": "helix",
+      "seed": 2909302001
+    },
+    {
+      "case_id": "validation_helix_02",
+      "family": "helix",
+      "seed": 2909302002
+    },
+    {
+      "case_id": "validation_helix_03",
+      "family": "helix",
+      "seed": 2909302003
+    },
+    {
+      "case_id": "validation_helix_04",
+      "family": "helix",
+      "seed": 2909302004
+    },
+    {
+      "case_id": "validation_helix_05",
+      "family": "helix",
+      "seed": 2909302005
+    },
+    {
+      "case_id": "validation_helix_06",
+      "family": "helix",
+      "seed": 2909302006
+    },
+    {
+      "case_id": "validation_helix_07",
+      "family": "helix",
+      "seed": 2909302007
+    },
+    {
+      "case_id": "validation_helix_08",
+      "family": "helix",
+      "seed": 2909302008
+    },
+    {
+      "case_id": "validation_helix_09",
+      "family": "helix",
+      "seed": 2909302009
+    },
+    {
+      "case_id": "validation_helix_10",
+      "family": "helix",
+      "seed": 2909302010
+    },
+    {
+      "case_id": "validation_helix_11",
+      "family": "helix",
+      "seed": 2909302011
+    },
+    {
+      "case_id": "validation_weaving_00",
+      "family": "weaving",
+      "seed": 2909303000
+    },
+    {
+      "case_id": "validation_weaving_01",
+      "family": "weaving",
+      "seed": 2909303001
+    },
+    {
+      "case_id": "validation_weaving_02",
+      "family": "weaving",
+      "seed": 2909303002
+    },
+    {
+      "case_id": "validation_weaving_03",
+      "family": "weaving",
+      "seed": 2909303003
+    },
+    {
+      "case_id": "validation_weaving_04",
+      "family": "weaving",
+      "seed": 2909303004
+    },
+    {
+      "case_id": "validation_weaving_05",
+      "family": "weaving",
+      "seed": 2909303005
+    },
+    {
+      "case_id": "validation_weaving_06",
+      "family": "weaving",
+      "seed": 2909303006
+    },
+    {
+      "case_id": "validation_weaving_07",
+      "family": "weaving",
+      "seed": 2909303007
+    },
+    {
+      "case_id": "validation_weaving_08",
+      "family": "weaving",
+      "seed": 2909303008
+    },
+    {
+      "case_id": "validation_weaving_09",
+      "family": "weaving",
+      "seed": 2909303009
+    },
+    {
+      "case_id": "validation_weaving_10",
+      "family": "weaving",
+      "seed": 2909303010
+    },
+    {
+      "case_id": "validation_weaving_11",
+      "family": "weaving",
+      "seed": 2909303011
+    }
+  ],
+  "screening_seconds": 10,
+  "validation_seconds": 20,
+  "finalists": 4
+}

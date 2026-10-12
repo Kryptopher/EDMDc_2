@@ -1,0 +1,3 @@
+# Store every file byte-for-byte (no line-ending conversion): src/ must stay byte-identical to the
+# versions recorded in the paper protocols, and every file is hash-listed in PROVENANCE.md.
+* -text

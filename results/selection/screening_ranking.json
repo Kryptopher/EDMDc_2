@@ -1,0 +1,356 @@
+{
+  "W1": [
+    {
+      "candidate_id": "c10",
+      "incomplete": 0,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 2.132426088490179,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c04",
+      "incomplete": 0,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 2.2958442900734397,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c21",
+      "incomplete": 0,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 2.9245797469597825,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c23",
+      "incomplete": 0,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 2.95539249015347,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c12",
+      "incomplete": 0,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 3.240409765547175,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c09",
+      "incomplete": 1,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 2.3427874766708268,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c05",
+      "incomplete": 3,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 2.4557239030847975,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c16",
+      "incomplete": 7,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 2.434355107151019,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c24",
+      "incomplete": 10,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 0.8416354079871056,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c01",
+      "incomplete": 10,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 0.8449460991368585,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c22",
+      "incomplete": 10,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 0.8676032412071117,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c17",
+      "incomplete": 10,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 0.886137310352993,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c03",
+      "incomplete": 10,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 1.0066054578615975,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c02",
+      "incomplete": 11,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 0.6890533149387468,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c13",
+      "incomplete": 11,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 0.6892790069243823,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c15",
+      "incomplete": 11,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 0.696860952236843,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c08",
+      "incomplete": 11,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 0.6971920421213128,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c00",
+      "incomplete": 11,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 0.7244351528348623,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c06",
+      "incomplete": 12,
+      "failure_steps": 0,
+      "mean_position_rmse_m": null,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c07",
+      "incomplete": 12,
+      "failure_steps": 0,
+      "mean_position_rmse_m": null,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c11",
+      "incomplete": 12,
+      "failure_steps": 0,
+      "mean_position_rmse_m": null,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c14",
+      "incomplete": 12,
+      "failure_steps": 0,
+      "mean_position_rmse_m": null,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c18",
+      "incomplete": 12,
+      "failure_steps": 0,
+      "mean_position_rmse_m": null,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c19",
+      "incomplete": 12,
+      "failure_steps": 0,
+      "mean_position_rmse_m": null,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c20",
+      "incomplete": 12,
+      "failure_steps": 0,
+      "mean_position_rmse_m": null,
+      "episodes": 12
+    }
+  ],
+  "W2a": [
+    {
+      "candidate_id": "c22",
+      "incomplete": 0,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 1.7511836671463339,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c24",
+      "incomplete": 0,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 1.767215940272618,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c01",
+      "incomplete": 0,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 1.8868186057506258,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c03",
+      "incomplete": 0,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 1.900370824373704,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c10",
+      "incomplete": 0,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 2.0948440868676976,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c05",
+      "incomplete": 0,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 2.190698532740634,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c04",
+      "incomplete": 0,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 2.2689494205213343,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c16",
+      "incomplete": 0,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 2.2746527529662885,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c19",
+      "incomplete": 0,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 2.514089602718511,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c12",
+      "incomplete": 0,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 2.9404534751759943,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c21",
+      "incomplete": 0,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 2.943576592448341,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c23",
+      "incomplete": 0,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 2.9472713994403335,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c17",
+      "incomplete": 1,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 1.7757475405053098,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c00",
+      "incomplete": 2,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 1.6956441600101986,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c15",
+      "incomplete": 3,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 1.5880705903948071,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c09",
+      "incomplete": 3,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 2.1952292490005894,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c13",
+      "incomplete": 6,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 1.3893636867283934,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c07",
+      "incomplete": 7,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 1.4405317910583757,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c18",
+      "incomplete": 7,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 2.079439057554867,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c20",
+      "incomplete": 9,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 1.4436290042646576,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c08",
+      "incomplete": 11,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 0.6679111610988001,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c02",
+      "incomplete": 11,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 0.6829046059604512,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c11",
+      "incomplete": 11,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 0.6846845007405699,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c14",
+      "incomplete": 11,
+      "failure_steps": 0,
+      "mean_position_rmse_m": 0.778582822258736,
+      "episodes": 12
+    },
+    {
+      "candidate_id": "c06",
+      "incomplete": 12,
+      "failure_steps": 0,
+      "mean_position_rmse_m": null,
+      "episodes": 12
+    }
+  ]
+}

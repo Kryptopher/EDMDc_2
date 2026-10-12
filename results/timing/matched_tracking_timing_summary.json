@@ -1,0 +1,35 @@
+[
+  {
+    "arm": "W1",
+    "label": "Yaw-scheduled hover-linear MPC",
+    "accuracy_oracle": false,
+    "episodes": 40,
+    "samples": 120000,
+    "mean_ms": 2.598789540918854,
+    "p95_ms": 2.944105060305445,
+    "max_ms": 5.751999909989536,
+    "count_over_10ms": 0
+  },
+  {
+    "arm": "W2a",
+    "label": "EDMDc-MPC (training_v2)",
+    "accuracy_oracle": false,
+    "episodes": 40,
+    "samples": 120000,
+    "mean_ms": 2.909773787816327,
+    "p95_ms": 3.2260000007227063,
+    "max_ms": 5.620499956421554,
+    "count_over_10ms": 0
+  },
+  {
+    "arm": "W3",
+    "label": "Nominal-model LTV MPC (accuracy oracle)",
+    "accuracy_oracle": true,
+    "episodes": 40,
+    "samples": 120000,
+    "mean_ms": 11.63954765428789,
+    "p95_ms": 12.504614988574755,
+    "max_ms": 20.084999967366457,
+    "count_over_10ms": 120000
+  }
+]

@@ -1,0 +1,326 @@
+{
+  "created_utc": "2026-10-02T23:54:40.612764+00:00",
+  "classification": "repeat one-worker complete MPC compute-call timing; no retuning",
+  "cells": [
+    {
+      "label": "Linear-A",
+      "predictor": "W1",
+      "bundle_owner": "W1",
+      "candidate_id": "c04",
+      "config": {
+        "dt": 0.01,
+        "horizon_steps": 50,
+        "block_steps": 10,
+        "q": [
+          0.5384988183729873,
+          0.5384988183729873,
+          0.5384988183729873,
+          0.1572338121828079,
+          0.1572338121828079,
+          0.1572338121828079,
+          0.5837548570017026,
+          0.5837548570017026,
+          0.5837548570017026,
+          0.07104363518292121,
+          0.07104363518292121,
+          0.07104363518292121
+        ],
+        "r": [
+          0.0023595366429165245,
+          0.09438146571666099,
+          0.09438146571666099,
+          0.047190732858330496
+        ],
+        "rd": [
+          0.06306533319097538,
+          2.522613327639015,
+          2.522613327639015,
+          1.2613066638195074
+        ],
+        "terminal_scale": 3.6655558943474302,
+        "trust": [
+          13.395700685423366,
+          1.0406461883364884,
+          1.0406461883364884,
+          0.23807460338075892
+        ],
+        "max_iterations": 4000,
+        "eps_abs": 1e-06,
+        "eps_rel": 1e-06
+      },
+      "config_sha256": "863e23c4fc3445c63bccb02f8d5afd404e20a775b382c6d3f6788464c9c966d2"
+    },
+    {
+      "label": "EDMDc-A",
+      "predictor": "W2a",
+      "bundle_owner": "W1",
+      "candidate_id": "c04",
+      "config": {
+        "dt": 0.01,
+        "horizon_steps": 50,
+        "block_steps": 10,
+        "q": [
+          0.5384988183729873,
+          0.5384988183729873,
+          0.5384988183729873,
+          0.1572338121828079,
+          0.1572338121828079,
+          0.1572338121828079,
+          0.5837548570017026,
+          0.5837548570017026,
+          0.5837548570017026,
+          0.07104363518292121,
+          0.07104363518292121,
+          0.07104363518292121
+        ],
+        "r": [
+          0.0023595366429165245,
+          0.09438146571666099,
+          0.09438146571666099,
+          0.047190732858330496
+        ],
+        "rd": [
+          0.06306533319097538,
+          2.522613327639015,
+          2.522613327639015,
+          1.2613066638195074
+        ],
+        "terminal_scale": 3.6655558943474302,
+        "trust": [
+          13.395700685423366,
+          1.0406461883364884,
+          1.0406461883364884,
+          0.23807460338075892
+        ],
+        "max_iterations": 4000,
+        "eps_abs": 1e-06,
+        "eps_rel": 1e-06
+      },
+      "config_sha256": "863e23c4fc3445c63bccb02f8d5afd404e20a775b382c6d3f6788464c9c966d2"
+    },
+    {
+      "label": "Linear-B",
+      "predictor": "W1",
+      "bundle_owner": "W2a",
+      "candidate_id": "c22",
+      "config": {
+        "dt": 0.01,
+        "horizon_steps": 100,
+        "block_steps": 5,
+        "q": [
+          0.5038325127223001,
+          0.5038325127223001,
+          0.5038325127223001,
+          0.041096384448054246,
+          0.041096384448054246,
+          0.041096384448054246,
+          0.8389653770521994,
+          0.8389653770521994,
+          0.8389653770521994,
+          0.004460241876262501,
+          0.004460241876262501,
+          0.004460241876262501
+        ],
+        "r": [
+          0.004520001340481839,
+          0.18080005361927354,
+          0.18080005361927354,
+          0.09040002680963677
+        ],
+        "rd": [
+          0.005599312399951494,
+          0.22397249599805977,
+          0.22397249599805977,
+          0.11198624799902988
+        ],
+        "terminal_scale": 13.507594007018826,
+        "trust": [
+          19.66586194048803,
+          0.22552799252908406,
+          0.22552799252908406,
+          0.07929650855922216
+        ],
+        "max_iterations": 4000,
+        "eps_abs": 1e-06,
+        "eps_rel": 1e-06
+      },
+      "config_sha256": "01cd20e2c5cc86fefe74d5b55f071da814fa0f462d711570ef3984134c479766"
+    },
+    {
+      "label": "EDMDc-B",
+      "predictor": "W2a",
+      "bundle_owner": "W2a",
+      "candidate_id": "c22",
+      "config": {
+        "dt": 0.01,
+        "horizon_steps": 100,
+        "block_steps": 5,
+        "q": [
+          0.5038325127223001,
+          0.5038325127223001,
+          0.5038325127223001,
+          0.041096384448054246,
+          0.041096384448054246,
+          0.041096384448054246,
+          0.8389653770521994,
+          0.8389653770521994,
+          0.8389653770521994,
+          0.004460241876262501,
+          0.004460241876262501,
+          0.004460241876262501
+        ],
+        "r": [
+          0.004520001340481839,
+          0.18080005361927354,
+          0.18080005361927354,
+          0.09040002680963677
+        ],
+        "rd": [
+          0.005599312399951494,
+          0.22397249599805977,
+          0.22397249599805977,
+          0.11198624799902988
+        ],
+        "terminal_scale": 13.507594007018826,
+        "trust": [
+          19.66586194048803,
+          0.22552799252908406,
+          0.22552799252908406,
+          0.07929650855922216
+        ],
+        "max_iterations": 4000,
+        "eps_abs": 1e-06,
+        "eps_rel": 1e-06
+      },
+      "config_sha256": "01cd20e2c5cc86fefe74d5b55f071da814fa0f462d711570ef3984134c479766"
+    },
+    {
+      "label": "Trajectory-linear-B",
+      "predictor": "W3",
+      "bundle_owner": "W3",
+      "candidate_id": "c22",
+      "config": {
+        "dt": 0.01,
+        "horizon_steps": 100,
+        "block_steps": 5,
+        "q": [
+          0.5038325127223001,
+          0.5038325127223001,
+          0.5038325127223001,
+          0.041096384448054246,
+          0.041096384448054246,
+          0.041096384448054246,
+          0.8389653770521994,
+          0.8389653770521994,
+          0.8389653770521994,
+          0.004460241876262501,
+          0.004460241876262501,
+          0.004460241876262501
+        ],
+        "r": [
+          0.004520001340481839,
+          0.18080005361927354,
+          0.18080005361927354,
+          0.09040002680963677
+        ],
+        "rd": [
+          0.005599312399951494,
+          0.22397249599805977,
+          0.22397249599805977,
+          0.11198624799902988
+        ],
+        "terminal_scale": 13.507594007018826,
+        "trust": [
+          19.66586194048803,
+          0.22552799252908406,
+          0.22552799252908406,
+          0.07929650855922216
+        ],
+        "max_iterations": 4000,
+        "eps_abs": 1e-06,
+        "eps_rel": 1e-06
+      },
+      "config_sha256": "01cd20e2c5cc86fefe74d5b55f071da814fa0f462d711570ef3984134c479766"
+    }
+  ],
+  "case_count_per_cell": 40,
+  "planned_updates_per_cell": 120000,
+  "planned_total_updates": 600000,
+  "workers": 1,
+  "concurrent_campaign_jobs": 0,
+  "timing_field": "solve_seconds measures entire WrenchMPC.compute() call; excludes allocator and nonlinear plant stepping",
+  "scenario_construction": "same 40 original isolated timing-pass tracking cases, each 30 s at dt=0.01 s",
+  "scenario_ids": [
+    "figure8_92001000_scale1.75_fixed",
+    "figure8_92001006_scale1.75_fixed",
+    "figure8_92001012_scale1.75_fixed",
+    "figure8_92001018_scale1.75_fixed",
+    "figure8_92001024_scale1.75_fixed",
+    "figure8_92001025_scale1.75_path",
+    "figure8_92001031_scale1.75_path",
+    "figure8_92001037_scale1.75_path",
+    "figure8_92001043_scale1.75_path",
+    "figure8_92001049_scale1.75_path",
+    "helix_92000000_scale1.75_fixed",
+    "helix_92000006_scale1.75_fixed",
+    "helix_92000012_scale1.75_fixed",
+    "helix_92000018_scale1.75_fixed",
+    "helix_92000024_scale1.75_fixed",
+    "helix_92000025_scale1.75_path",
+    "helix_92000031_scale1.75_path",
+    "helix_92000037_scale1.75_path",
+    "helix_92000043_scale1.75_path",
+    "helix_92000049_scale1.75_path",
+    "lissajous_92002000_scale1.75_fixed",
+    "lissajous_92002006_scale1.75_fixed",
+    "lissajous_92002012_scale1.75_fixed",
+    "lissajous_92002018_scale1.75_fixed",
+    "lissajous_92002024_scale1.75_fixed",
+    "lissajous_92002025_scale1.75_path",
+    "lissajous_92002031_scale1.75_path",
+    "lissajous_92002037_scale1.75_path",
+    "lissajous_92002043_scale1.75_path",
+    "lissajous_92002049_scale1.75_path",
+    "waypoint_92003000_scale1.75_fixed",
+    "waypoint_92003006_scale1.75_fixed",
+    "waypoint_92003012_scale1.75_fixed",
+    "waypoint_92003018_scale1.75_fixed",
+    "waypoint_92003024_scale1.75_fixed",
+    "waypoint_92003025_scale1.75_path",
+    "waypoint_92003031_scale1.75_path",
+    "waypoint_92003037_scale1.75_path",
+    "waypoint_92003043_scale1.75_path",
+    "waypoint_92003049_scale1.75_path"
+  ],
+  "selection_path": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\overnight_campaign_20260929\\continuation_20260930\\interception\\selection.json",
+  "selection_sha256": "2a922609747f9e38d83280c6ca4b611f4a5d1f32898de52b8ac6bf8ca41de8f9",
+  "original_tasks_path": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\wrench_controller_tuning_v1\\timing_pass\\tasks.json",
+  "original_tasks_sha256": "e86a6301089b7f7204e72c0a4e308b54ec42c95b99082598e2c644201a919833",
+  "original_parent_protocol_sha256": "796d60e4b06b72290191fd048922a70e63fe9f278d9a70f8a652f718fbe4a821",
+  "runner_source_sha256": {
+    "run_wrench_controller_tuning.py": "d8d1d08ede29b83978b2c808024134ac5e936e9b286357519146603edf8d2f04",
+    "run_wrench_revisit.py": "a65769c599c9a665947b1bad8fb707396a80d1831b46dedbfbf7d36854336933",
+    "wrench_revisit_mpc.py": "880e8136042d57c3d19c0575ae51d6c2c41aa7ed606dc34a38ee19a41392aebb",
+    "publication_scenarios.py": "fb4479ee0cfae44def50d26ab460f179a29c728feed317b66d34bcd3cdbd7427",
+    "Simulation.py": "d89f139ad885a1467f5df075f5542319caed8c45f5a10409e2f6fb528ad2d72c",
+    "quadcopter.py": "120469050255c5f0e45b0c0486bb13b9325d04619129098a7f9e03178862858f",
+    "PID_Mixer.py": "67648a4c96f0fec930ba381b30c4cd1da29f30f33a61993aead97e26b0de1a80",
+    "edmdc_mpc.py": "a9884524e39dded05c2738b55e0c28fe21578d5f4c63bf03a13978654568a4f6"
+  },
+  "model_path": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\wrench_revisit_2026-09-21\\training_v2\\models\\wrench_physics42_dt001.pkl",
+  "model_sha256": "090b8dd3106dcf3646dcf991fe23c030d3fe27435443a5f8fae19c1c377b2db4",
+  "script_path": "D:\\drone_capture\\edmdc\\quadcopter_EDMD\\Sanjay\\EDMDC_MPC\\artifacts\\interception_timing_repeat_20261002\\run_timing.py",
+  "script_sha256": "96af8ef02c4f3ab56a874a92892945c688defbddaeb3ab24cfa706d0a4a58215",
+  "environment": {
+    "python": "3.10.11",
+    "platform": "Windows-10-10.0.26100-SP0",
+    "processor": "AMD64 Family 26 Model 68 Stepping 0, AuthenticAMD",
+    "logical_cpus": 32,
+    "packages": {
+      "numpy": "1.26.4",
+      "scipy": "1.14.1",
+      "osqp": "1.0.5"
+    }
+  },
+  "no_retuning": true
+}

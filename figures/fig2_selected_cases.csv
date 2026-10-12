@@ -1,0 +1,4 @@
+family,scenario_id,seed,W1_RMSE_m,W2a_RMSE_m,W2a_minus_W1_RMSE_m,family_median_difference_m,selection_rule
+helix,helix_92000003_scale1.75_fixed,92000003,0.0005776771386792476,0.00034558389441238893,-0.0002320932442668587,-0.0002317951823900978,paired EDMDc-minus-hover-linear RMSE nearest family median; tie: lexicographic scenario ID
+figure8,figure8_92001041_scale1.75_path,92001041,0.010046722512532425,0.0019131429867312371,-0.00813357952580119,-0.008095902098280823,paired EDMDc-minus-hover-linear RMSE nearest family median; tie: lexicographic scenario ID
+lissajous,lissajous_92002049_scale1.75_path,92002049,0.015528687713328226,0.005730415277120424,-0.009798272436207803,-0.009679614096332684,paired EDMDc-minus-hover-linear RMSE nearest family median; Lissajous median tie: path-type case for non-ellipse presentation
