@@ -1,161 +1,205 @@
 # Drone Interception via EDMDc-Based Model Predictive Control
 
-Code, frozen configurations, and result records for the paper
+This repository contains the code and simulation results for our paper, **"Drone Interception via EDMDc-Based Model Predictive Control,"** submitted to ACC 2027.
 
-> S. Maharjan, D. Johnson, A. Bangal, Y. Atteia, T. Hlayel, and A. Stein,
-> "Drone Interception via EDMDc-Based Model Predictive Control," submitted to the American Control Conference (ACC) 2027.
+We use Extended Dynamic Mode Decomposition with control (EDMDc) to identify a lifted linear model of a quadrotor from simulation data, then use that model in MPC for trajectory tracking and drone interception. The MPC directly commands total thrust and body torques. We also include two physics-based MPC models for comparison: a yaw-scheduled hover linearization and a trajectory-linearized model.
 
-## Check the paper's numbers (under a minute)
-
-After installing the requirements (below), run from the repository root:
-
-```bash
-python experiments/analyze_tracking.py       # Table III, Sec. V-A
-python experiments/analyze_interception.py   # Tables IV and V, Secs. V-C to V-E
-python experiments/analyze_selection.py      # Table II, Sec. IV-C
-python experiments/analyze_timing.py         # Sec. V-B, Fig. 3
-python experiments/analyze_model.py          # Sec. IV-B
-```
-
-These scripts read only the frozen records in `results/` and the model in `data/models/`; none of them
-needs the training dataset. The table below is generated from their output by
-`python experiments/make_claim_table.py --readme`.
-
-<!-- CLAIM-TABLE:BEGIN -->
-| Paper | Value | Check | Result file |
-|---|---|---|---|
-| §IV-B | λ = 0 from a 22-value grid; 2,051,658 training transitions (342 runs); K 42×42, B_u 42×10 | `python experiments/analyze_model.py` | `data/models/wrench_physics42_dt001.pkl`, `results/training/training_physics42.log` |
-| §IV-B | Regression data matrix full rank (σ_min = 0.0941); condition number 1.37e+05 | `python experiments/analyze_model.py` | `data/models/wrench_physics42_dt001.pkl`, `results/training/training_physics42.log` |
-| §IV-B | Model file SHA-256 `090b8dd3106dcf3646dcf991fe23c030d3fe27435443a5f8fae19c1c377b2db4`; content digest (numerical fields) `f4e736d380d64679b991c4ae7b0d9a379d43fe8502c9a8b8c051dc1e90351cf4` | `python experiments/analyze_model.py` | `data/models/wrench_physics42_dt001.pkl`, `results/training/training_physics42.log` |
-| Table II, §IV-C | Configuration A (hover-linear): c04, Np/Nc/b = 50/5/10; 5/25 candidates completed all screening episodes | `python experiments/analyze_selection.py` | `results/selection/*.json` |
-| Table II, §IV-C | Configuration B (EDMDc): c22, Np/Nc/b = 100/20/5; 12/25 candidates completed all screening episodes | `python experiments/analyze_selection.py` | `results/selection/*.json` |
-| Table III | Hover-linear MPC: position 6.958 mm, attitude 2.158 mrad, yaw 2.560 mrad (n = 200) | `python experiments/analyze_tracking.py` | `results/tracking/blind_test_episodes.json` |
-| Table III | EDMDc-MPC: position 1.576 mm, attitude 4.462 mrad, yaw 7.142 mrad (n = 200) | `python experiments/analyze_tracking.py` | `results/tracking/blind_test_episodes.json` |
-| Table III | Trajectory-linear MPC: position 0.086 mm, attitude 0.182 mrad, yaw 0.057 mrad (n = 200) | `python experiments/analyze_tracking.py` | `results/tracking/blind_test_episodes.json` |
-| §V-A | EDMDc lower position RMSE in 191/200; paired difference -5.382 mm, 95% CI [-5.989, -4.772] mm | `python experiments/analyze_tracking.py` | `results/tracking/blind_test_episodes.json` |
-| §V-B | Matched-configuration mean update time: Hover-linear MPC 2.599 ms, EDMDc-MPC 2.910 ms, Trajectory-linear MPC 11.640 ms | `python experiments/analyze_timing.py` | `results/timing/*` |
-| §V-B, Fig. 3 | Four bundles, mean (P95, max): Linear-A 1.559 (1.987, 5.167) ms; EDMDc-A 1.634 (2.089, 6.853) ms; Linear-B 3.563 (3.954, 9.080) ms; EDMDc-B 4.190 (5.209, 9.862) ms; updates over 10 ms: 0 | `python experiments/analyze_timing.py` | `results/timing/*` |
-| Table IV | Linear-A, Oracle: 40/40 captures, 0 attitude aborts, success mean 5.8097 s, penalized mean 5.8097 s | `python experiments/analyze_interception.py` | `results/interception/episodes.json` |
-| Table IV | Linear-A, Current/CV: 33/40 captures, 0 attitude aborts, success mean 6.6655 s, penalized mean 8.9990 s | `python experiments/analyze_interception.py` | `results/interception/episodes.json` |
-| Table IV | Linear-A, 100-ms delay/CV: 32/40 captures, 0 attitude aborts, success mean 6.7888 s, penalized mean 9.4310 s | `python experiments/analyze_interception.py` | `results/interception/episodes.json` |
-| Table IV | Linear-A, 250-ms delay/CV: 31/40 captures, 0 attitude aborts, success mean 7.1416 s, penalized mean 10.0347 s | `python experiments/analyze_interception.py` | `results/interception/episodes.json` |
-| Table IV | EDMDc-B, Oracle: 40/40 captures, 0 attitude aborts, success mean 2.2335 s, penalized mean 2.2335 s | `python experiments/analyze_interception.py` | `results/interception/episodes.json` |
-| Table IV | EDMDc-B, Current/CV: 40/40 captures, 0 attitude aborts, success mean 2.2910 s, penalized mean 2.2910 s | `python experiments/analyze_interception.py` | `results/interception/episodes.json` |
-| Table IV | EDMDc-B, 100-ms delay/CV: 40/40 captures, 0 attitude aborts, success mean 2.3413 s, penalized mean 2.3413 s | `python experiments/analyze_interception.py` | `results/interception/episodes.json` |
-| Table IV | EDMDc-B, 250-ms delay/CV: 37/40 captures, 0 attitude aborts, success mean 2.5335 s, penalized mean 3.8435 s | `python experiments/analyze_interception.py` | `results/interception/episodes.json` |
-| §V-C | Current/CV joint captures n = 33: EDMDc-B − Linear-A -4.4491 s, 95% CI [-4.9612, -3.9836]; EDMDc-B earlier in 33/33 | `python experiments/analyze_interception.py` | `results/interception/episodes.json` |
-| §V-C | Current/CV failure-penalized difference -6.7080 s | `python experiments/analyze_interception.py` | `results/interception/episodes.json` |
-| §V-C | Helix captures: Linear-A 3/10, EDMDc-B 10/10 (other families: straight 10/10 vs 10/10, accelerating 10/10 vs 10/10, weaving 10/10 vs 10/10) | `python experiments/analyze_interception.py` | `results/interception/episodes.json` |
-| §V-D | 100-ms delay/CV joint captures n = 32: -4.5509 s, 95% CI [-5.2056, -3.9838]; EDMDc-B earlier in 32/32 | `python experiments/analyze_interception.py` | `results/interception/episodes.json` |
-| §V-D | 250-ms delay/CV joint captures n = 31: -4.7255 s, 95% CI [-5.7165, -3.9687]; EDMDc-B earlier in 31/31 | `python experiments/analyze_interception.py` | `results/interception/episodes.json` |
-| §V-E | Oracle: EDMDc-B earlier in 40/40 | `python experiments/analyze_interception.py` | `results/interception/episodes.json` |
-| §V-E | EDMDc-B Current/CV − oracle 0.0575 s, 95% CI [-0.0115, 0.1350] | `python experiments/analyze_interception.py` | `results/interception/episodes.json` |
-| Table V | Hover-linear, config A: 40/40 captures, 0 attitude aborts, mean score 5.8097 s | `python experiments/analyze_interception.py` | `results/interception/episodes.json` |
-| Table V | EDMDc, config A: 40/40 captures, 0 attitude aborts, mean score 5.9505 s | `python experiments/analyze_interception.py` | `results/interception/episodes.json` |
-| Table V | Hover-linear, config B: 2/40 captures, 38 attitude aborts, mean score 19.1015 s | `python experiments/analyze_interception.py` | `results/interception/episodes.json` |
-| Table V | EDMDc, config B: 40/40 captures, 0 attitude aborts, mean score 2.2335 s | `python experiments/analyze_interception.py` | `results/interception/episodes.json` |
-| §V-E | Config A, EDMDc − hover-linear 0.14075 s, 95% CI [0.09525, 0.18425] (paper: 0.1408, [0.0953, 0.1843]); EDMDc later in 34/40 | `python experiments/analyze_interception.py` | `results/interception/episodes.json` |
-| §V-E | Causal crossed captures (CV/100 ms/250 ms): EDMDc-A 33/32/31 vs Linear-A 33/32/31; Linear-B 2/2/1 vs EDMDc-B 40/40/37 | `python experiments/analyze_interception.py` | `results/interception/episodes.json` |
-| §II-A (context) | EDMDc-B Current/CV peak tilt: mean 58.75°, max 70.73° (abort limit 80°) | `python experiments/analyze_interception.py` | `results/interception/episodes.json` |
-| §IV-E | Initial separation 6.4–16.7 m (mean 12.5 m) | `python experiments/analyze_interception.py` | `results/interception/episodes.json` |
-| §IV-B | Retraining reproduces the content digest above (all numerical fields bitwise identical); model file SHA-256 is `090b8dd3…` when trained from the `.pkl` and `78822050…` from the `.npz`, because the stored input file name differs (see `DATA.md`) | `python experiments/train_edmdc.py --data <dataset> --output <dir>` (needs the training dataset, see `DATA.md`) | dataset, see `DATA.md` |
-| (supplementary) | Held-out open-loop prediction RMSE | `python experiments/evaluate_prediction.py --data <dataset>` (needs the training dataset, see `DATA.md`) | `results/prediction/heldout_rolling_aggregate.csv` |
-<!-- CLAIM-TABLE:END -->
-
-Only the last two rows need the training dataset (see `DATA.md`).
-
-## About
-
-This repository contains only what is needed to reproduce the paper's results: a 42-observable,
-wrench-input EDMDc predictor of the full 12-state quadrotor, embedded in a constrained MPC and
-compared with a yaw-scheduled hover-linear MPC baseline on the same nonlinear plant (RK4, 100 Hz).
+**Authors:** S. Maharjan, D. Johnson, A. Bangal, Y. Atteia, T. Hlayel, and A. Stein.
 
 ## Installation
 
-Python 3.10 was used for all results (3.10.11, Windows 11).
+Python 3.10 (we used 3.10.11 on Windows 11).
 
-```bash
+```
 conda create -n edmdc python=3.10
 conda activate edmdc
 pip install -r requirements.txt
 ```
 
-The pinned versions (`numpy 1.26.4`, `scipy 1.14.1`, `osqp 1.0.5`, …) are the ones used in the paper.
-Other versions may change results in the last digits.
+Versions are pinned to what the results came from: numpy 1.26.4, scipy 1.14.1, osqp 1.0.5.
+scikit-learn is in there only because the model file stores its standardization as fitted
+`StandardScaler` objects, so you need it to load the model even if you never fit anything.
 
-## Repository layout
+## Running the controller
+
+`WrenchMPC` takes the 12-state vector and a reference over its horizon, and gives back the
+wrench for the next step:
+
+```python
+command, info = controller.compute(measured, reference)   # command = [T, tx, ty, tz]
+```
+
+`measured` is position, velocity, ZYX Euler angles, body rates. `reference` is `(N, 12)`
+covering steps *k+1* to *k+N*, where *N* is `config.horizon_steps`. There's no input
+reference: the input cost penalizes deviation from the hover wrench, and the nominal input
+sequence is just the last solution shifted a step. Getting from the commanded wrench to
+motor speeds is your allocation, not the controller's.
+
+The following is a complete loop, hovering at one metre with EDMDc and the configuration the
+paper calls B:
+
+```python
+import json, pickle, sys
+import numpy as np
+sys.path.insert(0, "src")
+
+from Simulation import quad_sim
+from wrench_revisit_mpc import WrenchMPC, WrenchConfig, physical_reference, plant_step
+
+DT = 0.01
+nominal, plant = quad_sim(), quad_sim()        # prediction model, and the plant it flies
+
+with open("data/models/wrench_physics42_dt001.pkl", "rb") as f:
+    model = pickle.load(f)
+
+cfg = json.load(open("configs/interception_controllers.json"))["configurations"]["B"]["config"]
+config = WrenchConfig(**cfg)
+
+x = np.zeros(12)
+controller = WrenchMPC("edmdc", nominal, config, model, initial_yaw=x[8])
+
+for _ in range(500):
+    hold = dict(pos=np.array([0.0, 0.0, 1.0]), vel=np.zeros(3), acc=np.zeros(3), yaw=0.0)
+    reference = physical_reference([hold] * config.horizon_steps, nominal, DT)
+
+    u, info = controller.compute(x, reference)
+    x, applied, _, saturated = plant_step(plant, x, u, DT)
+    controller.previous_applied = applied.copy()    # update using the applied wrench
+```
+
+A few details matter when using the controller:
+
+`previous_applied` should be updated with the wrench actually applied after motor allocation and saturation. The controller uses this value when penalizing changes in control input.
+
+The controller keeps its previous solution between calls. Create a new controller instance for each simulation episode.
+
+`horizon_steps` must be divisible by `block_steps`, and for EDMDc `config.dt` has to match the
+`dt` in the model file.
+
+Pass `"yaw_linear"`, `"linear"` or `"ltv"` instead of `"edmdc"` to change predictor; only
+EDMDc needs the `model` argument. When the solver fails, `compute` hands back the last
+applied wrench with `info["accepted"] = False` instead of raising.
+
+`plant_step(sim, state, command, dt)` allocates, clips the rotor forces, takes an RK4 step,
+and returns the next state plus the wrench that was actually applied. The loop itself is
+left to the caller.
+
+## Using a different quadrotor
+
+The included EDMDc model was trained for a 3.34 kg quadrotor with a 550 mm frame, using data generated by a cascaded PID controller. For a different vehicle, you will need to identify a new model and retune the MPC. The main steps are:
+
+1. **Set up the vehicle model.** Build `quadcopter(m, g, l, I, kD, kT, k_drag_linear,
+   k_drag_angular)` from `src/quadcopter.py` and wrap it in something with `.quad` and
+   `.max_speed`, or override the class attributes on `quad_sim`. No `src/` edit needed. Do
+   not just call `quad_sim()` — it hard-codes our frame.
+
+2. **Collect data and train a new EDMDc model.** The trainer wants a dict of 3-D arrays, one row per run, every run the
+   same length: `t` as `(n_runs, T)`, `states` as `(n_runs, T, 12)`, `U` as
+   `(n_runs, T, 4)` with the wrench after allocation and saturation, not the request. Pairs
+   only form within a run, so run boundaries matter. We used 360 runs of 60 s at 100 Hz
+   under a stabilizing controller, with deliberate tilt excitation out to 30°. Excitation beyond hover is important for representing aggressive trajectories.
+   Then `experiments/train_edmdc.py` with your own validation and test indices and
+   `--skip-hash-check`, which you need because it otherwise checks the dataset against our
+   hash.
+
+3. **Retune the controller.** Configurations A and B, the two selected controllers in the paper, came out of a 25-candidate search for this
+   vehicle, this model and this task, with cost weights scaled to a 0.75 m capture radius.
+   `experiments/selection.py` has the machinery; the scenarios and candidates are ours.
+   Reusing these tuned configurations on another vehicle may substantially degrade performance.
+
+4. **Update the wrench bounds and input scaling if your control authority differs.** Both are
+   in `src/wrench_revisit_mpc.py`, at lines 141 and 156–157. `umin` and `umax` you
+   can overwrite on the instance; the input scaling goes into the QP matrices at
+   construction, so that one means editing the file.
+
+5. **Update the mixer** in `src/PID_Mixer.py` if your quadrotor does not use an X configuration.
+
+For hardware you're bringing your own estimator and mixer. The controller wants full state,
+Euler angles and body rates included, and a direct wrench interface, which most autopilots
+don't give you. The lifted state is in ZYX Euler angles and goes singular at ±90° pitch. We
+abort runs past 80°, but that's a monitor outside the optimizer, not a constraint in it.
+
+## Repository structure
 
 | Path | Contents |
 |---|---|
-| `src/` | Simulator, plant, allocation, EDMDc identification, and MPC code. These files are **byte-identical** to the versions used for the paper (SHA-256 in `PROVENANCE.md`); do not edit them if you want to reproduce exact numbers. |
-| `experiments/` | Command-line entry points for every experiment and analysis (below). |
-| `configs/` | Frozen controller configurations, the 25 search candidates, scenario seed lists, and training settings. |
-| `data/models/` | The EDMDc model used in the paper (`wrench_physics42_dt001.pkl`, 41 KB). |
-| `results/` | Frozen per-episode result records behind every table, plus the small inputs the figures need. |
-| `figures/` | Figure scripts (Figs. 2–4) and their outputs; `figures/paper/` holds the EPS files of Figs. 1–4 as submitted (Fig. 1 is a drawing with no generating script). |
-| `provenance/` | Unmodified original scripts and protocol files, for audit only. They contain the authors' original absolute paths and are not meant to be run from this repository. |
-| `DATA.md` | Training dataset (not in git; published on Zenodo as a 540 MB `.npz`), its structure, and how it was generated. |
+| `src/` | Simulator, plant, allocation, EDMDc identification, MPC |
+| `experiments/` | Command-line entry points for every experiment and analysis |
+| `configs/` | Controller configurations, the 25 search candidates, scenario seeds, training settings |
+| `data/models/` | The EDMDc model used in the paper |
+| `results/` | Frozen per-episode records behind every table, plus what the figures need |
+| `figures/` | Scripts for Figs. 2–4; `figures/paper/` has all four EPS files as submitted |
+| `provenance/` | Unmodified original scripts and protocol files, for audit |
+| `DATA.md` | The training dataset: what's in it, how it was made, where to get it |
 
-## Reproducing the paper
+`src/` is flat modules, no package wrapper, so scripts put it on the path themselves. Those
+files are byte-identical to what produced the paper's numbers, hashes in `PROVENANCE.md`,
+and editing them changes the results. The ones in `provenance/` are originals rather than
+cleaned copies, so they still have our local paths in them and aren't meant to run from
+here.
 
-Every command below runs from the repository root. Analysis scripts read the frozen records in
-`results/` by default; pass the `--episodes`/`--results` output of a rerun to analyze your own runs.
+## Reproducing the paper results
 
-| Paper item | Re-run | Analyze |
-|---|---|---|
-| EDMDc model (Sec. IV-A/B: λ = 0, 2,051,658 transitions) | `python experiments/train_edmdc.py --data <dataset.npz> --output results_local/training` | prints the model SHA-256 and compares it with the paper model |
-| Held-out prediction RMSE (optional, not tabulated in the paper) | `python experiments/evaluate_prediction.py --data <dataset.npz>` | printed |
-| Table III, Fig. 2 (matched tracking, 200 scenarios) | `python experiments/tracking.py --output results_local/tracking` | `python experiments/analyze_tracking.py [--episodes results_local/tracking/episodes.json]` |
-| Controller selection (Sec. IV-C, Table II) | `python experiments/selection.py --output results_local/selection` | `python experiments/analyze_selection.py [--results results_local/selection]` |
-| Tables IV and V, delay study, crossed study, Fig. 4 | `python experiments/interception.py --output results_local/interception` | `python experiments/analyze_interception.py [--episodes results_local/interception/episodes.json]` |
-| Fig. 3 (controller-update timing) | `python experiments/timing.py --output results_local/timing` | printed / `timing_summary.json` |
-| Figures 2, 3, 4 | — | `python figures/fig2_tracking.py`, `python figures/fig3_timing.py`, `python figures/fig4_interception.py` |
+Five scripts read the frozen records in `results/` and print the paper's values. None needs
+the training dataset.
 
-Useful options: `--workers N` (parallel episodes), `--seeds …`/`--cells …`/`--modes …` (interception
-subsets), `--families …`/`--replicates …` (tracking subsets), `--candidates …` (selection subsets),
-`--save-traces` (interception state traces).
-
-Quick check (about a minute): reproduce two Current/CV episodes shown in Fig. 4.
-
-```bash
-python experiments/interception.py --cells Linear-A EDMDc-B --modes cv --seeds 3103001001 --output results_local/quick
-# expected: Linear-A qualifies at 5.79 s, EDMDc-B at 2.13 s
+```
+python experiments/analyze_tracking.py
+python experiments/analyze_interception.py
+python experiments/analyze_selection.py
+python experiments/analyze_timing.py
+python experiments/analyze_model.py
 ```
 
-## What was verified for this release
+| Paper items | Script | Reads |
+|---|---|---|
+| Table III, §V-A | `analyze_tracking.py` | `results/tracking/` |
+| Tables IV–V, §§V-C to V-E | `analyze_interception.py` | `results/interception/` |
+| Table II, §IV-C | `analyze_selection.py` | `results/selection/` |
+| §V-B, Fig. 3 | `analyze_timing.py` | `results/timing/` |
+| §IV-B | `analyze_model.py` | `data/models/` |
 
-Run from this repository with the pinned environment:
+`CLAIMS.md` lists the source data and scripts for the reported results. It can be regenerated using `experiments/make_claim_table.py`.
 
-- **Analyses** reproduce every number in Tables II–V and the Section V text from the frozen records,
-  including the bootstrap intervals (e.g. Current/CV joint-capture difference −4.4491 s, 95% CI [−4.9612, −3.9836] s).
-- **Interception**: re-simulated episodes are bit-for-bit identical to the paper's saved traces
-  (Current/CV Linear-A and EDMDc-B, seed 3103001001; oracle crossed EDMDc-A and Linear-B, seed 3103002000).
-- **Tracking**: the hover-linear and EDMDc re-runs are bit-identical. The trajectory-linear comparator
-  differs at the 1e-13 relative level due to floating-point non-determinism, which was already recorded
-  for the original study.
-- **Selection**: all 48 screening episodes of candidates c04 and c22 reproduce exactly.
-- **Training**: retraining reproduces every numerical field of the paper model bitwise (content
-  digest `f4e736d380d64679b991c4ae7b0d9a379d43fe8502c9a8b8c051dc1e90351cf4`), from both the original
-  `.pkl` and the published `.npz`. The model file hash additionally depends on the stored input file
-  name; see `DATA.md`.
-- **Prediction**: held-out RMSE matches the frozen evaluation exactly.
-- **Figures**: Figs. 2–4 regenerated from `results/` are pixel-identical to the paper's renderings.
+To rerun the simulations:
 
-## Notes and limitations
+| Paper item | Command |
+|---|---|
+| Table III, Fig. 2, matched tracking, 200 scenarios | `python experiments/tracking.py --output results_local/tracking` |
+| Tables IV–V, delay and crossed studies, Fig. 4 | `python experiments/interception.py --output results_local/interception` |
+| Table II, controller selection | `python experiments/selection.py --output results_local/selection` |
+| Fig. 3, update timing | `python experiments/timing.py --output results_local/timing` |
+| §IV-B, the EDMDc model | `python experiments/train_edmdc.py --data <dataset.npz> --output results_local/training` |
 
-- **Interception scenarios** are regenerated from their seeds; every reference trajectory is checked
-  against the frozen hash in `configs/interception_scenarios.json`.
-- **Timing** numbers depend on hardware. The paper's numbers were measured on an AMD Ryzen 9 9950X
-  with one worker on an otherwise idle machine; run `timing.py` the same way.
-- **Selection** episodes use the known-future (scripted) target reference of the original selection
-  campaign; the evaluation in Tables IV–V uses the causal Current/CV and delayed references, plus the
-  oracle reference for comparison.
-- **Held-out runs** (indices 39, 59, 129, 155, 210, 356–359) had been inspected in earlier research
-  before the final model was trained; they are not a never-seen test set.
-- **Training data** generation scripts are included in `src/`, but three of them changed after the dataset
-  was generated, so regenerating the dataset is not guaranteed to be byte-identical. The published dataset
-  (see `DATA.md`) is the authoritative input.
+Feed the output back with `--episodes` or `--results`. Everything takes `--help`, which
+covers subsets by seed, cell, mode, family or candidate, and parallel episodes. Only the
+last row needs the dataset.
+
+For a quick check, run the two Current/CV cases from Fig. 4:
+
+```
+python experiments/interception.py --cells Linear-A EDMDc-B --modes cv \
+    --seeds 3103001001 --output results_local/quick
+```
+
+The expected interception times are approximately 5.79 s for Linear-A and 2.13 s for EDMDc-B.
+
+## Limitations and reproducibility notes
+
+The nine held-out runs (39, 59, 129, 155, 210, 356–359) were examined during earlier development, so they should not be considered a fully independent test set.
+
+Runtime measurements were collected on an otherwise idle Ryzen 9 9950X with one worker. The Python implementation uses complex-step Jacobians and has not been optimized for embedded execution.
+
+Three data-generation scripts were modified after the original dataset was created. Re-running those scripts may therefore produce different files. See `DATA.md` for details of the dataset used in the paper.
+
+All results are from simulation with exact state feedback and a nominal plant model. The experiments do not include perception, state-estimation errors, measurement noise, wind, or actuator uncertainty. Target position and velocity are provided directly and extrapolated using a constant-velocity model.
+
+`PROVENANCE.md` documents the checks used to verify the saved simulation results, trained model, and figures.
+
+## Citation
+
+If you use this code, please cite the paper listed above. Citation information is also available in `CITATION.cff`.
 
 ## License
 
-MIT — see `LICENSE`. Citation metadata: `CITATION.cff`.
+Released under the MIT License; see `LICENSE`.

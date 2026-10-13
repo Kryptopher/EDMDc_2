@@ -13,6 +13,7 @@ or `configs/` reads or depends on them.
 | `.gitattributes` | written for this release | release code/documentation | `0bf74143e24cf413eab053ed1d24b76f2faff41328b61f9130dabb0d8817eeab` |
 | `.gitignore` | written for this release | release code/documentation | `069642b4b5d8ce0ad2e5cf8eefdce2b96b57cd7318db4a847ebdaadae2aef311` |
 | `CITATION.cff` | written for this release | release code/documentation | `79feb280bc4f57ec98e5b8b4b692eff89754915710a6f94c4003e7eebd2f657d` |
+| `CLAIMS.md` | written for this release | release code/documentation | `36762a750b20c8dc16825910eb634442f3466f09a0db4789fb90989b1dd96e5e` |
 | `configs/edmdc_training.json` | artifacts/wrench_revisit_2026-09-21/training_v2/training_status.json | config; edited for release: fields added for the published .npz archive and the model content digest | `b97567fd9b0971e1adbbf343b1445d342dba7b13c6fb80f69183b0ef051fc75e` |
 | `configs/interception_candidates.json` | wrench_interception_v1/candidates.json | config | `d33f65fdc25819ace37db3d05b6ab3ab29c243de37e417ee5322c79f082eb221` |
 | `configs/interception_controllers.json` | overnight_campaign_20260929/continuation_20260930/interception/selection.json | config | `db962973aa11c533cc041985958ab59693e696bdac3740affcd4c0f876879297` |
@@ -32,7 +33,7 @@ or `configs/` reads or depends on them.
 | `experiments/dataset_io.py` | written for this release | release code/documentation | `a65f5c120a5e5b039207c8dca6269bf2e3bf666bd111b5e912625078ed971460` |
 | `experiments/evaluate_prediction.py` | written for this release | release code/documentation | `5080cb1a769d84b05b5be015043fb386aaaa861056f807ce7e600abeaec9fb58` |
 | `experiments/interception.py` | written for this release | release code/documentation | `f44b3f775cef2aad08f3b63177c4a7844cfd1a71bf810a818f318e2b3132acbd` |
-| `experiments/make_claim_table.py` | written for this release | release code/documentation | `4ecfcd6bad3d3da3386619345c8fa1851fffcb570a9fcae0f7f7bca334e01245` |
+| `experiments/make_claim_table.py` | written for this release | release code/documentation | `ae775b90b6af45441d14121daf3829dd8b441636891e56455474c8aa05c0f84b` |
 | `experiments/model_digest.py` | written for this release | release code/documentation | `60a23791e5cd8274e3e9e88707caf7d30c4fa707013cd1830402ae4e1f154e88` |
 | `experiments/selection.py` | written for this release | release code/documentation | `126bc0ff9aaea8bb4f78fde61c916f3fc4a26f9e731299b09d27e39bbaf490a0` |
 | `experiments/timing.py` | written for this release | release code/documentation | `c895fb1418ae73230ecf5641aa65fee1f3fb25b0dae7dc412b205261320698ea` |
@@ -96,7 +97,7 @@ or `configs/` reads or depends on them.
 | `provenance/original/wrench_interception_v1/campaign.py` | wrench_interception_v1/campaign.py | provenance: interception controller selection campaign (screening/validation) | `c78f6571991280c087ea3040ac4749e56bf1d29c67a2a3200053ccac4a368aab` |
 | `provenance/original/wrench_interception_v1/candidates.json` | wrench_interception_v1/candidates.json | provenance: 25 LHS candidates (all arms) | `417916c12aef60fce2c758bdcbaecd9eadd7ced4fa5af8c0f9535d148f32a3cc` |
 | `provenance/original/wrench_interception_v1/protocol.json` | wrench_interception_v1/protocol.json | provenance: selection campaign protocol | `11cdc6018c89753b1d769519916dbf3423078382a48c896c107ba2fd93c72a52` |
-| `README.md` | written for this release | release code/documentation | `38bec299b94480909cd90c20612628d89319aebf40f84a41c36b5b1f53ccf575` |
+| `README.md` | written for this release | release code/documentation | `e5d5bd9efbf486036b6ff651e0dd761cf3156aad2baa48d773a56a2449614ecd` |
 | `requirements.txt` | written for this release | release code/documentation | `84d1f34f04c75b0fbe6663447b9585b88569211b2d8e3b5ba48beb12b05558ad` |
 | `results/figure_inputs/interception/EDMDc-B_cv_3103001001.npz` | artifacts/target_information_ablation_20261002/episodes/primary/primary_EDMDc-B_cv_3103001001/trace.npz | figure input (Fig. 4) | `bdfad206dcb3de2d9ba94b346d2a89debd69023ad0e7b7ad65fd3666c2c67937` |
 | `results/figure_inputs/interception/EDMDc-B_cv_3103002006.npz` | artifacts/target_information_ablation_20261002/episodes/primary/primary_EDMDc-B_cv_3103002006/trace.npz | figure input (Fig. 4) | `87f866bc25f982456676030b92b7550c0690f21606e7d180041557b2bc001313` |
