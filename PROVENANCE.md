@@ -97,7 +97,7 @@ or `configs/` reads or depends on them.
 | `provenance/original/wrench_interception_v1/campaign.py` | wrench_interception_v1/campaign.py | provenance: interception controller selection campaign (screening/validation) | `c78f6571991280c087ea3040ac4749e56bf1d29c67a2a3200053ccac4a368aab` |
 | `provenance/original/wrench_interception_v1/candidates.json` | wrench_interception_v1/candidates.json | provenance: 25 LHS candidates (all arms) | `417916c12aef60fce2c758bdcbaecd9eadd7ced4fa5af8c0f9535d148f32a3cc` |
 | `provenance/original/wrench_interception_v1/protocol.json` | wrench_interception_v1/protocol.json | provenance: selection campaign protocol | `11cdc6018c89753b1d769519916dbf3423078382a48c896c107ba2fd93c72a52` |
-| `README.md` | written for this release | release code/documentation | `e5d5bd9efbf486036b6ff651e0dd761cf3156aad2baa48d773a56a2449614ecd` |
+| `README.md` | written for this release | release code/documentation | `5530a28d2a27b5175fb767b32921a6f43c086bc85f63f109187ebbee0da9e678` |
 | `requirements.txt` | written for this release | release code/documentation | `84d1f34f04c75b0fbe6663447b9585b88569211b2d8e3b5ba48beb12b05558ad` |
 | `results/figure_inputs/interception/EDMDc-B_cv_3103001001.npz` | artifacts/target_information_ablation_20261002/episodes/primary/primary_EDMDc-B_cv_3103001001/trace.npz | figure input (Fig. 4) | `bdfad206dcb3de2d9ba94b346d2a89debd69023ad0e7b7ad65fd3666c2c67937` |
 | `results/figure_inputs/interception/EDMDc-B_cv_3103002006.npz` | artifacts/target_information_ablation_20261002/episodes/primary/primary_EDMDc-B_cv_3103002006/trace.npz | figure input (Fig. 4) | `87f866bc25f982456676030b92b7550c0690f21606e7d180041557b2bc001313` |

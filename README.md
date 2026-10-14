@@ -98,9 +98,11 @@ The included EDMDc model was trained for a 3.34 kg quadrotor with a 550 mm frame
    `(n_runs, T, 4)` with the wrench after allocation and saturation, not the request. Pairs
    only form within a run, so run boundaries matter. We used 360 runs of 60 s at 100 Hz
    under a stabilizing controller, with deliberate tilt excitation out to 30°. Excitation beyond hover is important for representing aggressive trajectories.
-   Then `experiments/train_edmdc.py` with your own validation and test indices and
-   `--skip-hash-check`, which you need because it otherwise checks the dataset against our
-   hash.
+   Then run `experiments/train_edmdc.py` with `--skip-hash-check`, which you need because it
+   otherwise checks the dataset against our hash. Your validation and test run indices go in
+   `configs/edmdc_training.json`; there is no command-line flag for them. The dataset itself
+   must be a pickle of the dict described above, or an `.npz` in the layout
+   `experiments/dataset_io.py` expects.
 
 3. **Retune the controller.** Configurations A and B, the two selected controllers in the paper, came out of a 25-candidate search for this
    vehicle, this model and this task, with cost weights scaled to a 0.75 m capture radius.
@@ -194,7 +196,7 @@ Three data-generation scripts were modified after the original dataset was creat
 
 All results are from simulation with exact state feedback and a nominal plant model. The experiments do not include perception, state-estimation errors, measurement noise, wind, or actuator uncertainty. Target position and velocity are provided directly and extrapolated using a constant-velocity model.
 
-`PROVENANCE.md` documents the checks used to verify the saved simulation results, trained model, and figures.
+Before release we re-simulated episodes bit-identically, retrained the model to the same content digest, and regenerated the figures pixel-identically. `PROVENANCE.md` lists every file with its origin and hash.
 
 ## Citation
 
